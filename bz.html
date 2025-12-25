@@ -1,0 +1,1988 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>包头新华管理平台</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- SheetJS for Excel export -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#3b82f6',
+                        secondary: '#1e40af',
+                        accent: '#f97316',
+                        neutral: '#64748b',
+                        'neutral-light': '#f1f5f9',
+                        'neutral-dark': '#334155',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                    boxShadow: {
+                        'card': '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+                        'card-hover': '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .fade-in {
+                animation: fadeIn 0.5s ease-in;
+            }
+            .scrollbar-thin {
+                scrollbar-width: thin;
+            }
+            .scrollbar-hide::-webkit-scrollbar {
+                display: none;
+            }
+            .text-shadow {
+                text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            }
+            .bg-gradient-primary {
+                background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
+            }
+            /* 3D按钮效果 */
+            .btn-3d {
+                position: relative;
+                transition: all 0.2s ease;
+                transform-style: preserve-3d;
+                transform: perspective(1000px);
+                box-shadow: 0 4px 0 0 rgba(0,0,0,0.2);
+            }
+            .btn-3d:before {
+                content: '';
+                position: absolute;
+                width: 100%;
+                height: 100%;
+                left: 0;
+                top: 0;
+                background: rgba(255,255,255,0.1);
+                transform: translateZ(30px);
+                border-radius: inherit;
+            }
+            .btn-3d:active {
+                transform: translateY(4px) perspective(1000px);
+                box-shadow: 0 0 0 0 rgba(0,0,0,0.2);
+            }
+            .btn-3d:active:before {
+                transform: translateZ(0);
+            }
+            /* 轮播图指示器 */
+            .carousel-indicator {
+                width: 10px;
+                height: 10px;
+                border-radius: 50%;
+                background-color: rgba(255,255,255,0.5);
+                transition: all 0.3s ease;
+            }
+            .carousel-indicator.active {
+                background-color: white;
+                transform: scale(1.2);
+            }
+            /* 美化标题字体 */
+            .title-beautify {
+                font-family: 'Microsoft YaHei', '微软雅黑', 'SimHei', '黑体', sans-serif;
+                font-weight: 700;
+                letter-spacing: 2px;
+                text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+                transition: all 0.3s ease;
+            }
+            .title-beautify:hover {
+                text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.4);
+                transform: translateY(-1px);
+            }
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #f3f4f6;
+            border-top: 2px solid #3b82f6;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        @media print {
+            .no-print { display: none !important; }
+            .print-only { display: block !important; }
+            body { background: white; margin: 0; padding: 0; }
+            .compact-table { font-size: 10pt; }
+            .bordered-table th, .bordered-table td { border: 1px solid #000; }
+            thead { display: table-header-group; }
+            tfoot { display: table-footer-group; }
+            
+            /* 打印页脚样式 - 已修改为包含"共几页" */
+            @page {
+                @bottom-left {
+                    content: "包头新华管理平台 - 第 " counter(page) " 页，共 " counter(pages) " 页";
+                    font-size: 10pt;
+                    color: #666;
+                }
+                @bottom-right {
+                    content: "打印时间: " strftime("%Y-%m-%d %H:%M:%S", now());
+                    font-size: 10pt;
+                    color: #666;
+                }
+            }
+            
+            /* 修复表格分页问题 */
+            table { page-break-inside: avoid; }
+            tr { page-break-inside: avoid; page-break-after: auto; }
+            thead { display: table-header-group; }
+            tfoot { display: table-footer-group; }
+            
+            /* 分页符样式 */
+            .page-break-after {
+                page-break-after: always;
+            }
+        }
+        
+        /* 优化表格样式 */
+        .compact-table {
+            font-size: 0.75rem; /* 减小字体大小 */
+        }
+        
+        .compact-table th,
+        .compact-table td {
+            padding: 0.25rem 0.5rem; /* 减小内边距 */
+        }
+        
+        /* 高亮搜索结果 */
+        .search-highlight {
+            background-color: #fef3c7;
+            font-weight: 500;
+            padding: 0 2px;
+            border-radius: 2px;
+        }
+        
+        /* 文件上传按钮样式 */
+        .file-upload-btn {
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+        }
+        
+        .file-upload-btn input[type=file] {
+            position: absolute;
+            left: 0;
+            top: 0;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+        
+        /* 轮播图样式 */
+        .carousel-container {
+            position: relative;
+            width: 100vw;
+            height: 60vh; /* 使用视口高度单位，使轮播图高度更适合显示 */
+            overflow: hidden;
+            margin-left: calc(-50vw + 50%); /* 使轮播图宽度超出容器，实现满屏效果 */
+            margin-bottom: 20px;
+        }
+        
+        .carousel-slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            transition: opacity 1s ease-in-out;
+        }
+        
+        .carousel-slide.active {
+            opacity: 1;
+        }
+        
+        .carousel-slide img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center;
+            min-width: 100%;
+            min-height: 100%;
+        }
+        
+        .carousel-caption {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 20px;
+            background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+            color: white;
+            text-align: center;
+        }
+        
+        .carousel-controls {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 8px;
+            z-index: 10;
+        }
+        
+        .carousel-arrow {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 40px;
+            height: 40px;
+            background-color: rgba(255,255,255,0.5);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 10;
+            transition: all 0.3s ease;
+        }
+        
+        .carousel-arrow:hover {
+            background-color: rgba(255,255,255,0.8);
+        }
+        
+        .carousel-arrow.prev {
+            left: 20px;
+        }
+        
+        .carousel-arrow.next {
+            right: 20px;
+        }
+        
+        /* 确保左右两侧高度一致 */
+        .content-container {
+            display: flex;
+            flex-direction: column;
+            min-height: calc(100vh - 64px); /* 减去导航栏高度 */
+        }
+        
+        .flex-container {
+            display: flex;
+            flex: 1;
+            gap: 4;
+            min-height: 0; /* 解决flexbox高度计算问题 */
+        }
+        
+        .sidebar-container {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            min-height: 0; /* 允许内容溢出时收缩 */
+        }
+        
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            min-height: 0; /* 允许内容溢出时收缩 */
+        }
+        
+        /* 优化学校筛选区域高度 */
+        #schoolFilterContainer {
+            max-height: calc(100vh - 320px);
+            overflow-y: auto;
+            overflow-x: hidden;
+            flex: 1; /* 允许占满可用空间 */
+        }
+        
+        /* 优化表格容器高度，使其与左侧学校筛选区域一致 */
+        .scroll-container {
+            max-height: calc(100vh - 320px); /* 调整减去的高度以匹配左侧 */
+            overflow-y: auto;
+        }
+        
+        /* 确保表格占满可用空间 */
+        .scroll-container > table {
+            width: 100%;
+        }
+        
+        /* 侧边栏项目激活状态 */
+        .sidebar-item.active {
+            background-color: #dbeafe;
+            font-weight: 500;
+            color: #1e40af;
+        }
+        
+        /* 进度条样式 */
+        .progress-container {
+            width: 100%;
+            height: 6px;
+            background-color: #e5e7eb;
+            border-radius: 3px;
+            overflow: hidden;
+            margin-top: 8px;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            background-color: #3b82f6;
+            border-radius: 3px;
+            transition: width 0.3s ease;
+        }
+        
+        /* 操作按钮容器样式 */
+        .action-buttons-container {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            padding: 1rem;
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .action-buttons-container:hover {
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+            transform: translateY(-2px);
+        }
+        
+        /* 响应式调整 */
+        @media (max-width: 768px) {
+            .action-buttons-container {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .action-buttons-container button {
+                width: 100%;
+            }
+            
+            .flex-container {
+                flex-direction: column;
+            }
+            
+            .sidebar-container, .main-content {
+                min-height: auto;
+            }
+            
+            #schoolFilterContainer, .scroll-container {
+                max-height: 300px;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 font-sans">
+    <!-- 导航栏 -->
+    <nav class="bg-gradient-primary text-white p-4 shadow-lg no-print">
+        <div class="container mx-auto flex flex-col md:flex-row justify-between items-center">
+            <!-- 美化标题字体 -->
+            <h1 class="text-xl md:text-2xl font-bold text-shadow mb-2 md:mb-0 title-beautify">包头新华管理平台</h1>
+            <!-- 将时间放到最右侧 -->
+            <div class="flex items-center justify-end w-full md:w-auto">
+                <span id="currentTime" class="text-sm md:text-base font-medium"></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 图片轮播 -->
+    <div class="w-full overflow-hidden no-print">
+        <div class="carousel-container shadow-lg">
+            <!-- 轮播图片1 -->
+            <div class="carousel-slide active">
+                <img src="https://5b0988e595225.cdn.sohucs.com/images/20180923/614bc69cfa594f1abb233da6b87b96db.jpeg" alt="网格化管理系统">
+                <div class="carousel-caption">
+                    <h3 class="text-xl font-bold">网格化管理系统</h3>
+                    <p>全面的数据管理</p>
+                </div>
+            </div>
+            
+            <!-- 轮播图片2 -->
+            <div class="carousel-slide">
+                <img src="https://gips0.baidu.com/it/u=3860229528,721047818&fm=3074&app=3074&f=PNG?w=2560&h=1440" alt="数据管理系统">
+                <div class="carousel-caption">
+                    <h3 class="text-xl font-bold">数据管理系统</h3>
+                    <p>精准的数据分析</p>
+                </div>
+            </div>
+            
+            <!-- 轮播图片3 -->
+            <div class="carousel-slide">
+                <img src="https://bpic.588ku.com/video_library/cover/24/04/06/a75f382ef789bf643f4d4901a102736a_snapshot_t0.jpg" alt="信息管理平台">
+                <div class="carousel-caption">
+                    <h3 class="text-xl font-bold">信息管理平台</h3>
+                    <p>智能化信息管理</p>
+                </div>
+            </div>
+            
+            <!-- 轮播控制箭头 -->
+            <div class="carousel-arrow prev" onclick="changeSlide(-1)">
+                <i class="fas fa-chevron-left text-white"></i>
+            </div>
+            <div class="carousel-arrow next" onclick="changeSlide(1)">
+                <i class="fas fa-chevron-right text-white"></i>
+            </div>
+            
+            <!-- 轮播指示器 -->
+            <div class="carousel-controls">
+                <div class="carousel-indicator active" onclick="goToSlide(0)"></div>
+                <div class="carousel-indicator" onclick="goToSlide(1)"></div>
+                <div class="carousel-indicator" onclick="goToSlide(2)"></div>
+            </div>
+        </div>
+    </div>
+
+    
+
+    <div class="container mx-auto p-4 content-container">
+        <div class="flex-container">
+            <!-- 侧边栏 -->
+            <div class="w-full lg:w-64 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg shadow-card p-4 no-print transition-all duration-300 hover:shadow-card-hover sidebar-container border border-blue-100 flex-shrink-0">
+                <!-- 学校筛选标题 -->
+                <h2 class="text-lg font-semibold mb-4 text-blue-800 flex items-center">
+                    <i class="fas fa-filter mr-2 text-blue-500"></i>学校筛选
+                </h2>
+                
+                <!-- 学校筛选按钮组 -->
+                <div class="space-y-2 mb-4 bg-white rounded-lg p-2 shadow-sm" id="schoolFilterContainer">
+                    <button data-school="" class="sidebar-item w-full text-left px-3 py-2 rounded hover:bg-blue-50 transition-colors active flex items-center">
+                        <i class="fas fa-school mr-2 w-5 text-center text-blue-500"></i>全部学校
+                    </button>
+                    <!-- 学校筛选按钮将通过JavaScript动态生成 -->
+                </div>
+
+                <!-- 统计信息 -->
+                <div class="mt-4 p-4 bg-white rounded-lg shadow-sm border border-blue-100">
+                    <h3 class="font-semibold text-blue-800 mb-3 flex items-center">
+                        <i class="fas fa-chart-pie mr-2 text-blue-500"></i>统计概览
+                    </h3>
+                    <div class="text-sm space-y-3">
+                        <div class="flex justify-between items-center p-2 bg-blue-50 rounded">
+                            <span class="text-gray-600">总品种数:</span>
+                            <span id="totalOrders" class="font-medium text-blue-700">0</span>
+                        </div>
+                        <div class="flex justify-between items-center p-2 bg-blue-50 rounded">
+                            <span class="text-gray-600">总册数:</span>
+                            <span id="totalCopies" class="font-medium text-blue-700">0</span>
+                        </div>
+                        <div class="flex justify-between items-center p-2 bg-blue-50 rounded">
+                            <span class="text-gray-600">总码洋:</span>
+                            <span id="totalAmount" class="font-medium text-blue-700">¥0.00</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 主内容区 -->
+            <div class="flex-1 main-content">
+                <!-- 搜索和操作栏 - 优化布局和美观度 -->
+                <div class="bg-white rounded-lg shadow-md p-4 mb-4 no-print transition-all duration-300 hover:shadow-lg">
+                    <div class="flex flex-col lg:flex-row items-center justify-between gap-3">
+                        <!-- 搜索框和操作按钮 -->
+                        <div class="flex flex-col sm:flex-row items-center gap-2 w-full lg:w-auto">
+                            <!-- 搜索框 - 缩短宽度 -->
+                            <div class="relative w-full sm:w-48 md:w-56 flex-grow sm:flex-grow-0">
+                                <input type="text" id="searchInput" placeholder="搜索书名、订单号、书号..." 
+                                       class="w-full pl-9 pr-3 py-1.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-300 text-sm">
+                                <i class="fas fa-search absolute left-3 top-2.5 text-gray-400"></i>
+                            </div>
+                            
+                            <!-- 导入、导出和打印按钮 - 固定宽度确保在一行显示 -->
+                            <div class="flex flex-wrap gap-2 w-full sm:w-auto justify-center sm:justify-start min-w-[180px] sm:min-w-[220px]">
+                                <!-- 文件上传按钮 -->
+                                <div class="file-upload-btn">
+                                    <button class="bg-purple-500 hover:bg-purple-600 px-3 py-1.5 rounded-lg transition-all duration-300 flex items-center justify-center text-xs text-white shadow-sm hover:shadow">
+                                        <i class="fas fa-upload mr-1.5"></i>导入
+                                    </button>
+                                    <input type="file" id="excelFileInput" accept=".xls,.xlsx" onchange="handleFileUpload(event)">
+                                </div>
+                                <button id="exportExcelBtn" class="bg-green-500 hover:bg-green-600 px-3 py-1.5 rounded-lg transition-all duration-300 flex items-center justify-center text-xs text-white shadow-sm hover:shadow">
+                                    <i class="fas fa-file-excel mr-1.5"></i>导出
+                                </button>
+                                <button id="printBtn" class="bg-blue-500 hover:bg-blue-600 px-3 py-1.5 rounded-lg transition-all duration-300 flex items-center justify-center text-xs text-white shadow-sm hover:shadow">
+                                    <i class="fas fa-print mr-1.5"></i>打印
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- 记录信息 - 优化显示 -->
+                        <div class="text-xs text-gray-500 w-full lg:w-auto text-right flex items-center justify-center lg:justify-end flex-wrap gap-2">
+                            <span class="bg-blue-50 text-blue-600 px-2 py-0.5 rounded">
+                                <i class="fas fa-list-ul mr-1"></i>显示 <span id="currentRange">0-0</span> 条
+                            </span>
+                            <span class="bg-gray-50 text-gray-600 px-2 py-0.5 rounded">
+                                <i class="fas fa-database mr-1"></i>共 <span id="totalRecords">0</span> 条记录
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 数据表格 -->
+                <div class="bg-white rounded-lg shadow-card overflow-hidden transition-all duration-300 hover:shadow-card-hover flex-grow flex flex-col border border-gray-100">
+                    <div class="overflow-x-auto flex-grow">
+                        <div class="scroll-container overflow-y-auto scrollbar-thin">
+                            <table class="w-full compact-table bordered-table">
+                                <!-- 表头 -->
+                                <thead class="bg-gradient-to-r from-blue-600 to-blue-700 text-white sticky top-0 z-10">
+                                    <tr>
+                                        <th class="py-2 px-2 border border-blue-500 text-left font-semibold text-xs">学校</th>
+                                        <th class="py-2 px-2 border border-blue-500 text-left font-semibold text-xs">订单</th>
+                                        <th class="py-2 px-2 border border-blue-500 text-left font-semibold text-xs">书号</th>
+                                        <th class="py-2 px-2 border border-blue-500 text-left font-semibold text-xs">书名</th>
+                                        <th class="py-2 px-2 border border-blue-500 text-left font-semibold text-xs">作者</th>
+                                        <th class="py-2 px-2 border border-blue-500 text-left font-semibold text-xs">出版社</th>
+                                        <th class="py-2 px-2 border border-blue-500 text-right font-semibold text-xs">定价</th>
+                                        <th class="py-2 px-2 border border-blue-500 text-right font-semibold text-xs">册数</th>
+                                        <th class="py-2 px-2 border border-blue-500 text-right font-semibold text-xs">码洋</th>
+                                        <th class="py-2 px-2 border border-blue-500 text-left font-semibold text-xs">日期</th>
+                                    </tr>
+                                </thead>
+                                <!-- 表体 -->
+                                <tbody id="tableBody" class="divide-y divide-gray-200">
+                                    <!-- 数据将通过JavaScript动态加载 -->
+                                    <tr>
+                                        <td colspan="10" class="py-4 px-3 text-center border border-gray-300 text-gray-500 text-sm bg-gray-50">
+                                            暂无数据，请导入Excel文件
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 分页控件 -->
+                <div class="flex flex-col sm:flex-row justify-between items-center mt-4 bg-white rounded-lg shadow-card p-4 no-print transition-all duration-300 hover:shadow-card-hover">
+                    <div class="text-sm text-gray-600 mb-2 sm:mb-0">
+                        每页显示 
+                        <select id="pageSize" class="border border-gray-300 rounded px-2 py-1 focus:ring-1 focus:ring-primary focus:border-primary transition-all">
+                            <option value="10">10</option>
+                            <option value="20" selected>20</option>
+                            <option value="50">50</option>
+                            <option value="100">100</option>
+                        </select> 条
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <button id="prevPageBtn" class="bg-gray-200 hover:bg-gray-300 px-3 py-1 rounded transition-colors flex items-center justify-center w-8 h-8 opacity-50 cursor-not-allowed" disabled>
+                            <i class="fas fa-chevron-left"></i>
+                        </button>
+                        <span class="text-sm text-gray-700">
+                            第 <span id="currentPage">0</span> 页，共 <span id="totalPages">0</span> 页
+                        </span>
+                        <button id="nextPageBtn" class="bg-gray-200 hover:bg-gray-300 px-3 py-1 rounded transition-colors flex items-center justify-center w-8 h-8 opacity-50 cursor-not-allowed" disabled>
+                            <i class="fas fa-chevron-right"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 加载中遮罩 -->
+    <div id="loadingOverlay" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white p-6 rounded-lg shadow-lg flex flex-col items-center max-w-md w-full">
+            <div class="loading-spinner mr-3"></div>
+            <span id="loadingText" class="mb-2">正在处理，请稍候...</span>
+            <div class="progress-container w-full">
+                <div id="progressBar" class="progress-bar" style="width: 0%"></div>
+            </div>
+            <div id="progressText" class="text-xs text-gray-500 mt-1">0%</div>
+            <button id="cancelImportBtn" class="mt-4 px-4 py-1 bg-gray-200 hover:bg-gray-300 rounded text-sm hidden">
+                取消导入
+            </button>
+        </div>
+    </div>
+    
+    <!-- 密码输入模态框 -->
+    <div id="passwordModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white p-6 rounded-lg shadow-lg flex flex-col items-center max-w-md w-full">
+            <h3 class="text-lg font-semibold mb-4">请输入导入密码</h3>
+            <div class="w-full mb-4">
+                <input type="password" id="passwordInput" placeholder="输入密码" 
+                       class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-300">
+            </div>
+            <div class="text-red-500 text-sm mb-4 hidden" id="passwordError">密码错误，请重试</div>
+            <div class="flex space-x-2 w-full">
+                <button id="cancelPasswordBtn" class="flex-1 bg-gray-200 hover:bg-gray-300 px-4 py-2 rounded transition-colors">
+                    取消
+                </button>
+                <button id="confirmPasswordBtn" class="flex-1 bg-primary hover:bg-blue-600 text-white px-4 py-2 rounded transition-colors">
+                    确认
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 常量定义
+        const APP_CONSTANTS = {
+            DEFAULT_PAGE_SIZE: 20,
+            BATCH_SIZE: 100,
+            MAX_FILE_SIZE: 50 * 1024 * 1024, // 50MB
+            EXCEL_EXTENSIONS: ['.xls', '.xlsx'],
+            NOTIFICATION_DURATION: 3000,
+            DEBOUNCE_DELAY: 300,
+            IMPORT_PASSWORD: 'XH888' // 导入密码
+        };
+
+        // 工具函数
+        const Utils = {
+            // 防抖函数
+            debounce(func, wait) {
+                let timeout;
+                return function() {
+                    const context = this;
+                    const args = arguments;
+                    clearTimeout(timeout);
+                    timeout = setTimeout(() => {
+                        func.apply(context, args);
+                    }, wait);
+                };
+            },
+
+            // 解析数字，处理可能的千位分隔符
+            parseNumber(value) {
+                // 确保数据是字符串类型，然后再调用replace方法
+                const valueStr = (value !== undefined && value !== null) ? value.toString().replace(/,/g, '') : '';
+                return parseFloat(valueStr) || 0;
+            },
+
+            // 格式化金额
+            formatCurrency(amount) {
+                return `¥${amount.toFixed(2)}`;
+            },
+            
+            // 格式化价格（不带¥符号）
+            formatPrice(amount) {
+                return amount.toFixed(2);
+            },
+
+            // 格式化数字（添加千位分隔符）
+            formatNumber(number) {
+                return number.toLocaleString();
+            },
+
+            // 获取当前时间字符串
+            getCurrentTimeString() {
+                const now = new Date();
+                return now.toLocaleString('zh-CN', {
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit'
+                });
+            },
+
+            // 根据学校类型获取图标类
+            getSchoolIconClass(school) {
+                if (school.includes('大学')) {
+                    return 'fa-university';
+                } else if (school.includes('中学') || school.includes('一中')) {
+                    return 'fa-graduation-cap';
+                }
+                return 'fa-school';
+            }
+        };
+
+        // 应用程序类
+        class BookManagementApp {
+            constructor() {
+                // 数据存储 - 初始为空
+                this.bookData = [];
+                this.filteredData = [];
+                
+                // 分页状态
+                this.currentPage = 1;
+                this.itemsPerPage = APP_CONSTANTS.DEFAULT_PAGE_SIZE;
+                this.currentSearchTerm = '';
+                this.currentSchoolFilter = ''; // 当前选中的学校筛选
+                
+                // 导入状态
+                this.importAbortController = null;
+                this.isImporting = false;
+                
+                // DOM 元素
+                this.tableBody = document.getElementById('tableBody');
+                this.searchInput = document.getElementById('searchInput');
+                // 删除清除按钮相关代码
+                this.prevPageBtn = document.getElementById('prevPageBtn');
+                this.nextPageBtn = document.getElementById('nextPageBtn');
+                this.pageSizeSelect = document.getElementById('pageSize');
+                this.exportExcelBtn = document.getElementById('exportExcelBtn');
+                this.printBtn = document.getElementById('printBtn');
+                this.loadingOverlay = document.getElementById('loadingOverlay');
+                this.loadingText = document.getElementById('loadingText');
+                this.schoolFilterContainer = document.getElementById('schoolFilterContainer');
+                
+                // 进度条元素
+                this.progressBar = document.getElementById('progressBar');
+                this.progressText = document.getElementById('progressText');
+                this.cancelImportBtn = document.getElementById('cancelImportBtn');
+                
+                // 统计元素
+                this.totalOrdersElement = document.getElementById('totalOrders');
+                this.totalCopiesElement = document.getElementById('totalCopies');
+                this.totalAmountElement = document.getElementById('totalAmount');
+                
+                // 分页信息元素
+                this.currentRangeElement = document.getElementById('currentRange');
+                this.totalRecordsElement = document.getElementById('totalRecords');
+                this.currentPageElement = document.getElementById('currentPage');
+                this.totalPagesElement = document.getElementById('totalPages');
+                
+                // 初始化应用
+                this.initialize();
+            }
+            
+            // 初始化应用
+            initialize() {
+                this.updateTime();
+                this.setupEventListeners();
+                
+                // 每秒更新一次时间
+                setInterval(() => this.updateTime(), 1000);
+            }
+            
+            // 更新当前时间
+            updateTime() {
+                const timeElement = document.getElementById('currentTime');
+                if (timeElement) {
+                    timeElement.textContent = Utils.getCurrentTimeString();
+                }
+            }
+            
+            // 设置事件监听器
+            setupEventListeners() {
+                // 搜索功能
+                this.searchInput.addEventListener('input', Utils.debounce(() => this.performSearch(), APP_CONSTANTS.DEBOUNCE_DELAY));
+                
+                // 分页功能
+                this.prevPageBtn.addEventListener('click', () => this.previousPage());
+                this.nextPageBtn.addEventListener('click', () => this.nextPage());
+                this.pageSizeSelect.addEventListener('change', () => this.changePageSize());
+                
+                // 导出和打印
+                this.exportExcelBtn.addEventListener('click', () => this.exportToExcel());
+                this.printBtn.addEventListener('click', () => this.printOptimized());
+                
+                // 取消导入按钮
+                this.cancelImportBtn.addEventListener('click', () => this.cancelImport());
+                
+                // 全部学校筛选按钮
+                document.querySelector('[data-school=""]').addEventListener('click', () => {
+                    this.filterBySchool('');
+                    
+                    // 更新侧边栏激活状态
+                    document.querySelectorAll('.sidebar-item').forEach(item => {
+                        item.classList.remove('active');
+                    });
+                    document.querySelector('[data-school=""]').classList.add('active');
+                });
+            }
+            
+            // 渲染表格
+            renderTable() {
+                const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+                const endIndex = startIndex + this.itemsPerPage;
+                const currentData = this.filteredData.slice(startIndex, endIndex);
+                
+                this.tableBody.innerHTML = '';
+                
+                if (currentData.length === 0) {
+                    this.renderEmptyState();
+                    this.updatePaginationInfo();
+                    return;
+                }
+                
+                // 使用DocumentFragment批量添加行
+                const fragment = document.createDocumentFragment();
+                
+                // 渲染数据行
+                currentData.forEach((item, index) => {
+                    const row = this.createTableRow(item, index);
+                    fragment.appendChild(row);
+                });
+                
+                // 添加页合计行
+                const totalRow = this.createPageTotalRow(currentData);
+                fragment.appendChild(totalRow);
+                
+                // 一次性添加所有行
+                this.tableBody.appendChild(fragment);
+                
+                // 更新分页信息
+                this.updatePaginationInfo();
+            }
+            
+            // 创建表格行
+            createTableRow(item, index) {
+                const row = document.createElement('tr');
+                // 根据索引设置交替背景色
+                const rowClass = index % 2 === 0 
+                    ? 'compact-row fade-in hover:bg-blue-50 transition-colors' 
+                    : 'compact-row fade-in hover:bg-blue-50 transition-colors bg-blue-50';
+                row.className = rowClass;
+                
+                // 解析码洋数值并格式化（不带¥符号）
+                const amount = Utils.parseNumber(item.码洋);
+                const formattedAmount = Utils.formatPrice(amount);
+                
+                row.innerHTML = `
+                    <td class="py-1 px-2 border border-gray-300 text-xs">${item.学校}</td>
+                    <td class="py-1 px-2 border border-gray-300 text-xs">${item.订单}</td>
+                    <td class="py-1 px-2 border border-gray-300 text-xs">${item.书号}</td>
+                    <td class="py-1 px-2 border border-gray-300 text-xs">${this.highlightSearchTerm(item.书名)}</td>
+                    <td class="py-1 px-2 border border-gray-300 text-xs">${item.作者}</td>
+                    <td class="py-1 px-2 border border-gray-300 text-xs">${item.出版社}</td>
+                    <td class="py-1 px-2 text-right border border-gray-300 text-xs">${item.定价}</td>
+                    <td class="py-1 px-2 text-right border border-gray-300 text-xs">${item.册数}</td>
+                    <td class="py-1 px-2 text-right border border-gray-300 text-xs">${formattedAmount}</td>
+                    <td class="py-1 px-2 border border-gray-300 text-xs">${item.日期}</td>
+                `;
+                
+                return row;
+            }
+            
+            // 创建页合计行
+            createPageTotalRow(currentData) {
+                // 计算本页册数合计
+                const pageCopies = currentData.reduce((sum, item) => {
+                    const copies = Utils.parseNumber(item.册数);
+                    return sum + copies;
+                }, 0);
+                
+                // 计算本页码洋合计
+                const pageAmount = currentData.reduce((sum, item) => {
+                    const amount = Utils.parseNumber(item.码洋);
+                    return sum + amount;
+                }, 0);
+                
+                const totalRow = document.createElement('tr');
+                totalRow.className = 'page-total-row fade-in bg-gray-100';
+                totalRow.innerHTML = `
+                    <td class="py-1 px-2 border border-gray-300 text-center font-semibold text-xs" colspan="7">
+                    本页合计
+                    </td>
+                    <td class="py-1 px-2 text-right border border-gray-300 font-semibold text-xs">${Utils.formatNumber(pageCopies)}</td>
+                    <td class="py-1 px-2 text-right border border-gray-300 font-semibold text-xs">${Utils.formatPrice(pageAmount)}</td>
+                    <td class="py-1 px-2 border border-gray-300 text-xs"></td>
+                `;
+                
+                return totalRow;
+            }
+            
+            // 渲染空状态
+            renderEmptyState() {
+                const emptyRow = document.createElement('tr');
+                if (this.bookData.length === 0) {
+                    emptyRow.innerHTML = `
+                        <td colspan="10" class="py-4 px-3 text-center border border-gray-300 text-gray-500 text-sm">
+                            暂无数据，请导入Excel文件
+                        </td>
+                    `;
+                } else {
+                    emptyRow.innerHTML = `
+                        <td colspan="10" class="py-4 px-3 text-center border border-gray-300 text-gray-500 text-sm">
+                            暂无符合条件的订单数据
+                        </td>
+                    `;
+                }
+                this.tableBody.appendChild(emptyRow);
+            }
+            
+            // 搜索高亮
+            highlightSearchTerm(text) {
+                if (!this.currentSearchTerm) return text;
+                
+                const regex = new RegExp(`(${this.currentSearchTerm})`, 'gi');
+                return text.replace(regex, '<span class="search-highlight">$1</span>');
+            }
+            
+            // 更新分页信息
+            updatePaginationInfo() {
+                const totalPages = Math.ceil(this.filteredData.length / this.itemsPerPage);
+                const startIndex = (this.currentPage - 1) * this.itemsPerPage + 1;
+                const endIndex = Math.min(this.currentPage * this.itemsPerPage, this.filteredData.length);
+                
+                this.currentRangeElement.textContent = this.filteredData.length > 0 ? `${startIndex}-${endIndex}` : '0-0';
+                this.totalRecordsElement.textContent = this.filteredData.length;
+                this.currentPageElement.textContent = this.filteredData.length > 0 ? this.currentPage : '0';
+                this.totalPagesElement.textContent = totalPages > 0 ? totalPages : '0';
+                
+                // 禁用/启用分页按钮
+                this.prevPageBtn.disabled = this.currentPage === 1 || this.filteredData.length === 0;
+                this.nextPageBtn.disabled = this.currentPage === totalPages || this.filteredData.length === 0;
+                
+                if (this.prevPageBtn.disabled) {
+                    this.prevPageBtn.classList.add('opacity-50', 'cursor-not-allowed');
+                } else {
+                    this.prevPageBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                }
+                
+                if (this.nextPageBtn.disabled) {
+                    this.nextPageBtn.classList.add('opacity-50', 'cursor-not-allowed');
+                } else {
+                    this.nextPageBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                }
+            }
+            
+            // 更新统计信息
+            updateStatistics() {
+                const totalCopies = this.filteredData.reduce((sum, item) => {
+                    const copies = Utils.parseNumber(item.册数);
+                    return sum + copies;
+                }, 0);
+                
+                const totalAmount = this.filteredData.reduce((sum, item) => {
+                    const amount = Utils.parseNumber(item.码洋);
+                    return sum + amount;
+                }, 0);
+                
+                this.totalOrdersElement.textContent = this.filteredData.length;
+                this.totalCopiesElement.textContent = Utils.formatNumber(totalCopies);
+                this.totalAmountElement.textContent = Utils.formatCurrency(totalAmount);
+            }
+            
+            // 按学校筛选
+            filterBySchool(school) {
+                this.currentSchoolFilter = school;
+                this.applyFilters();
+            }
+            
+            // 搜索功能
+            performSearch() {
+                this.currentSearchTerm = this.searchInput.value.trim();
+                this.applyFilters();
+            }
+            
+            // 应用所有筛选
+            applyFilters() {
+                // 先应用学校筛选
+                let filtered = [...this.bookData];
+                
+                if (this.currentSchoolFilter) {
+                    filtered = this.filterBySchoolName(filtered, this.currentSchoolFilter);
+                }
+                
+                // 再应用搜索筛选
+                if (this.currentSearchTerm) {
+                    filtered = this.filterBySearchTerm(filtered, this.currentSearchTerm);
+                }
+                
+                this.filteredData = filtered;
+                this.currentPage = 1;
+                this.renderTable();
+                this.updateStatistics();
+            }
+            
+            // 按学校名称筛选数据
+            filterBySchoolName(data, schoolName) {
+                return data.filter(item => item.学校 === schoolName);
+            }
+            
+            // 按搜索词筛选数据
+            filterBySearchTerm(data, searchTerm) {
+                const lowerSearchTerm = searchTerm.toLowerCase();
+                return data.filter(item => {
+                    return Object.values(item).some(value => 
+                        (value !== undefined && value !== null) && 
+                        value.toString().toLowerCase().includes(lowerSearchTerm)
+                    );
+                });
+            }
+            
+            // 清除搜索 - 修改为直接清空输入框并重新应用筛选
+            clearSearch() {
+                this.searchInput.value = '';
+                this.currentSearchTerm = '';
+                this.applyFilters();
+            }
+            
+            // 分页功能
+            previousPage() {
+                if (this.currentPage > 1) {
+                    this.currentPage--;
+                    this.renderTable();
+                }
+            }
+            
+            nextPage() {
+                const totalPages = Math.ceil(this.filteredData.length / this.itemsPerPage);
+                if (this.currentPage < totalPages) {
+                    this.currentPage++;
+                    this.renderTable();
+                }
+            }
+            
+            changePageSize() {
+                this.itemsPerPage = parseInt(this.pageSizeSelect.value);
+                this.currentPage = 1;
+                this.renderTable();
+            }
+            
+            // 导出到Excel - 优化：根据查询条件动态生成文件名
+            exportToExcel() {
+                if (this.filteredData.length === 0) {
+                    this.showNotification('没有可导出的数据', 'warning');
+                    return;
+                }
+                
+                this.showLoading('正在导出Excel文件...');
+                
+                try {
+                    // 使用setTimeout模拟异步操作
+                    setTimeout(() => {
+                        // 直接使用筛选后的数据，不添加额外的表头行
+                        const excelData = [...this.filteredData];
+                        
+                        // 添加总计行
+                        const grandTotals = this.calculateGrandTotals();
+                        excelData.push({
+                            '学校': '总计',
+                            '订单': `${this.filteredData.length} 笔`,
+                            '书号': '',
+                            '书名': '',
+                            '作者': '',
+                            '出版社': '',
+                            '定价': '',
+                            '册数': grandTotals.totalCopies,
+                            '码洋': grandTotals.totalAmount,
+                            '日期': ''
+                        });
+                        
+                        const ws = XLSX.utils.json_to_sheet(excelData);
+                        const wb = XLSX.utils.book_new();
+                        XLSX.utils.book_append_sheet(wb, ws, "书目订单");
+                        
+                        // 设置列宽
+                        const wscols = [
+                            {wch: 15},  // 学校
+                            {wch: 10},  // 订单
+                            {wch: 15},  // 书号
+                            {wch: 30},  // 书名
+                            {wch: 10},  // 作者
+                            {wch: 15},  // 出版社
+                            {wch: 10},  // 定价
+                            {wch: 10},  // 册数
+                            {wch: 12},  // 码洋
+                            {wch: 10}   // 日期
+                        ];
+                        ws['!cols'] = wscols;
+                        
+                        // 根据查询条件生成文件名
+                        let fileName = "书目订单数据";
+                        
+                        // 如果有学校筛选条件，添加到文件名
+                        if (this.currentSchoolFilter) {
+                            fileName += `_${this.currentSchoolFilter}`;
+                        }
+                        
+                        // 如果有搜索关键词，添加到文件名
+                        if (this.currentSearchTerm) {
+                            // 限制搜索关键词长度，避免文件名过长
+                            const searchTerm = this.currentSearchTerm.length > 10 
+                                ? this.currentSearchTerm.substring(0, 10) + "..." 
+                                : this.currentSearchTerm;
+                            fileName += `_搜索_${searchTerm}`;
+                        }
+                        
+                        // 添加日期
+                        const today = new Date();
+                        const dateStr = today.toISOString().split('T')[0]; // YYYY-MM-DD
+                        fileName += `_${dateStr}.xlsx`;
+                        
+                        XLSX.writeFile(wb, fileName);
+                        
+                        this.hideLoading();
+                        this.showNotification('导出成功', 'success');
+                    }, 800);
+                } catch (error) {
+                    this.hideLoading();
+                    this.showNotification('导出失败: ' + error.message, 'error');
+                }
+            }
+            
+            // 优化打印功能 - 实现自适应分页，增加每页打印抬头
+            printOptimized() {
+                if (this.filteredData.length === 0) {
+                    this.showNotification('没有可打印的数据', 'warning');
+                    return;
+                }
+                
+                this.showLoading('正在准备打印内容...');
+                
+                try {
+                    // 准备打印内容
+                    let printContent = `
+                        <!DOCTYPE html>
+                        <html>
+                        <head>
+                            <meta charset="UTF-8">
+                            <title>包头新华管理平台 - 单据明细</title>
+                            <style>
+                                body { font-family: Arial, sans-serif; margin: 0; padding: 20px; }
+                                .print-header { text-align: center; margin-bottom: 10px; }
+                                table { width: 100%; border-collapse: collapse; font-size: 10px; page-break-inside: auto; }
+                                th, td { border: 1px solid #d1d5db; padding: 2px 4px; }
+                                th { background-color: #f3f4f6; font-weight: bold; }
+                                .page-total-row { background-color: #e5e7eb; font-weight: 600; }
+                                .grand-total-row { background-color: #dbeafe; font-weight: 700; }
+                                
+                                /* 打印页脚样式 - 已修改为包含"共几页" */
+                                @page {
+                                    @bottom-left {
+                                        content: "包头新华管理平台 - 第 " counter(page) " 页，共 " counter(pages) " 页";
+                                        font-size: 10pt;
+                                        color: #666;
+                                    }
+                                    @bottom-right {
+                                        content: ""; /* 清空右下角内容 */
+                                    }
+                                    margin: 1.5cm; /* 调整页边距 */
+                                }
+                                
+                                /* 确保表格在每一页都显示表头 */
+                                thead { display: table-header-group; }
+                                tfoot { display: table-footer-group; }
+                                
+                                /* 避免表格行跨页 */
+                                tr { page-break-inside: avoid; page-break-after: auto; }
+                                
+                                /* 分页符样式 */
+                                .page-break-after {
+                                    page-break-after: always;
+                                }
+                                
+                                /* 确保内容可见 */
+                                html, body { height: auto; }
+                                
+                                /* 每页抬头样式 - 增强版 */
+                                .page-header {
+                                    margin-bottom: 10px;
+                                    padding: 10px;
+                                    border-bottom: 2px solid #3b82f6;
+                                    background-color: #f8fafc;
+                                    border-radius: 4px;
+                                }
+                                
+                                .page-title {
+                                    font-size: 18px;
+                                    font-weight: bold;
+                                    text-align: center;
+                                    margin-bottom: 8px;
+                                    color: #1e40af;
+                                }
+                                
+                                .page-info {
+                                    font-size: 11px;
+                                    display: flex;
+                                    justify-content: space-between;
+                                    margin-bottom: 4px;
+                                    color: #475569;
+                                }
+                                
+                                .page-info-item {
+                                    display: flex;
+                                    align-items: center;
+                                }
+                                
+                                .page-info-item i {
+                                    margin-right: 4px;
+                                    color: #3b82f6;
+                                }
+                                
+                                /* 总计页样式 */
+                                .summary-page {
+                                    page-break-after: avoid;
+                                }
+                                
+                                .summary-title {
+                                    font-size: 18px;
+                                    font-weight: bold;
+                                    text-align: center;
+                                    margin-bottom: 20px;
+                                    color: #1e40af;
+                                }
+                                
+                                .summary-table {
+                                    width: 60%;
+                                    margin: 0 auto;
+                                }
+                                
+                                .summary-table th, .summary-table td {
+                                    padding: 8px;
+                                    font-size: 14px;
+                                }
+                                
+                                /* 统计信息表格样式 */
+                                .stats-table {
+                                    width: 100%;
+                                    margin-bottom: 20px;
+                                }
+                                
+                                .stats-table th, .stats-table td {
+                                    padding: 6px;
+                                    font-size: 12px;
+                                }
+                                
+                                /* 自适应表格样式 */
+                                .adaptive-table {
+                                    table-layout: auto;
+                                    width: 100%;
+                                }
+                                
+                                /* 表头固定样式 */
+                                .sticky-header {
+                                    position: sticky;
+                                    top: 0;
+                                    background-color: #f3f4f6;
+                                    z-index: 10;
+                                }
+                            </style>
+                        </head>
+                        <body>
+                    `;
+                    
+                    // 计算总计信息
+                    const grandTotals = this.calculateGrandTotals();
+                    const totalItems = this.filteredData.length;
+                    
+                    // 添加主抬头
+                    printContent += `
+                        <div class="page-header">
+                            <div class="page-title">包头新华管理平台 - 单据明细</div>
+                            <div class="page-info">
+                                <div class="page-info-item">
+                                    <i class="fas fa-clock"></i>
+                                    <span>打印时间: ${Utils.getCurrentTimeString()}</span>
+                                </div>
+                                <div class="page-info-item">
+                                    <i class="fas fa-filter"></i>
+                                    <span>${this.currentSchoolFilter ? '学校筛选: ' + this.currentSchoolFilter : '全部学校'}</span>
+                                </div>
+                            </div>
+                            <div class="page-info">
+                                <div class="page-info-item">
+                                    <i class="fas fa-file-alt"></i>
+                                    <span>总记录数: ${Utils.formatNumber(totalItems)} 条</span>
+                                </div>
+                                <div class="page-info-item">
+                                    <i class="fas fa-search"></i>
+                                    <span>${this.currentSearchTerm ? '搜索关键词: ' + this.currentSearchTerm : '无搜索条件'}</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 数据表格 -->
+                        <table class="adaptive-table">
+                            <thead>
+                                <tr class="sticky-header">
+                                    <th>学校</th>
+                                    <th>订单</th>
+                                    <th>书号</th>
+                                    <th>书名</th>
+                                    <th>作者</th>
+                                    <th>出版社</th>
+                                    <th>定价</th>
+                                    <th>册数</th>
+                                    <th>码洋</th>
+                                    <th>日期</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                    `;
+                    
+                    // 添加所有数据行
+                    this.filteredData.forEach((item, index) => {
+                        // 解析码洋数值并格式化（不带¥符号）
+                        const amount = Utils.parseNumber(item.码洋);
+                        const formattedAmount = Utils.formatPrice(amount);
+                        
+                        printContent += `
+                            <tr>
+                                <td>${item.学校}</td>
+                                <td>${item.订单}</td>
+                                <td>${item.书号}</td>
+                                <td>${item.书名}</td>
+                                <td>${item.作者}</td>
+                                <td>${item.出版社}</td>
+                                <td style="text-align: right;">${item.定价}</td>
+                                <td style="text-align: right;">${item.册数}</td>
+                                <td style="text-align: right;">${formattedAmount}</td>
+                                <td>${item.日期}</td>
+                            </tr>
+                        `;
+                    });
+                    
+                    // 添加总计行
+                    printContent += `
+                            <tr class="page-total-row">
+                                <td colspan="7" style="text-align: center;">总计</td>
+                                <td style="text-align: right;">${grandTotals.totalCopies}</td>
+                                <td style="text-align: right;">${grandTotals.totalAmount}</td>
+                                <td></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    
+                    <!-- 按学校统计部分 -->
+                    <div class="page-break-after"></div>
+                    <div class="summary-page">
+                        <div class="page-header">
+                            <div class="page-title">包头新华管理平台 - 单据统计</div>
+                            <div class="page-info">
+                                <div class="page-info-item">
+                                    <i class="fas fa-clock"></i>
+                                    <span>统计时间: ${Utils.getCurrentTimeString()}</span>
+                                </div>
+                                <div class="page-info-item">
+                                    <i class="fas fa-chart-pie"></i>
+                                    <span>数据分析报告</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div style="margin-top: 20px;">
+                            <div class="summary-title">按学校统计</div>
+                            <table class="stats-table">
+                                <thead>
+                                    <tr>
+                                        <th>学校</th>
+                                        <th>品种数</th>
+                                        <th>册数</th>
+                                        <th>码洋</th>
+                                        <th>占比</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                    `;
+                    
+                    // 按学校统计
+                    const schoolStats = {};
+                    this.filteredData.forEach(item => {
+                        const school = item.学校;
+                        if (!schoolStats[school]) {
+                            schoolStats[school] = {
+                                orders: 0,
+                                copies: 0,
+                                amount: 0
+                            };
+                        }
+                        schoolStats[school].orders++;
+                        schoolStats[school].copies += Utils.parseNumber(item.册数);
+                        schoolStats[school].amount += Utils.parseNumber(item.码洋);
+                    });
+                    
+                    // 添加学校统计行
+                    Object.keys(schoolStats).forEach(school => {
+                        const stats = schoolStats[school];
+                        const percentage = (stats.amount / Utils.parseNumber(grandTotals.totalAmount.replace('¥', '')) * 100).toFixed(2);
+                        
+                        printContent += `
+                            <tr>
+                                <td>${school}</td>
+                                <td style="text-align: right;">${Utils.formatNumber(stats.orders)}</td>
+                                <td style="text-align: right;">${Utils.formatNumber(stats.copies)}</td>
+                                <td style="text-align: right;">${Utils.formatCurrency(stats.amount)}</td>
+                                <td style="text-align: right;">${percentage}%</td>
+                            </tr>
+                        `;
+                    });
+                    
+                    // 添加总计行
+                    printContent += `
+                                    <tr class="grand-total-row">
+                                        <td>总计</td>
+                                        <td style="text-align: right;">${Utils.formatNumber(this.filteredData.length)}</td>
+                                        <td style="text-align: right;">${grandTotals.totalCopies}</td>
+                                        <td style="text-align: right;">${grandTotals.totalAmount}</td>
+                                        <td style="text-align: right;">100%</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        <div style="margin-top: 30px; font-size: 10px; text-align: center; color: #666;">
+                            <p>包头新华管理平台 - 统计分析</p>
+                        </div>
+                    </div>
+                    `;
+                    
+                    // 结束HTML
+                    printContent += `
+                        </body>
+                        </html>
+                    `;
+                    
+                    // 创建打印窗口并打印
+                    const printWindow = window.open('', '_blank');
+                    printWindow.document.write(printContent);
+                    
+                    // 等待文档加载完成
+                    printWindow.document.onreadystatechange = () => {
+                        if (printWindow.document.readyState === 'complete') {
+                            // 延迟打印，确保所有内容都已渲染
+                            setTimeout(() => {
+                                printWindow.print();
+                                printWindow.close();
+                                this.hideLoading();
+                            }, 800); // 延长延迟时间，确保复杂内容渲染完成
+                        }
+                    };
+                    
+                    printWindow.document.close();
+                } catch (error) {
+                    this.hideLoading();
+                    this.showNotification('打印准备失败: ' + error.message, 'error');
+                }
+            }
+            
+            // 计算总计
+            calculateGrandTotals() {
+                const totalCopies = this.filteredData.reduce((sum, item) => {
+                    const copies = Utils.parseNumber(item.册数);
+                    return sum + copies;
+                }, 0);
+                
+                const totalAmount = this.filteredData.reduce((sum, item) => {
+                    const amount = Utils.parseNumber(item.码洋);
+                    return sum + amount;
+                }, 0);
+                
+                return {
+                    totalCopies: Utils.formatNumber(totalCopies),
+                    totalAmount: Utils.formatCurrency(totalAmount)
+                };
+            }
+            
+            // 显示加载状态
+            showLoading(text = '正在处理，请稍候...', showProgress = false, showCancel = false) {
+                this.loadingText.textContent = text;
+                this.loadingOverlay.classList.remove('hidden');
+                
+                // 显示或隐藏进度条
+                if (showProgress) {
+                    this.progressBar.parentElement.classList.remove('hidden');
+                    this.progressText.parentElement.classList.remove('hidden');
+                    this.progressBar.style.width = '0%';
+                    this.progressText.textContent = '0%';
+                } else {
+                    this.progressBar.parentElement.classList.add('hidden');
+                    this.progressText.parentElement.classList.add('hidden');
+                }
+                
+                // 显示或隐藏取消按钮
+                if (showCancel) {
+                    this.cancelImportBtn.classList.remove('hidden');
+                } else {
+                    this.cancelImportBtn.classList.add('hidden');
+                }
+            }
+            
+            // 更新进度条
+            updateProgress(progress) {
+                const percentage = Math.min(Math.max(progress, 0), 100);
+                this.progressBar.style.width = `${percentage}%`;
+                this.progressText.textContent = `${Math.round(percentage)}%`;
+            }
+            
+            // 隐藏加载状态
+            hideLoading() {
+                this.loadingOverlay.classList.add('hidden');
+                this.cancelImportBtn.classList.add('hidden');
+                this.isImporting = false;
+                this.importAbortController = null;
+            }
+            
+            // 显示通知
+            showNotification(message, type = 'info') {
+                // 创建通知元素
+                const notification = document.createElement('div');
+                notification.className = `fixed bottom-4 right-4 px-4 py-2 rounded-lg shadow-lg z-50 transition-all duration-300 transform translate-y-0 opacity-100 flex items-center`;
+                
+                // 设置通知类型样式
+                if (type === 'success') {
+                    notification.classList.add('bg-green-500', 'text-white');
+                    notification.innerHTML = `<i class="fas fa-check-circle mr-2"></i>${message}`;
+                } else if (type === 'error') {
+                    notification.classList.add('bg-red-500', 'text-white');
+                    notification.innerHTML = `<i class="fas fa-exclamation-circle mr-2"></i>${message}`;
+                } else if (type === 'warning') {
+                    notification.classList.add('bg-yellow-500', 'text-white');
+                    notification.innerHTML = `<i class="fas fa-exclamation-triangle mr-2"></i>${message}`;
+                } else {
+                    notification.classList.add('bg-blue-500', 'text-white');
+                    notification.innerHTML = `<i class="fas fa-info-circle mr-2"></i>${message}`;
+                }
+                
+                // 添加到页面
+                document.body.appendChild(notification);
+                
+                // 自动隐藏
+                setTimeout(() => {
+                    notification.classList.add('opacity-0', 'translate-y-4');
+                    setTimeout(() => {
+                        document.body.removeChild(notification);
+                    }, 300);
+                }, APP_CONSTANTS.NOTIFICATION_DURATION);
+            }
+            
+            // 动态更新学校筛选列表
+            updateSchoolFilters() {
+                // 获取所有不重复的学校名称
+                const schools = [...new Set(this.bookData.map(item => item.学校))];
+                
+                // 清空学校筛选容器，但保留"全部学校"选项
+                this.clearSchoolFilters();
+                
+                // 为每个学校创建筛选按钮
+                schools.forEach(school => {
+                    const button = this.createSchoolFilterButton(school);
+                    this.schoolFilterContainer.appendChild(button);
+                });
+            }
+            
+            // 清空学校筛选容器，但保留"全部学校"选项
+            clearSchoolFilters() {
+                while (this.schoolFilterContainer.children.length > 1) {
+                    this.schoolFilterContainer.removeChild(this.schoolFilterContainer.lastChild);
+                }
+            }
+            
+            // 创建学校筛选按钮
+            createSchoolFilterButton(school) {
+                const button = document.createElement('button');
+                button.className = 'sidebar-item w-full text-left px-3 py-2 rounded hover:bg-blue-50 transition-colors flex items-center';
+                button.setAttribute('data-school', school);
+                
+                // 根据学校类型选择图标
+                const iconClass = Utils.getSchoolIconClass(school);
+                
+                button.innerHTML = `<i class="fas ${iconClass} mr-2 w-5 text-center"></i>${school}`;
+                
+                // 添加点击事件
+                button.addEventListener('click', () => {
+                    this.filterBySchool(school);
+                    this.updateActiveSchoolFilter(button);
+                });
+                
+                return button;
+            }
+            
+            // 更新学校筛选激活状态
+            updateActiveSchoolFilter(activeButton) {
+                document.querySelectorAll('.sidebar-item').forEach(item => {
+                    item.classList.remove('active');
+                });
+                activeButton.classList.add('active');
+            }
+            
+            // 导入Excel数据 - 优化版本
+            async importFromExcel(data) {
+                // 如果正在导入，先取消之前的导入
+                if (this.isImporting) {
+                    this.cancelImport();
+                }
+                
+                this.isImporting = true;
+                this.importAbortController = new AbortController();
+                const signal = this.importAbortController.signal;
+                
+                try {
+                    this.showLoading('正在导入数据...', true, true);
+                    
+                    // 分批处理数据
+                    const batchSize = APP_CONSTANTS.BATCH_SIZE;
+                    const totalItems = data.length;
+                    const totalBatches = Math.ceil(totalItems / batchSize);
+                    
+                    // 清空现有数据
+                    this.bookData = [];
+                    this.filteredData = [];
+                    
+                    // 重置筛选和分页
+                    this.currentSearchTerm = '';
+                    this.currentSchoolFilter = '';
+                    this.currentPage = 1;
+                    
+                    // 清除搜索框
+                    this.searchInput.value = '';
+                    
+                    // 分批处理数据
+                    for (let batchIndex = 0; batchIndex < totalBatches; batchIndex++) {
+                        // 检查是否已取消
+                        if (signal.aborted) {
+                            this.hideLoading();
+                            this.showNotification('导入已取消', 'info');
+                            return;
+                        }
+                        
+                        // 计算当前批次的起始和结束索引
+                        const startIndex = batchIndex * batchSize;
+                        const endIndex = Math.min(startIndex + batchSize, totalItems);
+                        const batch = data.slice(startIndex, endIndex);
+                        
+                        // 添加批次数据
+                        this.bookData.push(...batch);
+                        
+                        // 更新进度
+                        const progress = ((batchIndex + 1) / totalBatches) * 100;
+                        this.updateProgress(progress);
+                        
+                        // 更新统计信息
+                        this.updateStatistics();
+                        
+                        // 如果是最后一批，更新UI
+                        if (batchIndex === totalBatches - 1) {
+                            // 动态更新学校筛选列表
+                            this.updateSchoolFilters();
+                            
+                            // 重置侧边栏选中状态
+                            document.querySelectorAll('.sidebar-item').forEach(item => {
+                                item.classList.remove('active');
+                            });
+                            document.querySelector('[data-school=""]').classList.add('active');
+                            
+                            // 应用筛选并渲染表格
+                            this.applyFilters();
+                        }
+                        
+                        // 让出主线程，提高UI响应性
+                        await new Promise(resolve => setTimeout(resolve, 0));
+                    }
+                    
+                    this.hideLoading();
+                    this.showNotification(`成功导入 ${Utils.formatNumber(this.bookData.length)} 条数据，包含 ${[...new Set(this.bookData.map(item => item.学校))].length} 所学校`, 'success');
+                } catch (error) {
+                    if (!signal.aborted) {
+                        this.hideLoading();
+                        this.showNotification('导入失败: ' + error.message, 'error');
+                    }
+                }
+            }
+            
+            // 取消导入
+            cancelImport() {
+                if (this.importAbortController) {
+                    this.importAbortController.abort();
+                }
+            }
+        }
+
+        // 当DOM加载完成后初始化应用
+        document.addEventListener('DOMContentLoaded', () => {
+            // 初始化应用
+            window.app = new BookManagementApp();
+            
+            // 初始化轮播图
+            initCarousel();
+            
+            // 调整侧边栏和主内容区高度一致
+            adjustSidebarHeight();
+            
+            // 窗口大小改变时重新调整高度
+            window.addEventListener('resize', adjustSidebarHeight);
+        });
+        
+        // 调整侧边栏和主内容区高度一致
+        function adjustSidebarHeight() {
+            const sidebarContainer = document.querySelector('.sidebar-container');
+            const mainContent = document.querySelector('.main-content');
+            
+            if (sidebarContainer && mainContent) {
+                // 获取主内容区的高度
+                const mainContentHeight = mainContent.offsetHeight;
+                
+                // 设置侧边栏高度与主内容区一致
+                sidebarContainer.style.height = `${mainContentHeight}px`;
+                
+                // 调整学校筛选区域的最大高度
+                const schoolFilterContainer = document.getElementById('schoolFilterContainer');
+                if (schoolFilterContainer) {
+                    // 计算学校筛选区域的最大高度（减去标题和统计信息的高度）
+                    const headerHeight = document.querySelector('.sidebar-container h2').offsetHeight;
+                    const statsHeight = document.querySelector('.sidebar-container .mt-4').offsetHeight;
+                    const padding = 32; // 考虑内边距
+                    
+                    const maxFilterHeight = mainContentHeight - headerHeight - statsHeight - padding;
+                    schoolFilterContainer.style.maxHeight = `${maxFilterHeight}px`;
+                }
+            }
+        }
+        
+        // 轮播图功能
+        let currentSlide = 0;
+        let slideInterval;
+        const slides = document.querySelectorAll('.carousel-slide');
+        const indicators = document.querySelectorAll('.carousel-indicator');
+        const totalSlides = slides.length;
+        
+        // 初始化轮播图
+        function initCarousel() {
+            // 显示第一张幻灯片
+            showSlide(0);
+            
+            // 开始自动轮播
+            startAutoSlide();
+        }
+        
+        // 显示指定幻灯片
+        function showSlide(index) {
+            // 确保索引在有效范围内
+            currentSlide = (index + totalSlides) % totalSlides;
+            
+            // 更新幻灯片显示
+            slides.forEach((slide, i) => {
+                slide.classList.toggle('active', i === currentSlide);
+            });
+            
+            // 更新指示器状态
+            indicators.forEach((indicator, i) => {
+                indicator.classList.toggle('active', i === currentSlide);
+            });
+        }
+        
+        // 切换到上一张/下一张幻灯片
+        function changeSlide(direction) {
+            // 清除当前的自动轮播计时器
+            clearInterval(slideInterval);
+            
+            // 显示目标幻灯片
+            showSlide(currentSlide + direction);
+            
+            // 重新开始自动轮播
+            startAutoSlide();
+        }
+        
+        // 直接跳转到指定幻灯片
+        function goToSlide(index) {
+            // 清除当前的自动轮播计时器
+            clearInterval(slideInterval);
+            
+            // 显示目标幻灯片
+            showSlide(index);
+            
+            // 重新开始自动轮播
+            startAutoSlide();
+        }
+        
+        // 开始自动轮播
+        function startAutoSlide() {
+            // 每5秒切换一次幻灯片
+            slideInterval = setInterval(() => {
+                changeSlide(1);
+            }, 5000);
+        }
+
+        // 处理文件上传
+        function handleFileUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            // 验证文件类型和大小
+            if (!validateFile(file)) {
+                return;
+            }
+            
+            // 保存文件引用，用于后续处理
+            window.currentImportFile = file;
+            
+            // 重置文件输入
+            event.target.value = '';
+            
+            // 显示密码输入模态框
+            showPasswordModal();
+        }
+        
+        // 验证文件类型和大小
+        function validateFile(file) {
+            // 检查文件类型
+            const fileExtension = file.name.split('.').pop().toLowerCase();
+            if (!APP_CONSTANTS.EXCEL_EXTENSIONS.includes(`.${fileExtension}`)) {
+                window.app.showNotification('请上传.xls或.xlsx格式的Excel文件', 'error');
+                return false;
+            }
+            
+            // 检查文件大小
+            if (file.size > APP_CONSTANTS.MAX_FILE_SIZE) {
+                window.app.showNotification('文件大小不能超过50MB', 'error');
+                return false;
+            }
+            
+            return true;
+        }
+        
+        // 处理文件导入
+        function processFile(file) {
+            // 如果正在导入，先取消之前的导入
+            if (window.app.isImporting) {
+                window.app.cancelImport();
+            }
+            
+            // 显示加载状态
+            window.app.showLoading('正在准备导入...', true);
+            window.app.isImporting = true;
+            
+            // 直接在主线程处理Excel文件，避免Worker问题
+            try {
+                const reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    try {
+                        // 清空现有数据
+                        window.app.bookData = [];
+                        window.app.filteredData = [];
+                        
+                        // 重置筛选和分页
+                        window.app.currentSearchTerm = '';
+                        window.app.currentSchoolFilter = '';
+                        window.app.currentPage = 1;
+                        
+                        // 清除搜索框
+                        window.app.searchInput.value = '';
+                        
+                        // 解析Excel文件
+                        const data = new Uint8Array(e.target.result);
+                        
+                        // 修复：使用正确的配置解析.xls文件
+                        const workbook = XLSX.read(data, { 
+                            type: 'array',
+                            cellDates: true,
+                            cellNF: false,
+                            cellText: false,
+                            raw: false
+                        });
+                        
+                        // 获取第一个工作表
+                        const firstSheetName = workbook.SheetNames[0];
+                        const worksheet = workbook.Sheets[firstSheetName];
+                        
+                        // 转换为JSON
+                        const jsonData = XLSX.utils.sheet_to_json(worksheet, { 
+                            header: ['学校', '订单', '书号', '书名', '作者', '出版社', '定价', '册数', '码洋', '日期'],
+                            range: 1 // 从第二行开始读取数据（跳过表头）
+                        });
+                        
+                        // 清理数据，移除空行并处理undefined值
+                        const cleanedData = jsonData.filter(item => 
+                            item.学校 || item.订单 || item.书号 || item.书名
+                        ).map(item => {
+                            // 处理undefined值，将其转换为空字符串
+                            const cleanedItem = {};
+                            Object.keys(item).forEach(key => {
+                                cleanedItem[key] = item[key] !== undefined && item[key] !== null ? item[key] : '';
+                            });
+                            return cleanedItem;
+                        });
+                        
+                        // 导入清理后的数据
+                        window.app.importFromExcel(cleanedData);
+                        
+                    } catch (error) {
+                        handleImportError('处理文件失败: ' + error.message);
+                    }
+                };
+                
+                reader.onerror = function() {
+                    handleImportError('读取文件失败');
+                };
+                
+                // 读取文件
+                reader.readAsArrayBuffer(file);
+                
+            } catch (error) {
+                handleImportError('初始化导入失败: ' + error.message);
+            }
+        }
+        
+        // 处理导入错误
+        function handleImportError(errorMessage) {
+            window.app.hideLoading();
+            window.app.showNotification(errorMessage, 'error');
+            window.app.isImporting = false;
+        }
+        
+        // 显示密码输入模态框
+        function showPasswordModal() {
+            // 获取模态框元素
+            const passwordModal = document.getElementById('passwordModal');
+            const passwordInput = document.getElementById('passwordInput');
+            const passwordError = document.getElementById('passwordError');
+            const confirmPasswordBtn = document.getElementById('confirmPasswordBtn');
+            const cancelPasswordBtn = document.getElementById('cancelPasswordBtn');
+            
+            // 重置输入和错误状态
+            passwordInput.value = '';
+            passwordError.classList.add('hidden');
+            passwordInput.focus();
+            
+            // 显示模态框
+            passwordModal.classList.remove('hidden');
+            
+            // 确认按钮点击事件
+            const handleConfirm = function() {
+                const password = passwordInput.value.trim();
+                
+                // 验证密码
+                if (password === APP_CONSTANTS.IMPORT_PASSWORD) {
+                    // 密码正确，隐藏模态框并处理文件
+                    passwordModal.classList.add('hidden');
+                    processFile(window.currentImportFile);
+                    
+                    // 移除事件监听器
+                    confirmPasswordBtn.removeEventListener('click', handleConfirm);
+                    cancelPasswordBtn.removeEventListener('click', handleCancel);
+                } else {
+                    // 密码错误，显示错误信息
+                    passwordError.classList.remove('hidden');
+                    passwordInput.select();
+                }
+            };
+            
+            // 取消按钮点击事件
+            const handleCancel = function() {
+                // 隐藏模态框，取消导入
+                passwordModal.classList.add('hidden');
+                
+                // 移除事件监听器
+                confirmPasswordBtn.removeEventListener('click', handleConfirm);
+                cancelPasswordBtn.removeEventListener('click', handleCancel);
+            };
+            
+            // 添加事件监听器
+            confirmPasswordBtn.addEventListener('click', handleConfirm);
+            cancelPasswordBtn.addEventListener('click', handleCancel);
+            
+            // 回车键事件
+            passwordInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    handleConfirm();
+                }
+            });
+        }
+    </script>
+</body>
+</html>
