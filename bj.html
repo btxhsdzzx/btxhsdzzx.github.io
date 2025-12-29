@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>数据表格对比分析工具</title>
+    <title>包头新华数据对比平台</title>
     <!-- Tailwind CSS v3 -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Font Awesome -->
@@ -95,16 +95,21 @@
         <!-- 顶部标题和控制区 -->
         <header class="mb-8">
             <div class="flex flex-col md:flex-row justify-between items-center mb-6">
-                <h1 class="text-3xl md:text-4xl font-bold text-white mb-4 md:mb-0 flex items-center">
-                    <i class="fa fa-table mr-3 text-accent"></i>
-                    数据表格对比分析工具
-                </h1>
+                <div class="text-center md:text-left">
+                    <h1 class="text-3xl md:text-4xl font-bold text-white mb-2 flex items-center justify-center md:justify-start">
+                        <i class="fa fa-table mr-3 text-accent"></i>
+                        包头新华数据对比平台
+                    </h1>
+                    <p class="text-white/80 text-sm md:text-base">
+                     ***综合办版权所有***
+                    </p>
+                </div>
                 <div class="flex flex-wrap gap-3">
-                    <button id="compareTables" class="tech-button bg-accent text-primary">
-                        <i class="fa fa-exchange mr-2"></i>对比数据
+                    <button id="compareTables" class="tech-button bg-accent text-primary" title="对比两个表格中的数据差异">
+                        <i class="fa fa-exchange mr-2"></i>开始对比
                     </button>
-                    <button id="exportResults" class="tech-button">
-                        <i class="fa fa-download mr-2"></i>导出结果
+                    <button id="exportResults" class="tech-button" title="将对比结果导出为Excel文件">
+                        <i class="fa fa-download mr-2"></i>导出报告
                     </button>
                 </div>
             </div>
@@ -114,27 +119,36 @@
                 <h2 class="text-xl font-semibold text-white mb-4">对比设置</h2>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div>
-                        <label class="block text-white text-sm mb-2">主键列</label>
-                        <select id="primaryKey" class="w-full rounded-lg border border-gray-300 bg-white bg-opacity-80 p-2 focus:outline-none focus:ring-2 focus:ring-accent">
-                            <option value="">自动检测</option>
+                        <label class="block text-white text-sm mb-2">
+                            <i class="fa fa-key mr-1"></i>主键列
+                            <span class="text-accent text-xs ml-1" title="用于匹配两行数据的唯一标识列">?</span>
+                        </label>
+                        <select id="primaryKey" class="w-full rounded-lg border border-gray-300 bg-white bg-opacity-80 p-2 focus:outline-none focus:ring-2 focus:ring-accent" title="选择用于匹配数据行的唯一标识列，留空则自动检测">
+                            <option value="">🤖 自动检测</option>
                             <option value="id">ID</option>
                             <option value="name">名称</option>
                             <option value="code">代码</option>
                         </select>
                     </div>
                     <div>
-                        <label class="block text-white text-sm mb-2">对比模式</label>
-                        <select id="compareMode" class="w-full rounded-lg border border-gray-300 bg-white bg-opacity-80 p-2 focus:outline-none focus:ring-2 focus:ring-accent">
-                            <option value="all">所有列</option>
-                            <option value="selected">选定列</option>
+                        <label class="block text-white text-sm mb-2">
+                            <i class="fa fa-columns mr-1"></i>对比模式
+                            <span class="text-accent text-xs ml-1" title="选择要对比的列范围">?</span>
+                        </label>
+                        <select id="compareMode" class="w-full rounded-lg border border-gray-300 bg-white bg-opacity-80 p-2 focus:outline-none focus:ring-2 focus:ring-accent" title="选择要对比的列范围">
+                            <option value="all">📊 所有列</option>
+                            <option value="selected">🎯 选定列</option>
                         </select>
                     </div>
                     <div>
-                        <label class="block text-white text-sm mb-2">差异高亮方式</label>
-                        <select id="highlightMode" class="w-full rounded-lg border border-gray-300 bg-white bg-opacity-80 p-2 focus:outline-none focus:ring-2 focus:ring-accent">
-                            <option value="background">背景色</option>
-                            <option value="text">文字颜色</option>
-                            <option value="border">边框</option>
+                        <label class="block text-white text-sm mb-2">
+                            <i class="fa fa-paint-brush mr-1"></i>差异高亮方式
+                            <span class="text-accent text-xs ml-1" title="设置差异数据的显示样式">?</span>
+                        </label>
+                        <select id="highlightMode" class="w-full rounded-lg border border-gray-300 bg-white bg-opacity-80 p-2 focus:outline-none focus:ring-2 focus:ring-accent" title="设置差异数据的显示样式">
+                            <option value="background">🎨 背景色</option>
+                            <option value="text">✏️ 文字颜色</option>
+                            <option value="border">🔲 边框</option>
                         </select>
                     </div>
                 </div>
@@ -146,14 +160,14 @@
             <!-- 左侧表格 -->
             <div class="lg:col-span-1 data-card p-4">
                 <div class="flex justify-between items-center mb-4">
-                    <h2 class="text-xl font-semibold text-white">表格 A</h2>
+                    <h2 class="text-xl font-semibold text-white flex items-center">
+                        <i class="fa fa-file-excel-o mr-2 text-green-300"></i>
+                        表格 A <span class="text-xs text-white/60 ml-2">(基准数据)</span>
+                    </h2>
                     <div class="flex gap-2">
                         <input type="file" id="fileInputA" accept=".xlsx,.xls,.csv" class="hidden" onchange="handleFileUpload(event, 'A')">
-                        <button id="importTableA" class="tech-button py-1 px-3 text-sm" onclick="document.getElementById('fileInputA').click()">
+                        <button id="importTableA" class="tech-button py-1 px-3 text-sm" onclick="document.getElementById('fileInputA').click()" title="导入Excel或CSV文件">
                             <i class="fa fa-upload mr-1"></i>导入文件
-                        </button>
-                        <button id="loadSampleA" class="tech-button py-1 px-3 text-sm bg-gray-700 hover:bg-gray-600" onclick="loadSampleData('A')">
-                            <i class="fa fa-database mr-1"></i>示例数据
                         </button>
                     </div>
                 </div>
@@ -171,7 +185,13 @@
                         </thead>
                         <tbody>
                             <tr>
-                                <td colspan="6" class="px-4 py-8 text-center text-gray-400 italic">点击"加载数据"按钮加载示例数据</td>
+                                <td colspan="6" class="px-4 py-8 text-center">
+                                    <div class="text-gray-400 space-y-2">
+                                        <i class="fa fa-info-circle text-2xl"></i>
+                                        <p class="font-medium">准备就绪</p>
+                                        <p class="text-sm">🎯 点击"导入文件"上传您的数据</p>
+                                    </div>
+                                </td>
                             </tr>
                         </tbody>
                     </table>
@@ -181,14 +201,14 @@
             <!-- 右侧表格 -->
             <div class="lg:col-span-1 data-card p-4">
                 <div class="flex justify-between items-center mb-4">
-                    <h2 class="text-xl font-semibold text-white">表格 B</h2>
+                    <h2 class="text-xl font-semibold text-white flex items-center">
+                        <i class="fa fa-file-excel-o mr-2 text-blue-300"></i>
+                        表格 B <span class="text-xs text-white/60 ml-2">(对比数据)</span>
+                    </h2>
                     <div class="flex gap-2">
                         <input type="file" id="fileInputB" accept=".xlsx,.xls,.csv" class="hidden" onchange="handleFileUpload(event, 'B')">
-                        <button id="importTableB" class="tech-button py-1 px-3 text-sm" onclick="document.getElementById('fileInputB').click()">
+                        <button id="importTableB" class="tech-button py-1 px-3 text-sm" onclick="document.getElementById('fileInputB').click()" title="导入Excel或CSV文件">
                             <i class="fa fa-upload mr-1"></i>导入文件
-                        </button>
-                        <button id="loadSampleB" class="tech-button py-1 px-3 text-sm bg-gray-700 hover:bg-gray-600" onclick="loadSampleData('B')">
-                            <i class="fa fa-database mr-1"></i>示例数据
                         </button>
                     </div>
                 </div>
@@ -206,7 +226,13 @@
                         </thead>
                         <tbody>
                             <tr>
-                                <td colspan="6" class="px-4 py-8 text-center text-gray-400 italic">点击"加载数据"按钮加载示例数据</td>
+                                <td colspan="6" class="px-4 py-8 text-center">
+                                    <div class="text-gray-400 space-y-2">
+                                        <i class="fa fa-info-circle text-2xl"></i>
+                                        <p class="font-medium">准备就绪</p>
+                                        <p class="text-sm">🎯 点击"导入文件"上传您的数据</p>
+                                     </div>
+                                </td>
                             </tr>
                         </tbody>
                     </table>
@@ -215,26 +241,29 @@
 
             <!-- 差异分析面板 -->
             <div class="lg:col-span-1 data-card p-4">
-                <h2 class="text-xl font-semibold text-white mb-4">差异分析</h2>
+                <h2 class="text-xl font-semibold text-white mb-4 flex items-center">
+                    <i class="fa fa-chart-bar mr-2 text-yellow-300"></i>
+                    差异分析 <span class="text-xs text-white/60 ml-2">(智能对比结果)</span>
+                </h2>
                 
                 <!-- 差异统计卡片 -->
                 <div class="bg-white bg-opacity-10 rounded-lg p-4 mb-6">
                     <h3 class="text-lg font-medium text-white mb-3">差异统计</h3>
                     <div class="grid grid-cols-2 gap-4">
-                        <div class="bg-primary bg-opacity-50 rounded-lg p-3 text-center">
-                            <p class="text-sm text-gray-300">总差异数</p>
+                        <div class="bg-primary bg-opacity-50 rounded-lg p-3 text-center hover:bg-opacity-60 transition-all cursor-help" title="检测到的总差异数量">
+                            <p class="text-sm text-gray-300">🔍 总差异数</p>
                             <p id="totalDiffs" class="text-2xl font-bold text-accent">0</p>
                         </div>
-                        <div class="bg-primary bg-opacity-50 rounded-lg p-3 text-center">
-                            <p class="text-sm text-gray-300">差异行比例</p>
+                        <div class="bg-primary bg-opacity-50 rounded-lg p-3 text-center hover:bg-opacity-60 transition-all cursor-help" title="存在差异的行数占总行数的百分比">
+                            <p class="text-sm text-gray-300">📊 差异行比例</p>
                             <p id="diffRowPercentage" class="text-2xl font-bold text-accent">0%</p>
                         </div>
-                        <div class="bg-primary bg-opacity-50 rounded-lg p-3 text-center">
-                            <p class="text-sm text-gray-300">增加项</p>
+                        <div class="bg-primary bg-opacity-50 rounded-lg p-3 text-center hover:bg-opacity-60 transition-all cursor-help" title="表格B中新增的记录数量">
+                            <p class="text-sm text-gray-300">📈 增加项</p>
                             <p id="increaseCount" class="text-2xl font-bold text-diff-increase">0</p>
                         </div>
-                        <div class="bg-primary bg-opacity-50 rounded-lg p-3 text-center">
-                            <p class="text-sm text-gray-300">减少项</p>
+                        <div class="bg-primary bg-opacity-50 rounded-lg p-3 text-center hover:bg-opacity-60 transition-all cursor-help" title="表格A中有但表格B中没有的记录数量">
+                            <p class="text-sm text-gray-300">📉 减少项</p>
                             <p id="decreaseCount" class="text-2xl font-bold text-diff-decrease">0</p>
                         </div>
                     </div>
@@ -244,7 +273,12 @@
                 <div class="bg-white bg-opacity-10 rounded-lg p-4">
                     <h3 class="text-lg font-medium text-white mb-3">对比状态</h3>
                     <div id="diffSummary" class="text-sm text-gray-200">
-                        <p class="italic text-gray-400">请先加载两个表格的数据，然后点击"对比数据"按钮生成差异分析</p>
+                        <div class="text-center py-4">
+                            <i class="fa fa-info-circle text-xl text-accent mb-2"></i>
+                            <p class="font-medium text-white/90 mb-1">准备就绪</p>
+                            <p class="text-white/70">📊 请先加载两个表格的数据</p>
+                            <p class="text-white/70">⚡ 然后点击"开始对比"按钮生成分析报告</p>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -253,23 +287,26 @@
         <!-- 底部差异详情面板 -->
         <div class="mt-8 data-card p-4">
             <div class="flex justify-between items-center mb-4">
-                <h2 class="text-xl font-semibold text-white">差异详情</h2>
+                <h2 class="text-xl font-semibold text-white flex items-center">
+                    <i class="fa fa-list-alt mr-2 text-yellow-300"></i>
+                    差异详情 <span class="text-xs text-white/60 ml-2">(详细对比结果)</span>
+                </h2>
                 <div class="flex gap-2">
-                    <select id="diffFilter" class="rounded-lg border border-gray-300 bg-white bg-opacity-80 p-2 text-sm focus:outline-none focus:ring-2 focus:ring-accent">
-                        <option value="all">所有差异</option>
-                        <option value="increase">仅增加</option>
-                        <option value="decrease">仅减少</option>
-                        <option value="change">仅变化</option>
+                    <select id="diffFilter" class="rounded-lg border border-gray-300 bg-white bg-opacity-80 p-2 text-sm focus:outline-none focus:ring-2 focus:ring-accent" title="筛选不同类型的差异">
+                        <option value="all">🔍 所有差异</option>
+                        <option value="increase">📈 仅增加</option>
+                        <option value="decrease">📉 仅减少</option>
+                        <option value="change">🔄 仅变化</option>
                     </select>
-                    <select id="sortBy" class="rounded-lg border border-gray-300 bg-white bg-opacity-80 p-2 text-sm focus:outline-none focus:ring-2 focus:ring-accent">
-                        <option value="id">按ID排序</option>
-                        <option value="name">按名称排序</option>
-                        <option value="diffValue">按差异值排序</option>
-                        <option value="diffPercentage">按差异百分比排序</option>
+                    <select id="sortBy" class="rounded-lg border border-gray-300 bg-white bg-opacity-80 p-2 text-sm focus:outline-none focus:ring-2 focus:ring-accent" title="选择排序方式">
+                        <option value="id">🆔 按ID排序</option>
+                        <option value="name">📝 按名称排序</option>
+                        <option value="diffValue">📊 按差异值排序</option>
+                        <option value="diffPercentage">📈 按差异百分比排序</option>
                     </select>
                 </div>
             </div>
-            <div class="relative overflow-x-auto scrollbar-thin">
+            <div class="relative overflow-x-auto scrollbar-thin mb-4">
                 <table id="diffTable" class="w-full text-sm text-left text-gray-200">
                     <thead class="table-header">
                         <tr>
@@ -285,10 +322,54 @@
                     </thead>
                     <tbody>
                         <tr>
-                            <td colspan="8" class="px-4 py-8 text-center text-gray-400 italic">暂无差异数据</td>
+                            <td colspan="8" class="px-4 py-8 text-center">
+                                <div class="text-gray-400 space-y-3">
+                                    <i class="fa fa-search text-3xl"></i>
+                                    <p class="font-medium text-white/80">等待分析结果</p>
+                                    <p class="text-sm text-white/60">📊 完成数据对比后将显示详细差异</p>
+                                    <p class="text-sm text-white/60">⚡ 支持筛选和排序功能</p>
+                                </div>
+                            </td>
                         </tr>
                     </tbody>
                 </table>
+            </div>
+            
+            <!-- 分页控件 -->
+            <div id="paginationControls" class="flex items-center justify-between bg-white/10 rounded-lg p-3 hidden">
+                <div class="text-sm text-white/80">
+                    显示 <span id="startRange">1</span> - <span id="endRange">20</span> 条，共 <span id="totalItems">0</span> 条差异
+                </div>
+                <div class="flex items-center gap-3">
+                    <button id="firstPage" class="tech-button py-1 px-3 text-sm bg-white/10 hover:bg-white/20" disabled title="第一页">
+                        <i class="fa fa-step-backward"></i>
+                    </button>
+                    <button id="prevPage" class="tech-button py-1 px-3 text-sm bg-white/10 hover:bg-white/20" disabled title="上一页">
+                        <i class="fa fa-chevron-left"></i>
+                    </button>
+                    <div class="flex items-center gap-2">
+                        <span class="text-sm text-white/80">第</span>
+                        <span id="currentPageDisplay" class="text-sm font-medium text-white">1</span>
+                        <span class="text-sm text-white/80">页，共</span>
+                        <span id="totalPagesDisplay" class="text-sm font-medium text-white">1</span>
+                        <span class="text-sm text-white/80">页</span>
+                    </div>
+                    <button id="nextPage" class="tech-button py-1 px-3 text-sm bg-white/10 hover:bg-white/20" disabled title="下一页">
+                        <i class="fa fa-chevron-right"></i>
+                    </button>
+                    <button id="lastPage" class="tech-button py-1 px-3 text-sm bg-white/10 hover:bg-white/20" disabled title="最后一页">
+                        <i class="fa fa-step-forward"></i>
+                    </button>
+                </div>
+                <div class="flex items-center gap-2">
+                    <span class="text-sm text-white/80">每页显示:</span>
+                    <select id="pageSize" class="rounded-lg border border-gray-300 bg-white bg-opacity-80 p-1 text-sm focus:outline-none focus:ring-2 focus:ring-accent" title="每页显示条数">
+                        <option value="10">10条</option>
+                        <option value="20" selected>20条</option>
+                        <option value="50">50条</option>
+                        <option value="100">100条</option>
+                    </select>
+                </div>
             </div>
         </div>
     </div>
@@ -298,6 +379,8 @@
         let tableAData = [];
         let tableBData = [];
         let diffData = [];
+        let currentPage = 1;
+        let itemsPerPage = 20; // 默认每页显示20条
 
         // DOM 元素
         const tableA = document.getElementById('tableA');
@@ -314,20 +397,19 @@
         const sortBy = document.getElementById('sortBy');
         const highlightMode = document.getElementById('highlightMode');
         const primaryKey = document.getElementById('primaryKey');
+        const paginationControls = document.getElementById('paginationControls');
+        const prevPageBtn = document.getElementById('prevPage');
+        const nextPageBtn = document.getElementById('nextPage');
+        const firstPageBtn = document.getElementById('firstPage');
+        const lastPageBtn = document.getElementById('lastPage');
+        const pageSizeSelect = document.getElementById('pageSize');
+        const startRangeEl = document.getElementById('startRange');
+        const endRangeEl = document.getElementById('endRange');
+        const totalItemsEl = document.getElementById('totalItems');
+        const currentPageDisplay = document.getElementById('currentPageDisplay');
+        const totalPagesDisplay = document.getElementById('totalPagesDisplay');
 
-        // 示例数据 - 产品信息
-        const sampleProducts = [
-            { id: 1, name: '超级智能手机', category: '电子产品', price: 4999, stock: 150, sales: 2500 },
-            { id: 2, name: '专业笔记本电脑', category: '电子产品', price: 8999, stock: 80, sales: 1200 },
-            { id: 3, name: '智能手表', category: '穿戴设备', price: 1999, stock: 200, sales: 3500 },
-            { id: 4, name: '无线耳机', category: '音频设备', price: 999, stock: 300, sales: 5000 },
-            { id: 5, name: '4K智能电视', category: '家电', price: 5999, stock: 60, sales: 800 },
-            { id: 6, name: '游戏主机', category: '游戏设备', price: 3999, stock: 100, sales: 1800 },
-            { id: 7, name: '智能音箱', category: '智能家居', price: 799, stock: 250, sales: 4200 },
-            { id: 8, name: '机械键盘', category: '电脑配件', price: 599, stock: 180, sales: 2800 },
-            { id: 9, name: '专业相机', category: '摄影设备', price: 12999, stock: 40, sales: 600 },
-            { id: 10, name: '平板电脑', category: '电子产品', price: 3699, stock: 120, sales: 2200 }
-        ];
+
 
         // 初始化应用
         function initApp() {
@@ -355,13 +437,62 @@
 
             // 差异过滤和排序
             if (diffFilter) {
-                diffFilter.addEventListener('change', updateDiffTable);
+                diffFilter.addEventListener('change', () => {
+                    currentPage = 1; // 重置到第一页
+                    updateDiffTable();
+                });
                 console.log('差异过滤事件绑定成功');
             }
             
             if (sortBy) {
-                sortBy.addEventListener('change', updateDiffTable);
+                sortBy.addEventListener('change', () => {
+                    currentPage = 1; // 重置到第一页
+                    updateDiffTable();
+                });
                 console.log('排序方式事件绑定成功');
+            }
+            
+            // 分页控件事件绑定
+            if (prevPageBtn && nextPageBtn) {
+                prevPageBtn.addEventListener('click', () => {
+                    if (currentPage > 1) {
+                        changePage(currentPage - 1);
+                    }
+                });
+                
+                nextPageBtn.addEventListener('click', () => {
+                    const filteredData = getFilteredData();
+                    const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+                    if (currentPage < totalPages) {
+                        changePage(currentPage + 1);
+                    }
+                });
+                
+                // 第一页和最后一页按钮
+                if (firstPageBtn) {
+                    firstPageBtn.addEventListener('click', () => {
+                        changePage(1);
+                    });
+                }
+                
+                if (lastPageBtn) {
+                    lastPageBtn.addEventListener('click', () => {
+                        const filteredData = getFilteredData();
+                        const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+                        changePage(totalPages);
+                    });
+                }
+                console.log('分页按钮事件绑定成功');
+            }
+            
+            // 每页显示条数事件绑定
+            if (pageSizeSelect) {
+                pageSizeSelect.addEventListener('change', (e) => {
+                    itemsPerPage = parseInt(e.target.value);
+                    currentPage = 1; // 重置到第一页
+                    updateDiffTable();
+                });
+                console.log('每页显示条数事件绑定成功');
             }
 
             // 高亮方式
@@ -685,21 +816,24 @@
             updatePrimaryKeyOptions(allFields);
             updateSortOptions(allFields);
             
-            // 渲染数据行
+            // 渲染数据行（优化性能）
+            const fragment = document.createDocumentFragment();
             data.forEach(rowData => {
                 const row = document.createElement('tr');
                 row.className = 'border-b border-gray-700 hover:bg-white hover:bg-opacity-10 transition-colors';
                 
-                let rowHtml = '';
                 allFields.forEach(field => {
+                    const td = document.createElement('td');
+                    td.className = 'px-4 py-3';
+                    td.setAttribute('data-field', field);
                     const value = rowData[field] !== undefined ? rowData[field] : '';
-                    const displayValue = formatCellValue(value, field);
-                    rowHtml += `<td class="px-4 py-3" data-field="${field}">${displayValue}</td>`;
+                    td.textContent = formatCellValue(value, field);
+                    row.appendChild(td);
                 });
                 
-                row.innerHTML = rowHtml;
-                tbody.appendChild(row);
+                fragment.appendChild(row);
             });
+            tbody.appendChild(fragment);
         }
 
         // 更新主键列选项
@@ -823,101 +957,211 @@
             // 显示处理中状态
             diffSummary.innerHTML = '<p class="text-accent font-medium">🤖 正在进行数据对比分析，请稍候...</p>';
             
-            // 模拟处理延迟
-            setTimeout(() => {
-                try {
-                    // 清空之前的差异数据
-                    diffData = [];
+            // 记录开始时间
+            const startTime = Date.now();
+            
+            try {
+                // 清空之前的差异数据
+                diffData = [];
+                
+                // 获取主键列（智能检测或用户指定）
+                let primaryKeyField;
+                if (primaryKey.value === '') {
+                    // 自动检测主键
+                    primaryKeyField = detectPrimaryKey();
+                    console.log(`自动检测到主键列: ${primaryKeyField}`);
                     
-                    // 按ID对比数据
-                    const idMapA = new Map(tableAData.map(item => [item.id, item]));
-                    const idMapB = new Map(tableBData.map(item => [item.id, item]));
+                    // 显示自动检测结果给用户
+                    const primaryKeyContainer = primaryKey.parentElement;
+                    let autoDetectInfo = primaryKeyContainer.querySelector('.auto-detect-info');
+                    if (!autoDetectInfo) {
+                        autoDetectInfo = document.createElement('div');
+                        autoDetectInfo.className = 'auto-detect-info text-sm mt-1';
+                        primaryKeyContainer.appendChild(autoDetectInfo);
+                    }
+                    autoDetectInfo.innerHTML = `<span class="text-green-600">🤖 自动检测到主键: ${primaryKeyField}</span>`;
+                } else {
+                    // 使用用户指定的主键
+                    primaryKeyField = primaryKey.value;
+                    console.log(`使用用户指定的主键列: ${primaryKeyField}`);
                     
-                    // 找出所有唯一的ID
-                    const allIds = [...new Set([...idMapA.keys(), ...idMapB.keys()])];
-                    
-                    // 对比每一行数据
-                    allIds.forEach(id => {
-                        const itemA = idMapA.get(id);
-                        const itemB = idMapB.get(id);
-                        
-                        if (!itemA) {
-                            // 仅在表格B中存在 - 新增项
-                            diffData.push({
-                                id: id,
-                                name: itemB.name,
-                                field: '整行',
-                                valueA: '不存在',
-                                valueB: '新增',
-                                diffValue: '新增',
-                                diffPercentage: 'N/A',
-                                diffType: 'increase'
-                            });
-                        } else if (!itemB) {
-                            // 仅在表格A中存在 - 删除项
-                            diffData.push({
-                                id: id,
-                                name: itemA.name,
-                                field: '整行',
-                                valueA: '存在',
-                                valueB: '删除',
-                                diffValue: '删除',
-                                diffPercentage: 'N/A',
-                                diffType: 'decrease'
-                            });
-                        } else {
-                            // 两行都存在，对比各个字段
-                            const allFields = [...new Set([...Object.keys(itemA), ...Object.keys(itemB)])];
-                            
-                            allFields.forEach(field => {
-                                if (field === 'id' || field === 'name') return; // 跳过ID和名称字段
-                                
-                                const valueA = itemA[field] !== undefined ? itemA[field] : 'N/A';
-                                const valueB = itemB[field] !== undefined ? itemB[field] : 'N/A';
-                                
-                                if (valueA !== valueB) {
-                                    let diffValue = '变化';
-                                    let diffPercentage = 'N/A';
-                                    let diffType = 'change';
-                                    
-                                    // 计算数值差异
-                                    if (typeof valueA === 'number' && typeof valueB === 'number') {
-                                        diffValue = valueB - valueA;
-                                        diffPercentage = valueA !== 0 ? ((diffValue / valueA) * 100).toFixed(1) + '%' : '∞';
-                                        diffType = diffValue > 0 ? 'increase' : diffValue < 0 ? 'decrease' : 'change';
-                                    }
-                                    
-                                    diffData.push({
-                                        id: id,
-                                        name: itemA.name,
-                                        field: formatFieldName(field),
-                                        valueA: valueA,
-                                        valueB: valueB,
-                                        diffValue: diffValue,
-                                        diffPercentage: diffPercentage,
-                                        diffType: diffType
-                                    });
-                                }
-                            });
-                        }
-                    });
-                    
-                    // 更新差异统计
-                    updateDiffStats();
-                    
-                    // 更新差异表格
-                    updateDiffTable();
-                    
-                    // 更新差异摘要
-                    updateDiffSummary();
-                    
-                    console.log(`对比完成，发现${diffData.length}个差异`);
-                    
-                } catch (error) {
-                    console.error('对比分析失败:', error);
-                    diffSummary.innerHTML = `<p class="text-red-300">对比分析失败: ${error.message}</p>`;
+                    // 清除自动检测提示
+                    const primaryKeyContainer = primaryKey.parentElement;
+                    const autoDetectInfo = primaryKeyContainer.querySelector('.auto-detect-info');
+                    if (autoDetectInfo) {
+                        autoDetectInfo.remove();
+                    }
                 }
-            }, 1000);
+                
+                // 按主键对比数据（优化性能）
+                const mapA = new Map();
+                const mapB = new Map();
+                const tempDiffData = [];
+                
+                // 构建映射，处理可能的重复键
+                tableAData.forEach((item, index) => {
+                    const key = getRecordKey(item, primaryKeyField);
+                    mapA.set(key, item); // 直接覆盖，保留最后一个值
+                });
+                
+                tableBData.forEach((item, index) => {
+                    const key = getRecordKey(item, primaryKeyField);
+                    mapB.set(key, item); // 直接覆盖，保留最后一个值
+                });
+                
+                // 找出所有唯一的主键
+                const keysA = new Set(mapA.keys());
+                const keysB = new Set(mapB.keys());
+                const allKeys = [...new Set([...keysA, ...keysB])];
+                console.log(`总记录数: ${allKeys.length}`);
+                
+                // 对比每一行数据
+                for (const key of allKeys) {
+                    const itemA = mapA.get(key);
+                    const itemB = mapB.get(key);
+                    
+                    if (!itemA) {
+                        // 仅在表格B中存在 - 新增项
+                        tempDiffData.push({
+                            id: key,
+                            name: itemB.name || `项目${key}`,
+                            field: '整行',
+                            valueA: '不存在',
+                            valueB: '新增',
+                            diffValue: '新增',
+                            diffPercentage: 'N/A',
+                            diffType: 'increase'
+                        });
+                    } else if (!itemB) {
+                        // 仅在表格A中存在 - 删除项
+                        tempDiffData.push({
+                            id: key,
+                            name: itemA.name || `项目${key}`,
+                            field: '整行',
+                            valueA: '存在',
+                            valueB: '删除',
+                            diffValue: '删除',
+                            diffPercentage: 'N/A',
+                            diffType: 'decrease'
+                        });
+                    } else {
+                        // 两行都存在，对比各个字段
+                        const fieldsA = Object.keys(itemA);
+                        const fieldsB = Object.keys(itemB);
+                        const allFields = new Set([...fieldsA, ...fieldsB]);
+                        
+                        for (const field of allFields) {
+                            // 跳过主键字段，但不跳过名称字段
+                            if (field === primaryKeyField) continue;
+                            
+                            const valueA = itemA[field] !== undefined && itemA[field] !== null ? itemA[field] : 'N/A';
+                            const valueB = itemB[field] !== undefined && itemB[field] !== null ? itemB[field] : 'N/A';
+                            
+                            // 快速比较值
+                            if (valueA !== valueB) {
+                                let diffValue = '变化';
+                                let diffPercentage = 'N/A';
+                                let diffType = 'change';
+                                
+                                // 计算数值差异
+                                if (typeof valueA === 'number' && typeof valueB === 'number') {
+                                    diffValue = valueB - valueA;
+                                    diffPercentage = valueA !== 0 ? ((diffValue / valueA) * 100).toFixed(1) + '%' : '∞';
+                                    diffType = diffValue > 0 ? 'increase' : diffValue < 0 ? 'decrease' : 'change';
+                                }
+                                
+                                tempDiffData.push({
+                                    id: key,
+                                    name: itemA.name || itemB.name || `项目${key}`,
+                                    field: formatFieldName(field),
+                                    valueA: valueA,
+                                    valueB: valueB,
+                                    diffValue: diffValue,
+                                    diffPercentage: diffPercentage,
+                                    diffType: diffType
+                                });
+                            }
+                        }
+                    }
+                }
+                
+                // 批量赋值，减少内存操作
+                diffData = tempDiffData;
+                
+                // 更新差异统计
+                updateDiffStats();
+                
+                // 重置分页并更新差异表格
+                currentPage = 1;
+                updateDiffTable();
+                
+                // 更新差异摘要
+                updateDiffSummary();
+                
+                const endTime = Date.now();
+                console.log(`对比完成，发现${diffData.length}个差异，耗时${endTime - startTime}ms`);
+                
+            } catch (error) {
+                console.error('对比分析失败:', error);
+                diffSummary.innerHTML = `<p class="text-red-300">对比分析失败: ${error.message}</p>`;
+            }
+        }
+        
+        // 深度比较两个值是否相等
+        function valuesEqual(value1, value2) {
+            // 处理null和undefined
+            if (value1 === null || value1 === undefined) {
+                return value2 === null || value2 === undefined;
+            }
+            if (value2 === null || value2 === undefined) {
+                return false;
+            }
+            
+            // 处理不同类型
+            if (typeof value1 !== typeof value2) {
+                // 尝试数值转换比较
+                if (typeof value1 === 'number' && typeof value2 === 'string') {
+                    const num2 = parseFloat(value2);
+                    return !isNaN(num2) && value1 === num2;
+                }
+                if (typeof value1 === 'string' && typeof value2 === 'number') {
+                    const num1 = parseFloat(value1);
+                    return !isNaN(num1) && num1 === value2;
+                }
+                return false;
+            }
+            
+            // 处理数组
+            if (Array.isArray(value1) && Array.isArray(value2)) {
+                if (value1.length !== value2.length) return false;
+                return value1.every((item, index) => valuesEqual(item, value2[index]));
+            }
+            
+            // 处理对象
+            if (typeof value1 === 'object' && typeof value2 === 'object') {
+                const keys1 = Object.keys(value1);
+                const keys2 = Object.keys(value2);
+                
+                if (keys1.length !== keys2.length) return false;
+                
+                return keys1.every(key => 
+                    keys2.includes(key) && valuesEqual(value1[key], value2[key])
+                );
+            }
+            
+            // 处理字符串（忽略首尾空格）
+            if (typeof value1 === 'string' && typeof value2 === 'string') {
+                return value1.trim().toLowerCase() === value2.trim().toLowerCase();
+            }
+            
+            // 处理数值（允许一定的精度误差）
+            if (typeof value1 === 'number' && typeof value2 === 'number') {
+                if (isNaN(value1) && isNaN(value2)) return true;
+                return Math.abs(value1 - value2) < 1e-10;
+            }
+            
+            // 其他类型直接比较
+            return value1 === value2;
         }
 
         // 更新差异统计
@@ -941,6 +1185,7 @@
             
             if (diffData.length === 0) {
                 tbody.innerHTML = '<tr><td colspan="8" class="px-4 py-8 text-center text-gray-400 italic">暂无差异数据</td></tr>';
+                updatePaginationControls([]);
                 return;
             }
             
@@ -953,7 +1198,7 @@
                 filteredData = filteredData.filter(diff => diff.diffType === filterValue);
             }
             
-            // 排序
+            // 排序（优化性能）
             const sortValue = sortBy.value;
             filteredData.sort((a, b) => {
                 switch (sortValue) {
@@ -970,28 +1215,34 @@
                             ? parseFloat(b.diffPercentage) - parseFloat(a.diffPercentage)
                             : 0;
                     default:
-                        // 检查是否为字段排序
-                        if (tableAData.length > 0 && tableBData.length > 0) {
-                            const itemA1 = tableAData.find(item => item.id === a.id);
-                            const itemB1 = tableBData.find(item => item.id === a.id);
-                            const itemA2 = tableAData.find(item => item.id === b.id);
-                            const itemB2 = tableBData.find(item => item.id === b.id);
-                            
-                            const value1 = itemA1?.[sortValue] ?? itemB1?.[sortValue];
-                            const value2 = itemA2?.[sortValue] ?? itemB2?.[sortValue];
-                            
-                            if (typeof value1 === 'number' && typeof value2 === 'number') {
-                                return value1 - value2;
-                            } else if (typeof value1 === 'string' && typeof value2 === 'string') {
-                                return value1.localeCompare(value2);
-                            }
+                        // 使用差异数据中的原始值进行排序，避免重复查找
+                        if (a.field === sortValue || b.field === sortValue) {
+                            const value1 = typeof a.valueA === 'number' ? a.valueA : (typeof a.valueB === 'number' ? a.valueB : 0);
+                            const value2 = typeof b.valueA === 'number' ? b.valueA : (typeof b.valueB === 'number' ? b.valueB : 0);
+                            return value1 - value2;
                         }
                         return 0;
                 }
             });
             
+            // 应用分页
+            const startIndex = (currentPage - 1) * itemsPerPage;
+            const endIndex = startIndex + itemsPerPage;
+            const paginatedData = filteredData.slice(startIndex, endIndex);
+            
             // 渲染差异行
-            filteredData.forEach(diff => {
+            renderDiffRows(paginatedData, tbody);
+            
+            // 更新分页控件
+            updatePaginationControls(filteredData);
+        }
+        
+        // 渲染差异行（优化性能）
+        function renderDiffRows(data, tbody) {
+            // 使用文档片段优化DOM操作
+            const fragment = document.createDocumentFragment();
+            
+            data.forEach(diff => {
                 const row = document.createElement('tr');
                 row.className = `border-b border-gray-700 hover:bg-white hover:bg-opacity-10 transition-colors`;
                 
@@ -999,13 +1250,34 @@
                 const diffClass = diff.diffType === 'increase' ? 'text-diff-increase' : 
                                  diff.diffType === 'decrease' ? 'text-diff-decrease' : 'text-diff-change';
                 
+                // 根据高亮方式设置样式
+                const highlightStyle = highlightMode ? (highlightMode.value || 'background') : 'background';
+                let valueBClass = '';
+                let diffValueClass = '';
+                
+                switch (highlightStyle) {
+                    case 'background':
+                        valueBClass = `bg-${diffClass.replace('text-', '')} bg-opacity-20`;
+                        diffValueClass = `bg-${diffClass.replace('text-', '')} bg-opacity-20`;
+                        break;
+                    case 'text':
+                        valueBClass = `${diffClass} font-medium`;
+                        diffValueClass = `${diffClass} font-medium`;
+                        break;
+                    case 'border':
+                        const borderColor = diffClass.replace('text-', 'border-');
+                        valueBClass = `border-l-4 ${borderColor} font-medium`;
+                        diffValueClass = `border-l-4 ${borderColor} font-medium`;
+                        break;
+                }
+                
                 row.innerHTML = `
                     <td class="px-4 py-3">${diff.id}</td>
                     <td class="px-4 py-3">${diff.name}</td>
                     <td class="px-4 py-3">${diff.field}</td>
                     <td class="px-4 py-3">${formatValue(diff.valueA)}</td>
-                    <td class="px-4 py-3 ${diffClass} font-medium">${formatValue(diff.valueB)}</td>
-                    <td class="px-4 py-3 ${diffClass} font-medium">${formatValue(diff.diffValue)}</td>
+                    <td class="px-4 py-3 ${valueBClass}">${formatValue(diff.valueB)}</td>
+                    <td class="px-4 py-3 ${diffValueClass}">${formatValue(diff.diffValue)}</td>
                     <td class="px-4 py-3">${diff.diffPercentage}</td>
                     <td class="px-4 py-3">
                         <span class="px-2 py-1 rounded-full text-xs font-medium ${getDiffTypeClass(diff.diffType)}">
@@ -1014,12 +1286,116 @@
                     </td>
                 `;
                 
-                tbody.appendChild(row);
+                fragment.appendChild(row);
             });
+            
+            // 一次性添加所有行
+            tbody.appendChild(fragment);
+        }
+        
+
+        
+        // 切换页码
+        function changePage(page) {
+            if (page < 1) return;
+            
+            const filteredData = getFilteredData();
+            const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+            
+            if (page > totalPages) return;
+            
+            currentPage = page;
+            updateDiffTable();
+            
+            // 滚动到表格顶部
+            const diffTableContainer = diffTable.parentElement.parentElement;
+            diffTableContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+        
+        // 更新分页控件
+        function updatePaginationControls(filteredData) {
+            const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+            const totalItems = filteredData.length;
+            const startRange = Math.min((currentPage - 1) * itemsPerPage + 1, totalItems);
+            const endRange = Math.min(currentPage * itemsPerPage, totalItems);
+            
+            // 更新显示范围
+            if (startRangeEl) startRangeEl.textContent = startRange;
+            if (endRangeEl) endRangeEl.textContent = endRange;
+            if (totalItemsEl) totalItemsEl.textContent = totalItems;
+            if (currentPageDisplay) currentPageDisplay.textContent = currentPage;
+            if (totalPagesDisplay) totalPagesDisplay.textContent = totalPages;
+            
+            // 更新按钮状态
+            if (prevPageBtn) {
+                prevPageBtn.disabled = currentPage === 1;
+                prevPageBtn.classList.toggle('opacity-50', currentPage === 1);
+                prevPageBtn.classList.toggle('cursor-not-allowed', currentPage === 1);
+            }
+            
+            if (nextPageBtn) {
+                nextPageBtn.disabled = currentPage === totalPages;
+                nextPageBtn.classList.toggle('opacity-50', currentPage === totalPages);
+                nextPageBtn.classList.toggle('cursor-not-allowed', currentPage === totalPages);
+            }
+            
+            if (firstPageBtn) {
+                firstPageBtn.disabled = currentPage === 1;
+                firstPageBtn.classList.toggle('opacity-50', currentPage === 1);
+                firstPageBtn.classList.toggle('cursor-not-allowed', currentPage === 1);
+            }
+            
+            if (lastPageBtn) {
+                lastPageBtn.disabled = currentPage === totalPages;
+                lastPageBtn.classList.toggle('opacity-50', currentPage === totalPages);
+                lastPageBtn.classList.toggle('cursor-not-allowed', currentPage === totalPages);
+            }
+            
+            // 显示或隐藏分页控件
+            if (paginationControls) {
+                if (totalPages <= 1) {
+                    paginationControls.classList.add('hidden');
+                } else {
+                    paginationControls.classList.remove('hidden');
+                }
+            }
         }
 
-        // 更新差异图表
+        // 切换页码
+        function changePage(page) {
+            if (page < 1) return;
+            
+            const filteredData = getFilteredData();
+            const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+            
+            if (page > totalPages) return;
+            
+            currentPage = page;
+            updateDiffTable();
+            
+            // 滚动到表格顶部
+            const diffTableContainer = diffTable.parentElement.parentElement;
+            diffTableContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
 
+        // 切换每页显示数量
+        function changeItemsPerPage(value) {
+            itemsPerPage = parseInt(value);
+            currentPage = 1; // 重置到第一页
+            updateDiffTable();
+        }
+        
+        // 获取过滤后的数据
+        function getFilteredData() {
+            let filteredData = [...diffData];
+            const filterValue = diffFilter.value;
+            
+            if (filterValue !== 'all') {
+                filteredData = filteredData.filter(diff => diff.diffType === filterValue);
+            }
+            
+            return filteredData;
+        }
 
         // 更新差异摘要
         function updateDiffSummary() {
@@ -1064,38 +1440,104 @@
                 return;
             }
             
-            // 创建CSV内容
-            let csvContent = "ID,名称,字段,表格A值,表格B值,差异值,差异百分比,差异类型\n";
-            
-            diffData.forEach(diff => {
-                const row = [
-                    diff.id,
-                    `"${diff.name}"`,
-                    `"${diff.field}"`,
-                    `"${diff.valueA}"`,
-                    `"${diff.valueB}"`,
-                    `"${diff.diffValue}"`,
-                    diff.diffPercentage,
-                    getDiffTypeText(diff.diffType)
-                ].join(',');
+            try {
+                // 使用XLSX库导出Excel文件，更好地支持中文
+                if (typeof XLSX !== 'undefined') {
+                    // 准备Excel数据
+                    const excelData = diffData.map(diff => ({
+                        'ID': diff.id,
+                        '名称': diff.name,
+                        '字段': diff.field,
+                        '表格A值': formatExportValue(diff.valueA),
+                        '表格B值': formatExportValue(diff.valueB),
+                        '差异值': formatExportValue(diff.diffValue),
+                        '差异百分比': diff.diffPercentage,
+                        '差异类型': getDiffTypeText(diff.diffType)
+                    }));
+                    
+                    // 创建工作簿和工作表
+                    const ws = XLSX.utils.json_to_sheet(excelData);
+                    const wb = XLSX.utils.book_new();
+                    XLSX.utils.book_append_sheet(wb, ws, '差异分析结果');
+                    
+                    // 调整列宽
+                    const colWidths = [
+                        { wch: 10 }, // ID
+                        { wch: 20 }, // 名称
+                        { wch: 15 }, // 字段
+                        { wch: 15 }, // 表格A值
+                        { wch: 15 }, // 表格B值
+                        { wch: 15 }, // 差异值
+                        { wch: 15 }, // 差异百分比
+                        { wch: 10 }  // 差异类型
+                    ];
+                    ws['!cols'] = colWidths;
+                    
+                    // 生成Excel文件并下载
+                    const fileName = `数据对比结果_${new Date().toISOString().split('T')[0]}.xlsx`;
+                    XLSX.writeFile(wb, fileName);
+                    
+                    console.log('Excel文件导出成功');
+                    return;
+                }
                 
-                csvContent += row + '\n';
-            });
-            
-            // 创建下载链接
-            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-            const link = document.createElement('a');
-            const url = URL.createObjectURL(blob);
-            
-            link.setAttribute('href', url);
-            link.setAttribute('download', `数据对比结果_${new Date().toISOString().split('T')[0]}.csv`);
-            link.style.visibility = 'hidden';
-            
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            
-            console.log('导出成功');
+                // 如果XLSX库不可用，回退到CSV导出（增强版）
+                console.log('XLSX库不可用，回退到增强版CSV导出');
+                
+                // 创建CSV内容 - 增强的BOM处理
+                const headers = ['ID', '名称', '字段', '表格A值', '表格B值', '差异值', '差异百分比', '差异类型'];
+                let csvContent = headers.join(',') + '\n';
+                
+                diffData.forEach(diff => {
+                    const row = [
+                        diff.id,
+                        `"${diff.name.replace(/"/g, '""')}"`,
+                        `"${diff.field.replace(/"/g, '""')}"`,
+                        `"${formatExportValue(diff.valueA).replace(/"/g, '""')}"`,
+                        `"${formatExportValue(diff.valueB).replace(/"/g, '""')}"`,
+                        `"${formatExportValue(diff.diffValue).replace(/"/g, '""')}"`,
+                        diff.diffPercentage,
+                        `"${getDiffTypeText(diff.diffType).replace(/"/g, '""')}"`
+                    ].join(',');
+                    
+                    csvContent += row + '\n';
+                });
+                
+                // 使用ArrayBuffer和Uint8Array确保正确的UTF-8编码
+                const encoder = new TextEncoder();
+                const bom = new Uint8Array([0xEF, 0xBB, 0xBF]); // UTF-8 BOM
+                const csvBytes = encoder.encode(csvContent);
+                const combinedBytes = new Uint8Array(bom.length + csvBytes.length);
+                
+                combinedBytes.set(bom, 0);
+                combinedBytes.set(csvBytes, bom.length);
+                
+                const blob = new Blob([combinedBytes], { type: 'text/csv;charset=utf-8;' });
+                const link = document.createElement('a');
+                const url = URL.createObjectURL(blob);
+                
+                link.setAttribute('href', url);
+                link.setAttribute('download', `数据对比结果_${new Date().toISOString().split('T')[0]}.csv`);
+                link.style.visibility = 'hidden';
+                
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                
+                console.log('CSV文件导出成功');
+                
+            } catch (error) {
+                console.error('导出失败:', error);
+                alert(`导出失败: ${error.message}`);
+            }
+        }
+        
+        // 格式化导出值
+        function formatExportValue(value) {
+            if (value === null || value === undefined) return '';
+            if (typeof value === 'number') return value.toLocaleString();
+            if (typeof value === 'string' && value.length > 100) return value.substring(0, 100) + '...';
+            return value;
         }
 
         // 工具函数：格式化字段名
@@ -1146,6 +1588,130 @@
             }
         }
 
+        // 智能检测主键列
+        function detectPrimaryKey() {
+            console.log('开始智能检测主键列...');
+            
+            // 获取两个表格的所有字段
+            const allFieldsA = tableAData.length > 0 ? Object.keys(tableAData[0]) : [];
+            const allFieldsB = tableBData.length > 0 ? Object.keys(tableBData[0]) : [];
+            const commonFields = [...new Set(allFieldsA.filter(field => allFieldsB.includes(field)))];
+            
+            console.log(`共有 ${commonFields.length} 个共同字段:`, commonFields);
+            
+            // 主键评分
+            const fieldScores = {};
+            
+            commonFields.forEach(field => {
+                let score = 0;
+                
+                // 1. 字段名语义评分
+                const fieldLower = field.toLowerCase();
+                if (fieldLower.includes('id') || fieldLower.includes('编号') || fieldLower.includes('序号')) {
+                    score += 30;
+                } else if (fieldLower.includes('code') || fieldLower.includes('编码') || fieldLower.includes('key')) {
+                    score += 25;
+                } else if (fieldLower.includes('name') || fieldLower.includes('名称')) {
+                    score += 10;
+                }
+                
+                // 2. 唯一性评分
+                const valuesA = tableAData.map(item => item[field]).filter(val => val != null && val !== '');
+                const valuesB = tableBData.map(item => item[field]).filter(val => val != null && val !== '');
+                
+                const uniqueRateA = valuesA.length > 0 ? new Set(valuesA).size / valuesA.length : 0;
+                const uniqueRateB = valuesB.length > 0 ? new Set(valuesB).size / valuesB.length : 0;
+                const uniqueRate = Math.min(uniqueRateA, uniqueRateB);
+                
+                score += uniqueRate * 40;
+                
+                // 3. 非空值比例评分
+                const nonNullRateA = tableAData.filter(item => item[field] != null && item[field] !== '').length / tableAData.length;
+                const nonNullRateB = tableBData.filter(item => item[field] != null && item[field] !== '').length / tableBData.length;
+                const nonNullRate = Math.min(nonNullRateA, nonNullRateB);
+                
+                score += nonNullRate * 20;
+                
+                // 4. 数据类型评分（数值和字符串优先）
+                const sampleValues = [...valuesA.slice(0, 10), ...valuesB.slice(0, 10)];
+                const numericCount = sampleValues.filter(val => typeof val === 'number' || (typeof val === 'string' && !isNaN(val))).length;
+                const stringCount = sampleValues.filter(val => typeof val === 'string' && isNaN(val)).length;
+                
+                if (numericCount > stringCount) {
+                    score += 5; // 数值类型加分
+                }
+                
+                fieldScores[field] = score;
+                console.log(`字段 "${field}" 评分: ${score.toFixed(1)} (唯一性:${(uniqueRate*100).toFixed(1)}%, 非空率:${(nonNullRate*100).toFixed(1)}%)`);
+            });
+            
+            // 找出评分最高的字段
+            let bestField = 'id'; // 默认值
+            let bestScore = 0;
+            
+            Object.entries(fieldScores).forEach(([field, score]) => {
+                if (score > bestScore) {
+                    bestScore = score;
+                    bestField = field;
+                }
+            });
+            
+            // 如果最高分太低，考虑组合主键
+            if (bestScore < 50 && commonFields.length >= 2) {
+                console.log('单字段主键评分较低，考虑组合主键...');
+                
+                // 找出前3个评分最高的字段
+                const topFields = Object.entries(fieldScores)
+                    .sort(([,a], [,b]) => b - a)
+                    .slice(0, 3)
+                    .map(([field]) => field);
+                
+                // 测试两列组合
+                for (let i = 0; i < topFields.length; i++) {
+                    for (let j = i + 1; j < topFields.length; j++) {
+                        const field1 = topFields[i];
+                        const field2 = topFields[j];
+                        
+                        const combinedValuesA = tableAData.map(item => 
+                            `${item[field1] || ''}-${item[field2] || ''}`
+                        ).filter(val => val !== '-');
+                        
+                        const combinedValuesB = tableBData.map(item => 
+                            `${item[field1] || ''}-${item[field2] || ''}`
+                        ).filter(val => val !== '-');
+                        
+                        const combinedUniqueRateA = combinedValuesA.length > 0 ? 
+                            new Set(combinedValuesA).size / combinedValuesA.length : 0;
+                        const combinedUniqueRateB = combinedValuesB.length > 0 ? 
+                            new Set(combinedValuesB).size / combinedValuesB.length : 0;
+                        
+                        const combinedScore = (fieldScores[field1] + fieldScores[field2]) / 2 + 
+                                            Math.min(combinedUniqueRateA, combinedUniqueRateB) * 30;
+                        
+                        if (combinedScore > bestScore + 10) {
+                            bestScore = combinedScore;
+                            bestField = `${field1},${field2}`;
+                            console.log(`找到更好的组合主键: ${bestField} (评分:${combinedScore.toFixed(1)})`);
+                        }
+                    }
+                }
+            }
+            
+            console.log(`最终选择主键: ${bestField} (评分:${bestScore.toFixed(1)})`);
+            return bestField;
+        }
+        
+        // 获取记录的主键值（支持组合主键）
+        function getRecordKey(record, primaryKeyField) {
+            if (primaryKeyField.includes(',')) {
+                // 组合主键
+                return primaryKeyField.split(',').map(field => record[field] || '').join('-');
+            } else {
+                // 单一主键
+                return record[primaryKeyField];
+            }
+        }
+        
         // 页面加载完成后初始化
         document.addEventListener('DOMContentLoaded', initApp);
     </script>
