@@ -1,0 +1,1296 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>内蒙古新华发行集团新商品到货录入操作规则</title>
+    <!-- Tailwind CSS v3 -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome -->
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <!-- 统一的 Tailwind 配置 -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#0ea5e9',
+                        secondary: '#06b6d4',
+                        accent: '#f97316',
+                        dark: {
+                            900: '#0f172a',
+                            800: '#1e293b',
+                            700: '#334155',
+                            600: '#475569',
+                            500: '#64748b',
+                        },
+                        light: {
+                            50: '#f8fafc',
+                            100: '#f1f5f9',
+                            200: '#e2e8f0',
+                            300: '#cbd5e1',
+                            400: '#94a3b8',
+                            500: '#64748b',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                    boxShadow: {
+                        'glow': '0 0 20px rgba(59, 130, 246, 0.3)',
+                        'glow-lg': '0 0 30px rgba(59, 130, 246, 0.4)',
+                    }
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .text-gradient {
+                @apply bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-cyan-400;
+                text-shadow: 0 0 20px rgba(59, 130, 246, 0.5);
+            }
+            .glass-effect-dark {
+                @apply bg-dark-800/70 backdrop-blur-lg;
+            }
+            .scrollbar-thin {
+                scrollbar-width: thin;
+                scrollbar-color: rgba(59, 130, 246, 0.5) rgba(15, 23, 42, 0.3);
+            }
+            .scrollbar-thin::-webkit-scrollbar {
+                width: 6px;
+            }
+            .scrollbar-thin::-webkit-scrollbar-track {
+                background: rgba(15, 23, 42, 0.3);
+            }
+            .scrollbar-thin::-webkit-scrollbar-thumb {
+                background: rgba(59, 130, 246, 0.5);
+                border-radius: 3px;
+            }
+            .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+                background: rgba(59, 130, 246, 0.7);
+            }
+            .fade-in {
+                animation: fadeIn 0.5s ease-in-out;
+            }
+            @keyframes fadeIn {
+                from { opacity: 0; transform: translateY(10px); }
+                to { opacity: 1; transform: translateY(0); }
+            }
+            .pulse {
+                animation: pulse 2s infinite;
+            }
+            @keyframes pulse {
+                0% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.4); }
+                70% { box-shadow: 0 0 0 10px rgba(59, 130, 246, 0); }
+                100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0); }
+            }
+        }
+    </style>
+    <style>
+        body {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            min-height: 100vh;
+            font-family: 'Inter', system-ui, sans-serif;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+        .nav-item {
+            transition: all 0.3s ease;
+        }
+        .nav-item.active {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(6, 182, 212, 0.2));
+            border-color: rgba(59, 130, 246, 0.5);
+        }
+        .stat-card {
+            transition: all 0.3s ease;
+        }
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 25px rgba(59, 130, 246, 0.3);
+        }
+        .breadcrumb {
+            transition: all 0.3s ease;
+        }
+        .breadcrumb-item {
+            transition: all 0.3s ease;
+        }
+        .breadcrumb-item:hover {
+            color: #60a5fa;
+        }
+        .rule-card {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .rule-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(59, 130, 246, 0.2);
+        }
+        .btn-primary {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4);
+        }
+        .modal-content {
+            animation: modalFadeIn 0.3s ease-out;
+        }
+        @keyframes modalFadeIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        .header-gradient {
+            background: linear-gradient(135deg, 
+                rgba(15, 23, 42, 0.95) 0%, 
+                rgba(30, 41, 59, 0.95) 50%, 
+                rgba(15, 23, 42, 0.95) 100%);
+        }
+    </style>
+</head>
+<body class="text-light-100">
+    <!-- 顶部标题区域 -->
+    <header class="w-full header-gradient border-b border-white/5 py-16 relative overflow-hidden">
+        <!-- 背景装饰 -->
+        <div class="absolute inset-0 z-0">
+            <div class="absolute top-1/4 left-1/4 w-64 h-64 bg-blue-600/10 rounded-full filter blur-3xl"></div>
+            <div class="absolute bottom-1/4 right-1/4 w-80 h-80 bg-cyan-600/10 rounded-full filter blur-3xl"></div>
+        </div>
+        
+        <div class="container mx-auto px-4 text-center relative z-10">
+            <h1 class="text-3xl md:text-4xl lg:text-5xl font-bold text-gradient mb-4 tracking-tight">
+                内蒙古新华发行集团
+            </h1>
+            <p class="text-xl md:text-2xl text-light-300 font-light">
+                新商品到货录入操作规则
+            </p>
+        </div>
+    </header>
+
+    <!-- Introduction Section -->
+    <section class="mb-16 max-w-4xl mx-auto mt-8">
+        <div class="glass-effect-dark rounded-2xl p-8 border border-white/10 shadow-glow fade-in">
+            <h2 class="text-2xl font-bold text-gradient mb-6 flex items-center">
+                <i class="fa fa-info-circle mr-3 text-blue-400"></i>规则说明
+            </h2>
+            <div class="space-y-4 text-light-300 leading-relaxed">
+                <p>
+                    内蒙古新华发行集团是一个从事出版物流通的企业，它的经营活动是围绕着商品进行的，从这个意义上讲，商品信息制作是企业经营的开始，从系统流程上讲它是企业信息系统的第一步。企业经营的进、销、存、调、退、结都是围绕的商品信息进行的；企业经营的最后结果也是记录在商品信息上，商品信息是企业信息系统的核心，商品信息质量的好坏直接影响企业信息系统运行效率和企业经营的结果。
+                </p>
+                <p>
+                    因此，信息录入的准确与否直接影响到企业信息的准确性及经营的成败。因而在录入过程中要求每个录入员录入的规则操作一致，系统控制操作十分严谨。
+                </p>
+                <div class="bg-blue-900/20 border border-blue-500/30 rounded-xl p-5 mt-6">
+                    <div class="flex items-start">
+                        <div class="flex-shrink-0">
+                            <i class="fa fa-info-circle text-blue-400 text-xl"></i>
+                        </div>
+                        <div class="ml-4">
+                            <p class="text-blue-300">
+                                本规则适用于新商品到货，没有商品信息的到货录入。请各录入人员认真执行，严格操作，确保信息的准确完整。
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 主要内容区域 -->
+    <main class="container mx-auto px-4 py-8">
+        <!-- 搜索和筛选控制 -->
+        <div class="mb-10 flex flex-col md:flex-row gap-4 justify-between items-center max-w-5xl mx-auto">
+            <div class="relative w-full md:w-1/2">
+                <div class="glass-effect-dark rounded-xl overflow-hidden border border-white/5 focus-within:border-blue-500/50 transition-all duration-300">
+                    <input type="text" id="search-input" placeholder="搜索规则关键词..." class="w-full px-5 py-3 bg-transparent border-none focus:ring-0 text-light-100 placeholder:text-light-400/50">
+                    <button id="search-button" class="absolute right-4 top-1/2 transform -translate-y-1/2 text-blue-400 hover:text-blue-300 transition-colors">
+                        <i class="fa fa-search text-xl"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="flex gap-3 w-full md:w-auto">
+                <div class="glass-effect-dark rounded-xl overflow-hidden border border-white/5 relative focus-within:border-blue-500/50 transition-all duration-300">
+                    <select id="category-filter" class="px-4 py-3 bg-transparent border-none focus:ring-0 text-light-100 appearance-none pr-10">
+                        <option value="all">所有分类</option>
+                        <option value="书名">书名相关</option>
+                        <option value="开本">开本相关</option>
+                        <option value="文种">文种相关</option>
+                        <option value="数量">数量相关</option>
+                    </select>
+                    <i class="fa fa-chevron-down absolute right-4 top-1/2 transform -translate-y-1/2 text-blue-400 pointer-events-none"></i>
+                </div>
+                <button id="reset-filter" class="px-5 py-3 bg-gradient-to-r from-blue-600 to-cyan-600 text-white rounded-xl hover:shadow-glow transition-all duration-300 hover:-translate-y-1 btn-primary">
+                    <i class="fa fa-refresh mr-2"></i>重置
+                </button>
+            </div>
+        </div>
+
+        <!-- 操作规则列表 -->
+        <div class="mt-12 mb-16 max-w-5xl mx-auto">
+            <div class="glass-effect-dark rounded-2xl p-6 border border-white/5">
+                <h3 class="text-2xl font-bold text-gradient mb-6 text-center">操作规则列表</h3>
+                <div class="grid grid-cols-5 gap-3">
+                    <div class="stat-card bg-dark-800/50 rounded-xl p-4 text-center border border-white/5 hover:border-blue-500/30 transition-all duration-300 hover:-translate-y-1 cursor-pointer category-card" data-category="all">
+                        <div class="text-4xl font-bold text-blue-400 mb-2">31</div>
+                        <div class="text-light-400 text-sm">全部规则</div>
+                        <div class="mt-2 text-xs text-blue-300/70">点击查看</div>
+                    </div>
+                    <div class="stat-card bg-dark-800/50 rounded-xl p-4 text-center border border-white/5 hover:border-purple-500/30 transition-all duration-300 hover:-translate-y-1 cursor-pointer category-card" data-category="书名">
+                        <div class="text-4xl font-bold text-purple-400 mb-2">7</div>
+                        <div class="text-light-400 text-sm">书名相关</div>
+                        <div class="mt-2 text-xs text-blue-300/70">点击查看</div>
+                    </div>
+                    <div class="stat-card bg-dark-800/50 rounded-xl p-4 text-center border border-white/5 hover:border-green-500/30 transition-all duration-300 hover:-translate-y-1 cursor-pointer category-card" data-category="开本">
+                        <div class="text-4xl font-bold text-green-400 mb-2">1</div>
+                        <div class="text-light-400 text-sm">开本相关</div>
+                        <div class="mt-2 text-xs text-blue-300/70">点击查看</div>
+                    </div>
+                    <div class="stat-card bg-dark-800/50 rounded-xl p-4 text-center border border-white/5 hover:border-cyan-500/30 transition-all duration-300 hover:-translate-y-1 cursor-pointer category-card" data-category="文种">
+                        <div class="text-4xl font-bold text-cyan-400 mb-2">1</div>
+                        <div class="text-light-400 text-sm">文种相关</div>
+                        <div class="mt-2 text-xs text-blue-300/70">点击查看</div>
+                    </div>
+                    <div class="stat-card bg-dark-800/50 rounded-xl p-4 text-center border border-white/5 hover:border-orange-500/30 transition-all duration-300 hover:-translate-y-1 cursor-pointer category-card" data-category="数量">
+                        <div class="text-4xl font-bold text-orange-400 mb-2">1</div>
+                        <div class="text-light-400 text-sm">数量相关</div>
+                        <div class="mt-2 text-xs text-blue-300/70">点击查看</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 面包屑导航 -->
+        <div id="breadcrumb" class="max-w-5xl mx-auto mb-6 breadcrumb">
+            <div class="glass-effect-dark rounded-xl p-4 border border-white/5">
+                <div class="flex items-center space-x-2 text-sm">
+                    <span class="breadcrumb-item cursor-pointer text-blue-400" onclick="goHome()">
+                        <i class="fa fa-home mr-1"></i>首页
+                    </span>
+                    <i class="fa fa-angle-right text-light-400 mx-1"></i>
+                    <span id="breadcrumb-category" class="breadcrumb-item cursor-pointer text-light-300">
+                        全部规则
+                    </span>
+                    <i id="breadcrumb-rule-separator" class="fa fa-angle-right text-light-400 mx-1 hidden"></i>
+                    <span id="breadcrumb-rule" class="breadcrumb-item cursor-pointer text-light-300 hidden">
+                        规则详情
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 浮动返回按钮 -->
+        <button id="floating-back-btn" onclick="goBack()" class="fixed bottom-8 right-8 bg-gradient-to-r from-blue-600 to-cyan-600 text-white w-12 h-12 rounded-full flex items-center justify-center shadow-glow-lg cursor-pointer hover:shadow-glow transition-all duration-300 hidden z-40">
+            <i class="fa fa-arrow-left"></i>
+        </button>
+
+        <!-- 规则列表展示区域 -->
+        <div id="rules-list" class="max-w-5xl mx-auto mb-16">
+            <div class="glass-effect-dark rounded-2xl border border-white/5 overflow-hidden">
+                <div class="p-6 bg-dark-800/50 border-b border-white/5">
+                    <div class="flex justify-between items-center">
+                        <h3 class="text-2xl font-bold text-gradient">
+                            <span id="current-category-title">全部规则</span>
+                            <span id="current-rules-count" class="ml-3 text-sm font-normal text-light-400">
+                                (31)
+                            </span>
+                        </h3>
+                        <div class="text-sm text-light-400">
+                            <i class="fa fa-info-circle mr-1"></i>
+                            点击规则查看详情
+                        </div>
+                    </div>
+                </div>
+                <div id="rules-container" class="divide-y divide-white/5">
+                    <!-- 规则将在这里动态显示 -->
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="glass-effect-dark border-t border-white/5 py-6 mt-12">
+        <div class="container mx-auto px-4 text-center">
+            <p class="text-light-400 text-sm">© 2024 内蒙古新华发行集团 版权所有</p>
+            <p class="text-light-500 text-xs mt-2">新商品到货录入操作规则系统</p>
+        </div>
+    </footer>
+
+    <!-- 规则详情模态框 -->
+    <div id="ruleModal" class="fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center z-50" style="display: none;">
+        <div class="glass-effect-dark rounded-2xl border border-white/10 shadow-glow-lg w-full max-w-4xl max-h-[90vh] overflow-hidden modal-content">
+            <div class="p-6 bg-dark-800/50 border-b border-white/5 flex justify-between items-center">
+                <h3 class="text-xl font-bold text-gradient flex items-center">
+                    <i class="fa fa-info-circle mr-3 text-blue-400"></i>
+                    <span id="modal-title">规则详情</span>
+                </h3>
+                <button id="closeModalBtn" class="p-2 text-light-400 hover:text-white hover:bg-white/10 rounded-full transition-colors">
+                    <i class="fa fa-times text-xl"></i>
+                </button>
+            </div>
+            <div id="modal-content" class="p-6 overflow-y-auto max-h-[calc(90vh-100px)] scrollbar-thin">
+                <!-- 模态框内容将在这里显示 -->
+            </div>
+        </div>
+    </div>
+
+    <!-- 加载状态指示器 -->
+    <div id="loadingIndicator" class="fixed inset-0 bg-dark-900/80 backdrop-blur-sm flex items-center justify-center z-50 hidden">
+        <div class="glass-effect-dark rounded-2xl p-8 border border-white/10 text-center">
+            <div class="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+            <p class="text-xl text-light-300">加载中，请稍候...</p>
+        </div>
+    </div>
+
+    <script>
+        // 全局变量和函数
+        const rulesData = [
+            {
+                id: 1,
+                title: '新商品到货录入操作规则',
+                category: 'basic',
+                content: '本规则适用于新商品到货，没有商品信息的到货录入。请各录入人员认真执行，严格操作，确保信息的准确完整。',
+                subRules: [
+                    {
+                        title: '规则适用范围',
+                        content: '本规则适用于新商品到货，没有商品信息的到货录入。'
+                    },
+                    {
+                        title: '操作要求',
+                        content: '请各录入人员认真执行，严格操作，确保信息的准确完整。'
+                    }
+                ]
+            },
+            {
+                id: 2,
+                title: 'ISBN号录入规则',
+                category: 'basic',
+                content: 'ISBN号必须录入13位数字，不能包含任何字母、空格或其他字符。',
+                subRules: [
+                    {
+                        title: '录入格式',
+                        content: 'ISBN号必须录入13位数字，不能包含任何字母、空格或其他字符。'
+                    },
+                    {
+                        title: '验证要求',
+                        content: '录入后系统会自动验证ISBN号的有效性。'
+                    }
+                ]
+            },
+            {
+                id: 3,
+                title: '定价录入规则',
+                category: 'basic',
+                content: '定价必须录入两位小数，单位为元。',
+                subRules: [
+                    {
+                        title: '录入格式',
+                        content: '定价必须录入两位小数，单位为元。'
+                    },
+                    {
+                        title: '数值范围',
+                        content: '定价不能为负数，最大不超过9999.99元。'
+                    }
+                ]
+            },
+            {
+                id: 4,
+                title: '书名录入规则一',
+                category: '书名',
+                content: '书名必须与图书版权页上的书名完全一致，不得自行修改或简化。',
+                subRules: [
+                    {
+                        title: '录入要求',
+                        content: '书名必须与图书版权页上的书名完全一致，不得自行修改或简化。'
+                    },
+                    {
+                        title: '特殊情况',
+                        content: '如有副书名，必须一并录入。'
+                    }
+                ]
+            },
+            {
+                id: 5,
+                title: '书名录入规则二',
+                category: '书名',
+                content: '书名中的标点符号必须与原书保持一致。',
+                subRules: [
+                    {
+                        title: '标点要求',
+                        content: '书名中的标点符号必须与原书保持一致。'
+                    },
+                    {
+                        title: '空格处理',
+                        content: '书名中的空格也必须按照原书格式录入。'
+                    }
+                ]
+            },
+            {
+                id: 6,
+                title: '书名录入规则三',
+                category: '书名',
+                content: '外文书名必须录入原文书名，如有中文译名，可在备注中注明。',
+                subRules: [
+                    {
+                        title: '外文书名',
+                        content: '外文书名必须录入原文书名。'
+                    },
+                    {
+                        title: '中文译名',
+                        content: '如有中文译名，可在备注中注明。'
+                    }
+                ]
+            },
+            {
+                id: 7,
+                title: '书名录入规则四',
+                category: '书名',
+                content: '丛书类图书必须在书名前加上丛书名，并使用括号括起。',
+                subRules: [
+                    {
+                        title: '丛书处理',
+                        content: '丛书类图书必须在书名前加上丛书名，并使用括号括起。'
+                    },
+                    {
+                        title: '示例格式',
+                        content: '例如：(世界名著) 红楼梦'
+                    }
+                ]
+            },
+            {
+                id: 8,
+                title: '书名录入规则五',
+                category: '书名',
+                content: '多卷本图书必须在书名后注明卷数或册数。',
+                subRules: [
+                    {
+                        title: '多卷本处理',
+                        content: '多卷本图书必须在书名后注明卷数或册数。'
+                    },
+                    {
+                        title: '示例格式',
+                        content: '例如：中国通史 第1卷'
+                    }
+                ]
+            },
+            {
+                id: 9,
+                title: '书名录入规则六',
+                category: '书名',
+                content: '修订版、精装版等特殊版本信息必须在书名后注明。',
+                subRules: [
+                    {
+                        title: '版本信息',
+                        content: '修订版、精装版等特殊版本信息必须在书名后注明。'
+                    },
+                    {
+                        title: '示例格式',
+                        content: '例如：计算机基础（修订版）'
+                    }
+                ]
+            },
+            {
+                id: 10,
+                title: '书名录入规则七',
+                category: '书名',
+                content: '书名中包含的数字必须使用中文数字还是阿拉伯数字，应与原书保持一致。',
+                subRules: [
+                    {
+                        title: '数字格式',
+                        content: '书名中包含的数字必须与原书保持一致。'
+                    },
+                    {
+                        title: '示例说明',
+                        content: '例如：原书使用"三"就录入"三"，原书使用"3"就录入"3"'
+                    }
+                ]
+            },
+            {
+                id: 11,
+                title: '作者录入规则',
+                category: 'basic',
+                content: '作者姓名必须与版权页一致，多个作者之间用逗号分隔。',
+                subRules: [
+                    {
+                        title: '录入要求',
+                        content: '作者姓名必须与版权页一致。'
+                    },
+                    {
+                        title: '多作者处理',
+                        content: '多个作者之间用逗号分隔。'
+                    }
+                ]
+            },
+            {
+                id: 12,
+                title: '出版社录入规则',
+                category: 'basic',
+                content: '出版社名称必须从系统提供的下拉列表中选择，不得手动输入。',
+                subRules: [
+                    {
+                        title: '选择要求',
+                        content: '出版社名称必须从系统提供的下拉列表中选择。'
+                    },
+                    {
+                        title: '特殊情况',
+                        content: '如下拉列表中没有所需出版社，应联系系统管理员添加。'
+                    }
+                ]
+            },
+            {
+                id: 13,
+                title: '出版日期录入规则',
+                category: 'basic',
+                content: '出版日期格式为YYYY-MM-DD，必须与版权页上的出版日期一致。',
+                subRules: [
+                    {
+                        title: '格式要求',
+                        content: '出版日期格式为YYYY-MM-DD。'
+                    },
+                    {
+                        title: '验证要求',
+                        content: '必须与版权页上的出版日期一致。'
+                    }
+                ]
+            },
+            {
+                id: 14,
+                title: '开本录入规则',
+                category: '开本',
+                content: '开本必须按照国家标准格式录入，如16开、32开等。',
+                subRules: [
+                    {
+                        title: '格式要求',
+                        content: '开本必须按照国家标准格式录入。'
+                    },
+                    {
+                        title: '常见格式',
+                        content: '如16开、32开、大32开、12开等。'
+                    }
+                ]
+            },
+            {
+                id: 15,
+                title: '文种录入规则',
+                category: '文种',
+                content: '文种必须选择系统提供的标准选项，如中文、英文、蒙文等。',
+                subRules: [
+                    {
+                        title: '选择要求',
+                        content: '文种必须选择系统提供的标准选项。'
+                    },
+                    {
+                        title: '常见选项',
+                        content: '如中文、英文、蒙文、藏文等。'
+                    }
+                ]
+            },
+            {
+                id: 16,
+                title: '装帧录入规则',
+                category: 'basic',
+                content: '装帧类型必须选择系统提供的标准选项，如平装、精装、线装等。',
+                subRules: [
+                    {
+                        title: '选择要求',
+                        content: '装帧类型必须选择系统提供的标准选项。'
+                    },
+                    {
+                        title: '常见选项',
+                        content: '如平装、精装、线装、简装等。'
+                    }
+                ]
+            },
+            {
+                id: 17,
+                title: '页数录入规则',
+                category: 'basic',
+                content: '页数必须录入整数，不包括封面、扉页和版权页。',
+                subRules: [
+                    {
+                        title: '录入要求',
+                        content: '页数必须录入整数。'
+                    },
+                    {
+                        title: '计算范围',
+                        content: '不包括封面、扉页和版权页。'
+                    }
+                ]
+            },
+            {
+                id: 18,
+                title: '重量录入规则',
+                category: 'basic',
+                content: '重量单位为克，录入整数，保留一位小数。',
+                subRules: [
+                    {
+                        title: '单位要求',
+                        content: '重量单位为克。'
+                    },
+                    {
+                        title: '格式要求',
+                        content: '录入整数，保留一位小数。'
+                    }
+                ]
+            },
+            {
+                id: 19,
+                title: '尺寸录入规则',
+                category: 'basic',
+                content: '尺寸格式为长×宽×高，单位为毫米，录入整数。',
+                subRules: [
+                    {
+                        title: '格式要求',
+                        content: '尺寸格式为长×宽×高，单位为毫米。'
+                    },
+                    {
+                        title: '数值要求',
+                        content: '录入整数。'
+                    }
+                ]
+            },
+            {
+                id: 20,
+                title: '数量录入规则',
+                category: '数量',
+                content: '数量必须录入整数，不得为负数。',
+                subRules: [
+                    {
+                        title: '数值要求',
+                        content: '数量必须录入整数。'
+                    },
+                    {
+                        title: '范围要求',
+                        content: '不得为负数。'
+                    }
+                ]
+            },
+            {
+                id: 21,
+                title: '图书分类录入规则',
+                category: 'basic',
+                content: '图书分类必须按照《中国图书馆分类法》进行分类，录入完整的分类号。',
+                subRules: [
+                    {
+                        title: '分类标准',
+                        content: '必须按照《中国图书馆分类法》进行分类。'
+                    },
+                    {
+                        title: '录入要求',
+                        content: '录入完整的分类号。'
+                    }
+                ]
+            },
+            {
+                id: 22,
+                title: '主题词录入规则',
+                category: 'basic',
+                content: '主题词必须从《汉语主题词表》中选取，多个主题词之间用分号分隔。',
+                subRules: [
+                    {
+                        title: '选取标准',
+                        content: '主题词必须从《汉语主题词表》中选取。'
+                    },
+                    {
+                        title: '多主题词处理',
+                        content: '多个主题词之间用分号分隔。'
+                    }
+                ]
+            },
+            {
+                id: 23,
+                title: '内容简介录入规则',
+                category: 'basic',
+                content: '内容简介应简明扼要地描述图书的主要内容，字数控制在100-500字之间。',
+                subRules: [
+                    {
+                        title: '内容要求',
+                        content: '简明扼要地描述图书的主要内容。'
+                    },
+                    {
+                        title: '字数限制',
+                        content: '字数控制在100-500字之间。'
+                    }
+                ]
+            },
+            {
+                id: 24,
+                title: '读者对象录入规则',
+                category: 'basic',
+                content: '读者对象必须选择系统提供的标准选项，如少儿、成人、专业人士等。',
+                subRules: [
+                    {
+                        title: '选择要求',
+                        content: '读者对象必须选择系统提供的标准选项。'
+                    },
+                    {
+                        title: '常见选项',
+                        content: '如少儿、成人、专业人士等。'
+                    }
+                ]
+            },
+            {
+                id: 25,
+                title: '特殊标记录入规则',
+                category: 'basic',
+                content: '特殊标记如教科书、工具书等必须按照系统要求进行标记。',
+                subRules: [
+                    {
+                        title: '标记要求',
+                        content: '必须按照系统要求进行标记。'
+                    },
+                    {
+                        title: '常见标记',
+                        content: '如教科书、工具书、畅销书等。'
+                    }
+                ]
+            },
+            {
+                id: 26,
+                title: '复本量录入规则',
+                category: 'basic',
+                content: '复本量必须录入整数，不得为负数。',
+                subRules: [
+                    {
+                        title: '数值要求',
+                        content: '复本量必须录入整数。'
+                    },
+                    {
+                        title: '范围要求',
+                        content: '不得为负数。'
+                    }
+                ]
+            },
+            {
+                id: 27,
+                title: '入库日期录入规则',
+                category: 'basic',
+                content: '入库日期格式为YYYY-MM-DD，默认为当天日期。',
+                subRules: [
+                    {
+                        title: '格式要求',
+                        content: '入库日期格式为YYYY-MM-DD。'
+                    },
+                    {
+                        title: '默认值',
+                        content: '默认为当天日期。'
+                    }
+                ]
+            },
+            {
+                id: 28,
+                title: '批次号录入规则',
+                category: 'basic',
+                content: '批次号由系统自动生成，也可手动录入，格式为YYYYMMDDXX。',
+                subRules: [
+                    {
+                        title: '生成方式',
+                        content: '批次号由系统自动生成，也可手动录入。'
+                    },
+                    {
+                        title: '格式要求',
+                        content: '格式为YYYYMMDDXX。'
+                    }
+                ]
+            },
+            {
+                id: 29,
+                title: '备注录入规则',
+                category: 'basic',
+                content: '备注应录入图书的特殊信息，如赠品、缺页等。',
+                subRules: [
+                    {
+                        title: '内容要求',
+                        content: '录入图书的特殊信息。'
+                    },
+                    {
+                        title: '常见备注',
+                        content: '如赠品、缺页、破损等。'
+                    }
+                ]
+            },
+            {
+                id: 30,
+                title: '审核标记规则',
+                category: 'basic',
+                content: '录入完成后，必须进行审核，审核通过后才能入库。',
+                subRules: [
+                    {
+                        title: '审核要求',
+                        content: '录入完成后，必须进行审核。'
+                    },
+                    {
+                        title: '审核流程',
+                        content: '审核通过后才能入库。'
+                    }
+                ]
+            },
+            {
+                id: 31,
+                title: '数据保存规则',
+                category: 'basic',
+                content: '录入过程中应定期保存数据，避免数据丢失。',
+                subRules: [
+                    {
+                        title: '保存要求',
+                        content: '录入过程中应定期保存数据。'
+                    },
+                    {
+                        title: '保存频率',
+                        content: '建议每录入10条数据保存一次。'
+                    }
+                ]
+            }
+        ];
+
+        // 工具函数
+        function showLoading() {
+            const loadingIndicator = document.getElementById('loadingIndicator');
+            if (loadingIndicator) {
+                loadingIndicator.style.display = 'flex';
+            }
+        }
+        
+        function hideLoading() {
+            const loadingIndicator = document.getElementById('loadingIndicator');
+            if (loadingIndicator) {
+                loadingIndicator.style.display = 'none';
+            }
+        }
+        
+        // 获取分类名称
+        function getCategoryName(category) {
+            const categoryMap = {
+                'basic': '基础信息',
+                'book': '图书特有信息',
+                '教材': '教材相关',
+                'physical': '物理属性',
+                '书名': '书名相关',
+                '开本': '开本相关',
+                '文种': '文种相关',
+                '数量': '数量相关'
+            };
+            return categoryMap[category] || category;
+        }
+        
+        // 显示规则详情 - 核心函数
+        function showRuleDetail(ruleId) {
+            console.log('=== 显示规则详情 ===');
+            console.log('规则ID:', ruleId, '类型:', typeof ruleId);
+            console.log('rulesData长度:', rulesData.length);
+            
+            try {
+                // 参数验证和转换
+                const numRuleId = parseInt(ruleId);
+                console.log('转换后的规则ID:', numRuleId, '是否有效:', !isNaN(numRuleId));
+                
+                if (isNaN(numRuleId)) {
+                    console.error('无效的规则ID:', ruleId);
+                    alert('参数错误，请刷新页面重试。');
+                    return;
+                }
+                
+                // 根据ID查找规则
+                const rule = rulesData.find(r => r.id === numRuleId);
+                console.log('查找结果:', rule ? rule.title : '未找到');
+                
+                if (!rule) {
+                    console.error('未找到ID为', numRuleId, '的规则');
+                    console.log('规则数据:', rulesData.map(r => ({id: r.id, title: r.title})));
+                    alert('未找到指定规则，请刷新页面重试。');
+                    return;
+                }
+                
+                console.log('找到规则:', rule.title);
+                
+                // 获取模态框元素
+                const modal = document.getElementById('ruleModal');
+                const modalTitle = document.getElementById('modal-title');
+                const modalContent = document.getElementById('modal-content');
+                
+                console.log('模态框元素:', {
+                    modal: !!modal,
+                    modalTitle: !!modalTitle,
+                    modalContent: !!modalContent
+                });
+                
+                if (!modal || !modalTitle || !modalContent) {
+                    console.error('模态框元素未找到');
+                    alert('页面元素加载失败，请刷新页面重试。');
+                    return;
+                }
+                
+                // 更新模态框内容
+                modalTitle.textContent = rule.title;
+                
+                let subRulesHTML = '';
+                if (rule.subRules && rule.subRules.length > 0) {
+                    subRulesHTML = rule.subRules.map(subRule => `
+                        <div class="mt-4 bg-dark-800/50 rounded-xl p-4 border border-white/5">
+                            <h4 class="font-semibold text-cyan-300 mb-2">${subRule.title}</h4>
+                            <p class="text-light-300">${subRule.content}</p>
+                        </div>
+                    `).join('');
+                }
+                
+                modalContent.innerHTML = `
+                    <div class="space-y-6">
+                        <div class="flex items-center gap-4 mb-6">
+                            <div class="w-16 h-16 bg-gradient-to-r from-blue-600 to-cyan-600 text-white rounded-xl flex items-center justify-center shadow-glow">
+                                <span class="font-bold text-2xl">${rule.id}</span>
+                            </div>
+                            <div>
+                                <h3 class="text-2xl font-bold text-gradient mb-2">${rule.title}</h3>
+                                <span class="bg-blue-900/30 text-blue-300 text-sm px-4 py-2 rounded-full border border-blue-500/30">${getCategoryName(rule.category)}</span>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-dark-800/50 rounded-xl p-6 border border-white/5">
+                            <h4 class="font-semibold text-cyan-300 mb-3">规则内容</h4>
+                            <p class="text-light-300 leading-relaxed">${rule.content}</p>
+                        </div>
+                        
+                        ${subRulesHTML}
+                        
+                        <div class="bg-blue-900/20 border border-blue-500/30 rounded-xl p-5 mt-6">
+                            <div class="flex items-start">
+                                <div class="flex-shrink-0">
+                                    <i class="fa fa-info-circle text-blue-400 text-xl"></i>
+                                </div>
+                                <div class="ml-4">
+                                    <p class="text-blue-300">
+                                        请严格按照本规则执行操作，确保信息录入的准确性和完整性。
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                // 显示模态框
+                modal.style.display = 'flex';
+                
+                // 更新面包屑
+                document.getElementById('breadcrumb-rule').textContent = rule.title;
+                document.getElementById('breadcrumb-rule').classList.remove('hidden');
+                document.getElementById('breadcrumb-rule-separator').classList.remove('hidden');
+                
+                console.log('规则详情显示成功');
+            } catch (error) {
+                console.error('显示规则详情时发生错误:', error);
+                alert('系统错误，请刷新页面重试。');
+            }
+        }
+        
+        // 关闭模态框
+        function closeModal() {
+            const modal = document.getElementById('ruleModal');
+            if (modal) {
+                modal.style.display = 'none';
+            }
+            
+            // 重置面包屑
+            document.getElementById('breadcrumb-rule').classList.add('hidden');
+            document.getElementById('breadcrumb-rule-separator').classList.add('hidden');
+        }
+        
+        // 返回首页
+        function goHome() {
+            console.log('=== 返回首页 ===');
+            renderRules('all');
+            updateBreadcrumb('全部规则');
+            hideFloatingBackButton();
+        }
+        
+        // 返回上一级
+        function goBack() {
+            console.log('=== 返回上一级 ===');
+            const currentCategory = document.getElementById('current-category-title').textContent;
+            renderRules(getCategoryFromTitle(currentCategory));
+            updateBreadcrumb(currentCategory);
+            hideFloatingBackButton();
+        }
+        
+        // 从标题获取分类
+        function getCategoryFromTitle(title) {
+            const categoryMap = {
+                '全部规则': 'all',
+                '书名相关': '书名',
+                '开本相关': '开本',
+                '文种相关': '文种',
+                '数量相关': '数量'
+            };
+            return categoryMap[title] || 'all';
+        }
+        
+        // 更新面包屑
+        function updateBreadcrumb(categoryName) {
+            document.getElementById('breadcrumb-category').textContent = categoryName;
+        }
+        
+        // 显示浮动返回按钮
+        function showFloatingBackButton() {
+            const btn = document.getElementById('floating-back-btn');
+            if (btn) {
+                btn.classList.remove('hidden');
+            }
+        }
+        
+        // 隐藏浮动返回按钮
+        function hideFloatingBackButton() {
+            const btn = document.getElementById('floating-back-btn');
+            if (btn) {
+                btn.classList.add('hidden');
+            }
+        }
+        
+        // 渲染规则列表 - 核心函数
+        function renderRules(category = 'all', searchTerm = '') {
+            console.log('=== 渲染规则列表 ===');
+            console.log('分类:', category, '搜索词:', searchTerm);
+            
+            try {
+                showLoading();
+                
+                // 过滤规则
+                let filteredRules = rulesData;
+                
+                if (category && category !== 'all') {
+                    filteredRules = filteredRules.filter(rule => rule.category === category);
+                }
+                
+                if (searchTerm && searchTerm.trim() !== '') {
+                    const term = searchTerm.toLowerCase().trim();
+                    filteredRules = filteredRules.filter(rule => 
+                        rule.title.toLowerCase().includes(term) ||
+                        rule.content.toLowerCase().includes(term) ||
+                        (rule.subRules && rule.subRules.some(sub => 
+                            sub.title.toLowerCase().includes(term) || 
+                            sub.content.toLowerCase().includes(term)
+                        ))
+                    );
+                }
+                
+                console.log('过滤后的规则数量:', filteredRules.length);
+                
+                // 获取容器
+                const container = document.getElementById('rules-container');
+                if (!container) {
+                    console.error('规则容器未找到');
+                    return;
+                }
+                
+                // 设置容器可见性
+                container.style.display = 'block';
+                
+                // 使用DocumentFragment优化性能
+                const fragment = document.createDocumentFragment();
+                
+                if (filteredRules.length === 0) {
+                    // 显示空状态
+                    const emptyDiv = document.createElement('div');
+                    emptyDiv.className = 'p-8 text-center text-light-400';
+                    emptyDiv.innerHTML = `
+                        <i class="fa fa-search text-4xl mb-4 text-light-500"></i>
+                        <p class="text-lg">未找到符合条件的规则</p>
+                        <p class="text-sm mt-2">请尝试调整搜索条件或分类筛选</p>
+                    `;
+                    fragment.appendChild(emptyDiv);
+                } else {
+                    // 渲染规则卡片
+                    filteredRules.forEach(rule => {
+                        const ruleCard = document.createElement('div');
+                        ruleCard.className = 'rule-card p-6 hover:bg-dark-800/30 transition-colors cursor-pointer';
+                        ruleCard.setAttribute('data-rule-id', rule.id);
+                        
+                        let badgeColor = 'bg-blue-900/30 text-blue-300 border-blue-500/30';
+                        switch (rule.category) {
+                            case '书名':
+                                badgeColor = 'bg-purple-900/30 text-purple-300 border-purple-500/30';
+                                break;
+                            case '开本':
+                                badgeColor = 'bg-green-900/30 text-green-300 border-green-500/30';
+                                break;
+                            case '文种':
+                                badgeColor = 'bg-cyan-900/30 text-cyan-300 border-cyan-500/30';
+                                break;
+                            case '数量':
+                                badgeColor = 'bg-orange-900/30 text-orange-300 border-orange-500/30';
+                                break;
+                        }
+                        
+                        ruleCard.innerHTML = `
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center gap-4">
+                                    <div class="w-10 h-10 bg-gradient-to-r from-blue-600 to-cyan-600 text-white rounded-lg flex items-center justify-center shadow-glow">
+                                        <span class="font-bold">${rule.id}</span>
+                                    </div>
+                                    <div>
+                                        <h4 class="text-lg font-semibold text-light-100 mb-1">${rule.title}</h4>
+                                        <div class="flex items-center gap-2">
+                                            <span class="${badgeColor} text-xs px-3 py-1 rounded-full border">${getCategoryName(rule.category)}</span>
+                                            <span class="text-light-500 text-xs">点击查看详情</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="text-light-400">
+                                    <i class="fa fa-angle-right text-xl"></i>
+                                </div>
+                            </div>
+                        `;
+                        
+                        // 添加点击事件
+                        ruleCard.addEventListener('click', function() {
+                            const ruleId = this.getAttribute('data-rule-id');
+                            showRuleDetail(ruleId);
+                        });
+                        
+                        fragment.appendChild(ruleCard);
+                    });
+                }
+                
+                // 清空容器并添加新内容
+                container.innerHTML = '';
+                container.appendChild(fragment);
+                
+                // 更新标题和计数
+                const categoryTitle = category === 'all' ? '全部规则' : getCategoryName(category);
+                document.getElementById('current-category-title').textContent = categoryTitle;
+                document.getElementById('current-rules-count').textContent = `(${filteredRules.length})`;
+                
+                // 更新面包屑
+                updateBreadcrumb(categoryTitle);
+                
+                console.log('规则列表渲染完成');
+                
+            } catch (error) {
+                console.error('渲染规则列表时发生错误:', error);
+                alert('加载规则失败，请刷新页面重试。');
+            } finally {
+                hideLoading();
+            }
+        }
+        
+        // 搜索功能
+        function performSearch() {
+            const searchInput = document.getElementById('search-input');
+            const categoryFilter = document.getElementById('category-filter');
+            
+            if (!searchInput || !categoryFilter) {
+                console.error('搜索或筛选元素未找到');
+                return;
+            }
+            
+            const searchTerm = searchInput.value.trim();
+            const category = categoryFilter.value;
+            
+            console.log('执行搜索:', { searchTerm, category });
+            renderRules(category, searchTerm);
+        }
+        
+        // 重置筛选
+        function resetFilters() {
+            const searchInput = document.getElementById('search-input');
+            const categoryFilter = document.getElementById('category-filter');
+            
+            if (searchInput) searchInput.value = '';
+            if (categoryFilter) categoryFilter.value = 'all';
+            
+            console.log('重置筛选条件');
+            renderRules('all', '');
+        }
+        
+        // 事件监听器设置
+        function setupEventListeners() {
+            console.log('=== 设置事件监听器 ===');
+            
+            // 分类卡片点击事件
+            const categoryCards = document.querySelectorAll('.category-card');
+            categoryCards.forEach(card => {
+                card.addEventListener('click', function() {
+                    const category = this.getAttribute('data-category');
+                    console.log('分类卡片点击:', category);
+                    renderRules(category);
+                });
+            });
+            
+            // 搜索按钮点击事件
+            const searchButton = document.getElementById('search-button');
+            if (searchButton) {
+                searchButton.addEventListener('click', performSearch);
+            }
+            
+            // 搜索框回车事件
+            const searchInput = document.getElementById('search-input');
+            if (searchInput) {
+                searchInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        performSearch();
+                    }
+                });
+            }
+            
+            // 分类筛选变化事件
+            const categoryFilter = document.getElementById('category-filter');
+            if (categoryFilter) {
+                categoryFilter.addEventListener('change', performSearch);
+            }
+            
+            // 重置按钮点击事件
+            const resetButton = document.getElementById('reset-filter');
+            if (resetButton) {
+                resetButton.addEventListener('click', resetFilters);
+            }
+            
+            // 模态框关闭按钮点击事件
+            const closeModalBtn = document.getElementById('closeModalBtn');
+            if (closeModalBtn) {
+                closeModalBtn.addEventListener('click', closeModal);
+            }
+            
+            // 模态框外部点击关闭
+            const ruleModal = document.getElementById('ruleModal');
+            if (ruleModal) {
+                ruleModal.addEventListener('click', function(e) {
+                    if (e.target === this) {
+                        closeModal();
+                    }
+                });
+            }
+            
+            // 面包屑点击事件
+            const breadcrumbCategory = document.getElementById('breadcrumb-category');
+            if (breadcrumbCategory) {
+                breadcrumbCategory.addEventListener('click', function() {
+                    const category = getCategoryFromTitle(this.textContent);
+                    renderRules(category);
+                });
+            }
+            
+            console.log('事件监听器设置完成');
+        }
+        
+        // 页面初始化
+        function initializePage() {
+            console.log('=== 页面初始化 ===');
+            console.log('rulesData初始化完成，共', rulesData.length, '条规则');
+            
+            // 设置事件监听器
+            setupEventListeners();
+            
+            // 初始渲染规则列表
+            renderRules('all');
+            
+            console.log('页面初始化完成');
+        }
+        
+        // 页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM加载完成');
+            initializePage();
+        });
+    </script>
+</body>
+</html>
