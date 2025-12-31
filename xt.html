@@ -1,0 +1,2804 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>图书业务系统参考资料</title>
+    <!-- Tailwind CSS v3 -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome -->
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <!-- 统一的 Tailwind 配置 -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        // 主色调
+                        primary: '#6d28d9',
+                        secondary: '#7c3aed',
+                        accent: '#8b5cf6',
+                        // 模块颜色
+                        'module-system': '#0ea5e9',
+                        'module-business': '#10b981',
+                        'module-arrival': '#f59e0b',
+                        'module-logistics': '#ef4444',
+                        'module-wholesale': '#ec4899',
+                        'module-analysis': '#8b5cf6',
+                        'module-checkout': '#14b8a6',
+                        'module-financial': '#f97316',
+                        // 辅助色
+                        light: '#f8fafc',
+                        dark: '#1e1b4b',
+                        'glow-purple': '#c4b5fd',
+                        'glow-blue': '#93c5fd',
+                        'glow-green': '#86efac',
+                        'glow-yellow': '#fde68a',
+                        'glow-red': '#fca5a5'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                        display: ['Montserrat', 'system-ui', 'sans-serif']
+                    },
+                    boxShadow: {
+                        'glow': '0 0 15px rgba(139, 92, 246, 0.5)',
+                        'glow-lg': '0 0 25px rgba(139, 92, 246, 0.7)',
+                        'glow-xl': '0 0 35px rgba(139, 92, 246, 0.9)',
+                        'card': '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
+                        'card-hover': '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
+                        '3d': '0 4px 0 0 rgba(0, 0, 0, 0.2)',
+                        '3d-hover': '0 6px 0 0 rgba(0, 0, 0, 0.3)'
+                    },
+                    backgroundImage: {
+                        'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
+                        'pattern': 'radial-gradient(circle at 10% 20%, rgba(139, 92, 246, 0.1) 0%, rgba(79, 70, 229, 0.05) 90.1%)',
+                        'pattern-dark': 'radial-gradient(circle at 10% 20%, rgba(139, 92, 246, 0.2) 0%, rgba(30, 27, 75, 0.95) 90.1%)'
+                    },
+                    animation: {
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'glow': 'glow 2s ease-in-out infinite alternate',
+                        'float': 'float 6s ease-in-out infinite',
+                        'glow-strong': 'glowStrong 2s ease-in-out infinite alternate'
+                    },
+                    keyframes: {
+                        glow: {
+                            '0%': {
+                                'text-shadow': '0 0 5px rgba(139, 92, 246, 0.7), 0 0 10px rgba(139, 92, 246, 0.5), 0 0 15px rgba(139, 92, 246, 0.3)'
+                            },
+                            '100%': {
+                                'text-shadow': '0 0 10px rgba(139, 92, 246, 0.9), 0 0 20px rgba(139, 92, 246, 0.7), 0 0 30px rgba(139, 92, 246, 0.5)'
+                            }
+                        },
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0px)' },
+                            '50%': { transform: 'translateY(-10px)' }
+                        },
+                        glowStrong: {
+                            '0%': {
+                                'text-shadow': '0 0 10px rgba(255, 255, 255, 0.9), 0 0 20px rgba(139, 92, 246, 0.8), 0 0 30px rgba(139, 92, 246, 0.6), 0 0 40px rgba(139, 92, 246, 0.4)'
+                            },
+                            '100%': {
+                                'text-shadow': '0 0 15px rgba(255, 255, 255, 1), 0 0 30px rgba(139, 92, 246, 0.9), 0 0 45px rgba(139, 92, 246, 0.7), 0 0 60px rgba(139, 92, 246, 0.5)'
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            
+            /* 文化气息背景 */
+            .bg-culture {
+                background-color: #6d28d9;
+                background-image: 
+                    radial-gradient(circle at 25% 25%, rgba(255, 255, 255, 0.15) 0%, transparent 50%),
+                    radial-gradient(circle at 75% 75%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+                    url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%239C92AC' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+            }
+            
+            /* 发光文字效果 */
+            .text-glow {
+                @apply animate-glow font-bold;
+            }
+            
+            .text-glow-purple {
+                @apply text-white drop-shadow-[0_0_10px_rgba(139,92,246,0.8)] animate-glow-strong;
+            }
+            
+            .text-glow-blue {
+                @apply text-white drop-shadow-[0_0_10px_rgba(14,165,233,0.8)];
+            }
+            
+            .text-glow-green {
+                @apply text-white drop-shadow-[0_0_10px_rgba(16,185,129,0.8)];
+            }
+            
+            .text-glow-yellow {
+                @apply text-white drop-shadow-[0_0_10px_rgba(245,158,11,0.8)];
+            }
+            
+            .text-glow-red {
+                @apply text-white drop-shadow-[0_0_10px_rgba(239,68,68,0.8)];
+            }
+            
+            /* 3D按钮效果 */
+            .btn-3d {
+                @apply relative px-6 py-3 rounded-lg font-bold transform transition-all duration-200 shadow-3d active:translate-y-1 active:shadow-[0_2px_0_0_rgba(0,0,0,0.2)];
+            }
+            
+            .btn-3d-purple {
+                @apply bg-gradient-to-b from-purple-500 to-purple-700 text-white shadow-[0_4px_0_0_rgba(88,28,135,1)];
+            }
+            
+            .btn-3d-blue {
+                @apply bg-gradient-to-b from-blue-500 to-blue-700 text-white shadow-[0_4px_0_0_rgba(30,64,175,1)];
+            }
+            
+            .btn-3d-green {
+                @apply bg-gradient-to-b from-green-500 to-green-700 text-white shadow-[0_4px_0_0_rgba(22,101,52,1)];
+            }
+            
+            /* 侧边栏样式 */
+            .sidebar-item {
+                @apply flex items-center px-4 py-3 text-white rounded-md transition-all duration-300 transform hover:translate-x-2;
+            }
+            
+            .sidebar-item.active {
+                @apply transform translate-x-2;
+            }
+            
+            .sidebar-item.system {
+                @apply bg-gradient-to-r from-module-system/20 to-transparent hover:bg-gradient-to-r from-module-system/40 to-transparent;
+            }
+            
+            .sidebar-item.system.active {
+                @apply bg-gradient-to-r from-module-system/60 to-transparent shadow-glow;
+            }
+            
+            .sidebar-item.business {
+                @apply bg-gradient-to-r from-module-business/20 to-transparent hover:bg-gradient-to-r from-module-business/40 to-transparent;
+            }
+            
+            .sidebar-item.business.active {
+                @apply bg-gradient-to-r from-module-business/60 to-transparent shadow-glow;
+            }
+            
+            .sidebar-item.arrival {
+                @apply bg-gradient-to-r from-module-arrival/20 to-transparent hover:bg-gradient-to-r from-module-arrival/40 to-transparent;
+            }
+            
+            .sidebar-item.arrival.active {
+                @apply bg-gradient-to-r from-module-arrival/60 to-transparent shadow-glow;
+            }
+            
+            .sidebar-item.logistics {
+                @apply bg-gradient-to-r from-module-logistics/20 to-transparent hover:bg-gradient-to-r from-module-logistics/40 to-transparent;
+            }
+            
+            .sidebar-item.logistics.active {
+                @apply bg-gradient-to-r from-module-logistics/60 to-transparent shadow-glow;
+            }
+            
+            .sidebar-item.wholesale {
+                @apply bg-gradient-to-r from-module-wholesale/20 to-transparent hover:bg-gradient-to-r from-module-wholesale/40 to-transparent;
+            }
+            
+            .sidebar-item.wholesale.active {
+                @apply bg-gradient-to-r from-module-wholesale/60 to-transparent shadow-glow;
+            }
+            
+            .sidebar-item.analysis {
+                @apply bg-gradient-to-r from-module-analysis/20 to-transparent hover:bg-gradient-to-r from-module-analysis/40 to-transparent;
+            }
+            
+            .sidebar-item.analysis.active {
+                @apply bg-gradient-to-r from-module-analysis/60 to-transparent shadow-glow;
+            }
+            
+            .sidebar-item.checkout {
+                @apply bg-gradient-to-r from-module-checkout/20 to-transparent hover:bg-gradient-to-r from-module-checkout/40 to-transparent;
+            }
+            
+            .sidebar-item.checkout.active {
+                @apply bg-gradient-to-r from-module-checkout/60 to-transparent shadow-glow;
+            }
+            
+            .sidebar-item.financial {
+                @apply bg-gradient-to-r from-module-financial/20 to-transparent hover:bg-gradient-to-r from-module-financial/40 to-transparent;
+            }
+            
+            .sidebar-item.financial.active {
+                @apply bg-gradient-to-r from-module-financial/60 to-transparent shadow-glow;
+            }
+            
+            /* 子菜单样式 */
+            .submenu {
+                @apply overflow-hidden transition-all duration-500 ease-in-out rounded-lg mt-1 border border-white/10;
+            }
+            
+            /* 模块特定的二级菜单背景 */
+            .submenu.system {
+                @apply bg-gradient-to-br from-module-system/20 to-module-system/5 backdrop-blur-md border-module-system/30;
+                box-shadow: 
+                    0 4px 20px rgba(14, 165, 233, 0.15),
+                    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            }
+            
+            .submenu.business {
+                @apply bg-gradient-to-br from-module-business/20 to-module-business/5 backdrop-blur-md border-module-business/30;
+                box-shadow: 
+                    0 4px 20px rgba(16, 185, 129, 0.15),
+                    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            }
+            
+            .submenu.arrival {
+                @apply bg-gradient-to-br from-module-arrival/20 to-module-arrival/5 backdrop-blur-md border-module-arrival/30;
+                box-shadow: 
+                    0 4px 20px rgba(245, 158, 11, 0.15),
+                    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            }
+            
+            .submenu.logistics {
+                @apply bg-gradient-to-br from-module-logistics/20 to-module-logistics/5 backdrop-blur-md border-module-logistics/30;
+                box-shadow: 
+                    0 4px 20px rgba(239, 68, 68, 0.15),
+                    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            }
+            
+            .submenu.wholesale {
+                @apply bg-gradient-to-br from-module-wholesale/20 to-module-wholesale/5 backdrop-blur-md border-module-wholesale/30;
+                box-shadow: 
+                    0 4px 20px rgba(236, 72, 153, 0.15),
+                    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            }
+            
+            .submenu.analysis {
+                @apply bg-gradient-to-br from-module-analysis/20 to-module-analysis/5 backdrop-blur-md border-module-analysis/30;
+                box-shadow: 
+                    0 4px 20px rgba(139, 92, 246, 0.15),
+                    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            }
+            
+            .submenu.checkout {
+                @apply bg-gradient-to-br from-module-checkout/20 to-module-checkout/5 backdrop-blur-md border-module-checkout/30;
+                box-shadow: 
+                    0 4px 20px rgba(20, 184, 166, 0.15),
+                    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            }
+            
+            .submenu.financial {
+                @apply bg-gradient-to-br from-module-financial/20 to-module-financial/5 backdrop-blur-md border-module-financial/30;
+                box-shadow: 
+                    0 4px 20px rgba(249, 115, 22, 0.15),
+                    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            }
+            
+            .submenu-item {
+                @apply flex items-center px-4 py-2 rounded-md transition-all duration-300 transform hover:translate-x-2;
+            }
+            
+            .submenu-item.system {
+                @apply text-module-system/80 hover:text-module-system transition-all duration-300 hover:shadow-[0_0_10px_rgba(14,165,233,0.3)];
+            }
+            
+            .submenu-item.system.active {
+                @apply text-module-system font-semibold shadow-[0_0_15px_rgba(14,165,233,0.5)];
+            }
+            
+            .submenu-item.business {
+                @apply text-module-business/80 hover:text-module-business transition-all duration-300 hover:shadow-[0_0_10px_rgba(16,185,129,0.3)];
+            }
+            
+            .submenu-item.business.active {
+                @apply text-module-business font-semibold shadow-[0_0_15px_rgba(16,185,129,0.5)];
+            }
+            
+            .submenu-item.arrival {
+                @apply text-module-arrival/80 hover:text-module-arrival transition-all duration-300 hover:shadow-[0_0_10px_rgba(245,158,11,0.3)];
+            }
+            
+            .submenu-item.arrival.active {
+                @apply text-module-arrival font-semibold shadow-[0_0_15px_rgba(245,158,11,0.5)];
+            }
+            
+            .submenu-item.logistics {
+                @apply text-module-logistics/80 hover:text-module-logistics transition-all duration-300 hover:shadow-[0_0_10px_rgba(239,68,68,0.3)];
+            }
+            
+            .submenu-item.logistics.active {
+                @apply text-module-logistics font-semibold shadow-[0_0_15px_rgba(239,68,68,0.5)];
+            }
+            
+            .submenu-item.wholesale {
+                @apply text-module-wholesale/80 hover:text-module-wholesale transition-all duration-300 hover:shadow-[0_0_10px_rgba(236,72,153,0.3)];
+            }
+            
+            .submenu-item.wholesale.active {
+                @apply text-module-wholesale font-semibold shadow-[0_0_15px_rgba(236,72,153,0.5)];
+            }
+            
+            .submenu-item.analysis {
+                @apply text-module-analysis/80 hover:text-module-analysis transition-all duration-300 hover:shadow-[0_0_10px_rgba(139,92,246,0.3)];
+            }
+            
+            .submenu-item.analysis.active {
+                @apply text-module-analysis font-semibold shadow-[0_0_15px_rgba(139,92,246,0.5)];
+            }
+            
+            .submenu-item.checkout {
+                @apply text-module-checkout/80 hover:text-module-checkout transition-all duration-300 hover:shadow-[0_0_10px_rgba(20,184,166,0.3)];
+            }
+            
+            .submenu-item.checkout.active {
+                @apply text-module-checkout font-semibold shadow-[0_0_15px_rgba(20,184,166,0.5)];
+            }
+            
+            .submenu-item.financial {
+                @apply text-module-financial/80 hover:text-module-financial transition-all duration-300 hover:shadow-[0_0_10px_rgba(249,115,22,0.3)];
+            }
+            
+            .submenu-item.financial.active {
+                @apply text-module-financial font-semibold shadow-[0_0_15px_rgba(249,115,22,0.5)];
+            }
+            
+            /* 内容展示区样式 */
+            .content-area {
+                @apply bg-culture min-h-screen relative overflow-hidden;
+            }
+            
+            .content-area::before {
+                content: '';
+                @apply absolute inset-0 bg-gradient-to-br from-white/10 to-white/5 opacity-70;
+            }
+            
+            .content-container {
+                @apply max-w-7xl mx-auto p-6 relative z-10;
+            }
+            
+            /* 内容卡片样式 */
+            .content-card {
+                @apply backdrop-blur-md rounded-xl shadow-card p-6 mb-6 transition-all duration-500 hover:shadow-card-hover border border-white/30 transform hover:-translate-y-1 relative overflow-hidden bg-white/90;
+            }
+            
+            .content-card::before {
+                content: '';
+                @apply absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary via-secondary to-accent opacity-80;
+            }
+            
+            .content-card.system {
+                @apply border-l-4 border-module-system bg-gradient-to-br from-white to-blue-50;
+            }
+            
+            .content-card.business {
+                @apply border-l-4 border-module-business bg-gradient-to-br from-white to-green-50;
+            }
+            
+            .content-card.arrival {
+                @apply border-l-4 border-module-arrival bg-gradient-to-br from-white to-yellow-50;
+            }
+            
+            .content-card.logistics {
+                @apply border-l-4 border-module-logistics bg-gradient-to-br from-white to-red-50;
+            }
+            
+            .content-card.wholesale {
+                @apply border-l-4 border-module-wholesale bg-gradient-to-br from-white to-pink-50;
+            }
+            
+            .content-card.analysis {
+                @apply border-l-4 border-module-analysis bg-gradient-to-br from-white to-purple-50;
+            }
+            
+            .content-card.checkout {
+                @apply border-l-4 border-module-checkout bg-gradient-to-br from-white to-teal-50;
+            }
+            
+            .content-card.financial {
+                @apply border-l-4 border-module-financial bg-gradient-to-br from-white to-orange-50;
+            }
+            
+            /* 标题样式 */
+            .content-title {
+                @apply text-2xl font-bold mb-4 pb-3 border-b border-gray-200 flex items-center gap-3 relative;
+            }
+            
+            .content-title::after {
+                content: '';
+                @apply absolute bottom-0 left-0 w-16 h-0.5 bg-gradient-to-r from-primary to-secondary rounded-full;
+            }
+            
+            .content-title.system {
+                @apply text-module-system;
+            }
+            
+            .content-title.business {
+                @apply text-module-business;
+            }
+            
+            .content-title.arrival {
+                @apply text-module-arrival;
+            }
+            
+            .content-title.logistics {
+                @apply text-module-logistics;
+            }
+            
+            .content-title.wholesale {
+                @apply text-module-wholesale;
+            }
+            
+            .content-title.analysis {
+                @apply text-module-analysis;
+            }
+            
+            .content-title.checkout {
+                @apply text-module-checkout;
+            }
+            
+            .content-title.financial {
+                @apply text-module-financial;
+            }
+            
+            .content-subtitle {
+                @apply text-xl font-semibold mb-3 mt-6 flex items-center gap-2;
+            }
+            
+            .content-subtitle.system {
+                @apply text-module-system/80;
+            }
+            
+            .content-subtitle.business {
+                @apply text-module-business/80;
+            }
+            
+            .content-subtitle.arrival {
+                @apply text-module-arrival/80;
+            }
+            
+            .content-subtitle.logistics {
+                @apply text-module-logistics/80;
+            }
+            
+            .content-subtitle.wholesale {
+                @apply text-module-wholesale/80;
+            }
+            
+            .content-subtitle.analysis {
+                @apply text-module-analysis/80;
+            }
+            
+            .content-subtitle.checkout {
+                @apply text-module-checkout/80;
+            }
+            
+            .content-subtitle.financial {
+                @apply text-module-financial/80;
+            }
+            
+            /* 基础文本样式 */
+            .content-text {
+                @apply text-gray-700 mb-4 leading-relaxed relative z-10;
+            }
+            
+            .content-text p {
+                @apply mb-3;
+            }
+            
+            .content-text p:last-child {
+                @apply mb-0;
+            }
+            
+            .content-list {
+                @apply list-disc pl-6 mb-4 text-gray-700 space-y-2;
+            }
+            
+            .content-list li {
+                @apply relative pl-2;
+            }
+            
+            .content-list li::marker {
+                @apply text-primary;
+            }
+            
+            /* 提示框样式 */
+            .content-note {
+                @apply bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-4 rounded-r-md shadow-sm;
+            }
+            
+            .content-warning {
+                @apply bg-red-50 border-l-4 border-red-400 p-4 mb-4 rounded-r-md shadow-sm;
+            }
+            
+            .content-success {
+                @apply bg-green-50 border-l-4 border-green-400 p-4 mb-4 rounded-r-md shadow-sm;
+            }
+            
+            /* 功能卡片样式 */
+            .feature-card {
+                @apply bg-white/95 backdrop-blur-md rounded-xl shadow-lg p-6 transition-all duration-500 hover:shadow-xl hover:-translate-y-1 border border-gray-100;
+            }
+            
+            .feature-icon {
+                @apply w-12 h-12 flex items-center justify-center rounded-full text-white text-xl mb-4 shadow-lg;
+            }
+            
+            .feature-icon.system {
+                @apply bg-gradient-to-br from-module-system to-blue-700;
+            }
+            
+            .feature-icon.business {
+                @apply bg-gradient-to-br from-module-business to-green-700;
+            }
+            
+            .feature-icon.arrival {
+                @apply bg-gradient-to-br from-module-arrival to-yellow-700;
+            }
+            
+            .feature-icon.logistics {
+                @apply bg-gradient-to-br from-module-logistics to-red-700;
+            }
+            
+            .feature-icon.wholesale {
+                @apply bg-gradient-to-br from-module-wholesale to-pink-700;
+            }
+            
+            .feature-icon.analysis {
+                @apply bg-gradient-to-br from-module-analysis to-purple-700;
+            }
+            
+            .feature-icon.checkout {
+                @apply bg-gradient-to-br from-module-checkout to-teal-700;
+            }
+            
+            .feature-icon.financial {
+                @apply bg-gradient-to-br from-module-financial to-orange-700;
+            }
+            
+            .feature-title {
+                @apply text-lg font-semibold text-gray-800 mb-2;
+            }
+            
+            .feature-text {
+                @apply text-gray-600;
+            }
+            
+            /* 步骤卡片样式 */
+            .step-card {
+                @apply bg-white/95 backdrop-blur-md rounded-lg shadow-md p-4 transition-all duration-500 hover:shadow-lg;
+            }
+            
+            .step-card.system {
+                @apply border-l-4 border-module-system;
+            }
+            
+            .step-card.business {
+                @apply border-l-4 border-module-business;
+            }
+            
+            .step-card.arrival {
+                @apply border-l-4 border-module-arrival;
+            }
+            
+            .step-card.logistics {
+                @apply border-l-4 border-module-logistics;
+            }
+            
+            .step-card.wholesale {
+                @apply border-l-4 border-module-wholesale;
+            }
+            
+            .step-card.analysis {
+                @apply border-l-4 border-module-analysis;
+            }
+            
+            .step-card.checkout {
+                @apply border-l-4 border-module-checkout;
+            }
+            
+            .step-card.financial {
+                @apply border-l-4 border-module-financial;
+            }
+            
+            .step-number {
+                @apply text-white w-8 h-8 rounded-full flex items-center justify-center font-bold mb-2;
+            }
+            
+            .step-number.system {
+                @apply bg-module-system;
+            }
+            
+            .step-number.business {
+                @apply bg-module-business;
+            }
+            
+            .step-number.arrival {
+                @apply bg-module-arrival;
+            }
+            
+            .step-number.logistics {
+                @apply bg-module-logistics;
+            }
+            
+            .step-number.wholesale {
+                @apply bg-module-wholesale;
+            }
+            
+            .step-number.analysis {
+                @apply bg-module-analysis;
+            }
+            
+            .step-number.checkout {
+                @apply bg-module-checkout;
+            }
+            
+            .step-number.financial {
+                @apply bg-module-financial;
+            }
+            
+            .step-title {
+                @apply font-semibold text-gray-800 mb-1;
+            }
+            
+            .step-text {
+                @apply text-gray-600 text-sm;
+            }
+            
+            /* 图片样式 */
+            .img-tech {
+                @apply rounded-xl shadow-lg border-2 border-gray-200 transition-all duration-500 hover:shadow-xl transform hover:-translate-y-1;
+            }
+            
+            /* 装饰元素 */
+            .decoration-circle {
+                @apply absolute rounded-full opacity-10 blur-3xl;
+            }
+            
+            .decoration-circle-purple {
+                @apply bg-purple-600;
+            }
+            
+            .decoration-circle-blue {
+                @apply bg-blue-600;
+            }
+            
+            .decoration-circle-green {
+                @apply bg-green-600;
+            }
+            
+            /* 科技感线条 */
+            .tech-line {
+                @apply absolute h-px bg-gradient-to-r from-transparent via-purple-500 to-transparent opacity-30;
+            }
+            
+            /* 卡片悬浮效果 */
+            .hover-lift {
+                @apply transition-all duration-500 hover:-translate-y-2 hover:shadow-xl;
+            }
+            
+            /* 图标动画 */
+            .icon-pulse {
+                @apply animate-pulse-slow;
+            }
+            
+            /* 页面加载动画 */
+            .fade-in {
+                animation: fadeIn 0.8s ease-in-out;
+            }
+            
+            @keyframes fadeIn {
+                from { opacity: 0; transform: translateY(20px); }
+                to { opacity: 1; transform: translateY(0); }
+            }
+            
+            /* 滚动条样式 */
+            .custom-scrollbar::-webkit-scrollbar {
+                @apply w-2;
+            }
+            
+            .custom-scrollbar::-webkit-scrollbar-track {
+                @apply bg-gray-100 rounded-full;
+            }
+            
+            .custom-scrollbar::-webkit-scrollbar-thumb {
+                @apply bg-purple-400 rounded-full hover:bg-purple-500;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- 大气标题区域 - 页面顶部 -->
+    <header class="relative overflow-hidden bg-gradient-to-br from-primary via-secondary to-accent text-white">
+        <!-- 动态背景效果 -->
+        <div class="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="none" fill-rule="evenodd"%3E%3Cg fill="%23ffffff" fill-opacity="0.03"%3E%3Cpath d="M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')]"></div>
+        
+        <!-- 科技感网格线条 -->
+        <div class="absolute inset-0 overflow-hidden">
+            <div class="absolute top-1/4 left-0 w-full h-px bg-gradient-to-r from-transparent via-white/40 to-transparent"></div>
+            <div class="absolute top-2/4 left-0 w-full h-px bg-gradient-to-r from-transparent via-white/30 to-transparent"></div>
+            <div class="absolute top-3/4 left-0 w-full h-px bg-gradient-to-r from-transparent via-white/20 to-transparent"></div>
+            <div class="absolute left-1/4 top-0 h-full w-px bg-gradient-to-b from-transparent via-white/20 to-transparent"></div>
+            <div class="absolute left-2/4 top-0 h-full w-px bg-gradient-to-b from-transparent via-white/10 to-transparent"></div>
+            <div class="absolute left-3/4 top-0 h-full w-px bg-gradient-to-b from-transparent via-white/15 to-transparent"></div>
+        </div>
+        
+        <!-- 动态发光粒子 -->
+        <div class="absolute inset-0">
+            <div class="absolute top-1/4 left-1/4 w-3 h-3 rounded-full bg-white/60 animate-pulse"></div>
+            <div class="absolute top-1/3 left-2/3 w-2 h-2 rounded-full bg-white/50 animate-pulse" style="animation-delay: 1s;"></div>
+            <div class="absolute top-2/3 left-1/5 w-2.5 h-2.5 rounded-full bg-white/70 animate-pulse" style="animation-delay: 2s;"></div>
+            <div class="absolute top-3/4 left-3/4 w-1.5 h-1.5 rounded-full bg-white/40 animate-pulse" style="animation-delay: 0.5s;"></div>
+            <div class="absolute top-1/5 left-3/5 w-2 h-2 rounded-full bg-white/60 animate-pulse" style="animation-delay: 1.5s;"></div>
+            <div class="absolute top-4/5 left-1/3 w-1 h-1 rounded-full bg-white/80 animate-pulse" style="animation-delay: 2.5s;"></div>
+        </div>
+        
+        <!-- 主标题内容 -->
+        <div class="relative z-10 text-center px-6 py-8 max-w-6xl mx-auto">
+            <!-- 装饰性图标 -->
+            <div class="flex justify-center mb-3">
+                <div class="w-12 h-12 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center border border-white/20 shadow-glow-lg">
+                    <i class="fa fa-book text-2xl text-white"></i>
+                </div>
+            </div>
+            
+            <!-- 主标题 -->
+            <h1 class="text-3xl md:text-5xl font-bold text-white mb-2 font-display tracking-tight">
+                <span class="block text-glow-purple animate-float">内蒙新华连锁店业务系统</span>
+            </h1>
+            
+            <!-- 副标题 -->
+            <p class="text-xl md:text-2xl text-white/90 mb-4 font-light">
+                学习参考资料
+            </p>
+            
+            <!-- 描述文本 -->
+            <p class="text-base md:text-lg text-white/80 max-w-3xl mx-auto leading-relaxed">
+                全流程数字化解决方案
+            </p>
+        </div>
+        
+        <!-- 底部装饰 -->
+        <div class="absolute bottom-0 left-0 w-full h-20 bg-gradient-to-t from-dark to-transparent"></div>
+    </header>
+
+    <div class="flex h-screen overflow-hidden">
+        <!-- 侧边栏 -->
+        <aside class="w-64 bg-white shadow-md hidden md:block overflow-y-auto">
+
+            <nav class="p-4">
+                <ul class="space-y-2">
+                    <!-- 系统设置 -->
+                    <li>
+                        <div class="sidebar-item system" data-menu="system-settings">
+                            <i class="fa fa-cog w-6"></i>
+                            <span>系统设置</span>
+                            <i class="fa fa-chevron-down ml-auto"></i>
+                        </div>
+                        <ul class="submenu system hidden mt-2 space-y-1" id="system-settings-submenu">
+                            <li><a href="#" class="submenu-item system" data-content="permissions"><i class="fa fa-lock w-5 mr-3"></i>权限设定/新增角色</a></li>
+                            <li><a href="#" class="submenu-item system" data-content="operators"><i class="fa fa-user w-5 mr-3"></i>操作员定义</a></li>
+                            <li><a href="#" class="submenu-item system" data-content="accounting-units"><i class="fa fa-building w-5 mr-3"></i>核算单位</a></li>
+                            <li><a href="#" class="submenu-item system" data-content="warehouses"><i class="fa fa-warehouse w-5 mr-3"></i>库房设定</a></li>
+                            <li><a href="#" class="submenu-item system" data-content="area-dictionary"><i class="fa fa-map w-5 mr-3"></i>货区字典表</a></li>
+                            <li><a href="#" class="submenu-item system" data-content="location-dictionary"><i class="fa fa-map-marker w-5 mr-3"></i>货位字典表</a></li>
+                            <li><a href="#" class="submenu-item system" data-content="container-dictionary"><i class="fa fa-box w-5 mr-3"></i>容器字典表</a></li>
+                            <li><a href="#" class="submenu-item system" data-content="area-settings"><i class="fa fa-cog w-5 mr-3"></i>货区综合设置</a></li>
+                            <li><a href="#" class="submenu-item system" data-content="salesman-category"><i class="fa fa-users w-5 mr-3"></i>分类业务员对照</a></li>
+                            <li><a href="#" class="submenu-item system" data-content="salesman-location"><i class="fa fa-user-map w-5 mr-3"></i>营业员货位归属</a></li>
+                            <li><a href="#" class="submenu-item system" data-content="pos-definition"><i class="fa fa-cash-register w-5 mr-3"></i>POS机定义</a></li>
+                            <li><a href="#" class="submenu-item system" data-content="smart-replenishment"><i class="fa fa-magic w-5 mr-3"></i>智能添货参数</a></li>
+                            <li><a href="#" class="submenu-item system" data-content="login-release"><i class="fa fa-unlock w-5 mr-3"></i>解除登陆占用</a></li>
+                            <li><a href="#" class="submenu-item system" data-content="常备书参数"><i class="fa fa-book w-5 mr-3"></i>常备书参数设置</a></li>
+                            <li><a href="#" class="submenu-item system" data-content="system-parameters"><i class="fa fa-sliders w-5 mr-3"></i>系统参数设置</a></li>
+                            <li><a href="#" class="submenu-item system" data-content="discount-definition"><i class="fa fa-percent w-5 mr-3"></i>前台折扣定义</a></li>
+                            <li><a href="#" class="submenu-item system" data-content="consignment-salesman"><i class="fa fa-handshake w-5 mr-3"></i>联营营业员设置</a></li>
+                            <li><a href="#" class="submenu-item system" data-content="supplier-salesman"><i class="fa fa-handshake-o w-5 mr-3"></i>供应商业务员对照</a></li>
+                        </ul>
+                    </li>
+                    
+                    <!-- 商流管理 -->
+                    <li>
+                        <div class="sidebar-item business" data-menu="business-flow">
+                            <i class="fa fa-exchange w-6"></i>
+                            <span>商流管理</span>
+                            <i class="fa fa-chevron-down ml-auto"></i>
+                        </div>
+                        <ul class="submenu business hidden mt-2 space-y-1" id="business-flow-submenu">
+                            <li><a href="#" class="submenu-item business" data-content="smart-replenishment-business">智能添货</a></li>
+                            <li><a href="#" class="submenu-item business" data-content="future-order">期货订货</a></li>
+                            <li><a href="#" class="submenu-item business" data-content="manual-replenishment">手动添货</a></li>
+                            <li><a href="#" class="submenu-item business" data-content="order-audit">订货审核</a></li>
+                            <li><a href="#" class="submenu-item business" data-content="return-task">主动下达退货任务</a></li>
+                            <li><a href="#" class="submenu-item business" data-content="supplier-info">供商信息查询</a></li>
+                        </ul>
+                    </li>
+                    
+                    <!-- 到货管理 -->
+                    <li>
+                        <div class="sidebar-item arrival" data-menu="arrival-management">
+                            <i class="fa fa-truck w-6"></i>
+                            <span>到货管理</span>
+                            <i class="fa fa-chevron-down ml-auto"></i>
+                        </div>
+                        <ul class="submenu arrival hidden mt-2 space-y-1" id="arrival-management-submenu">
+                            <li><a href="#" class="submenu-item arrival" data-content="package-registration">包件登记</a></li>
+                            <li><a href="#" class="submenu-item arrival" data-content="self-purchase-entry">自进货到货录入</a></li>
+                            <li><a href="#" class="submenu-item arrival" data-content="business-distribution">业务分书</a></li>
+                            <li><a href="#" class="submenu-item arrival" data-content="arrival-distribution">到货分流</a></li>
+                            <li><a href="#" class="submenu-item arrival" data-content="print-transfer">打印调拨单</a></li>
+                            <li><a href="#" class="submenu-item arrival" data-content="print-documents">单据打印</a></li>
+                        </ul>
+                    </li>
+                    
+                    <!-- 物流管理 -->
+                    <li>
+                        <div class="sidebar-item logistics" data-menu="logistics-management">
+                            <i class="fa fa-cubes w-6"></i>
+                            <span>物流管理</span>
+                            <i class="fa fa-chevron-down ml-auto"></i>
+                        </div>
+                        <ul class="submenu logistics hidden mt-2 space-y-1" id="logistics-management-submenu">
+                            <li><a href="#" class="submenu-item logistics" data-content="arrival-shelving"><i class="fa fa-arrow-down w-5 mr-3"></i>到货上架</a></li>
+                            <li><a href="#" class="submenu-item logistics" data-content="return-removal"><i class="fa fa-arrow-up w-5 mr-3"></i>退货下架</a></li>
+                            <li><a href="#" class="submenu-item logistics" data-content="print-return"><i class="fa fa-print w-5 mr-3"></i>打印退货单据</a></li>
+                            <li><a href="#" class="submenu-item logistics" data-content="print-boxing"><i class="fa fa-cube w-5 mr-3"></i>打印装箱单</a></li>
+                            <li><a href="#" class="submenu-item logistics" data-content="general-transfer"><i class="fa fa-exchange w-5 mr-3"></i>一般转移</a></li>
+                            <li><a href="#" class="submenu-item logistics" data-content="location-adjustment"><i class="fa fa-arrows w-5 mr-3"></i>货位调整(日常)</a></li>
+                            <li><a href="#" class="submenu-item logistics" data-content="batch-location-adjustment"><i class="fa fa-random w-5 mr-3"></i>货位调整（批量）</a></li>
+                            <li><a href="#" class="submenu-item logistics" data-content="print-transfer-loss"><i class="fa fa-file-text w-5 mr-3"></i>打印转移单及损益、报废单</a></li>
+                            <li><a href="#" class="submenu-item logistics" data-content="shelving-query"><i class="fa fa-search w-5 mr-3"></i>上下架数据查询</a></li>
+                            <li><a href="#" class="submenu-item logistics" data-content="box-occupation"><i class="fa fa-archive w-5 mr-3"></i>箱号占用情况</a></li>
+                            <li><a href="#" class="submenu-item logistics" data-content="location-adjustment-query"><i class="fa fa-search-plus w-5 mr-3"></i>货位调整查询</a></li>
+                            <li><a href="#" class="submenu-item logistics" data-content="data-correction"><i class="fa fa-pencil w-5 mr-3"></i>数据更正</a></li>
+                        </ul>
+                    </li>
+                    
+                    <!-- 批销管理 -->
+                    <li>
+                        <div class="sidebar-item wholesale" data-menu="wholesale-management">
+                            <i class="fa fa-shopping-cart w-6"></i>
+                            <span>批销管理</span>
+                            <i class="fa fa-chevron-down ml-auto"></i>
+                        </div>
+                        <ul class="submenu wholesale hidden mt-2 space-y-1" id="wholesale-management-submenu">
+                            <li><a href="#" class="submenu-item" data-content="wholesale-billing">批销开单</a></li>
+                            <li><a href="#" class="submenu-item" data-content="later-verification">后期核销</a></li>
+                            <li><a href="#" class="submenu-item" data-content="wholesale-return">批销退货</a></li>
+                            <li><a href="#" class="submenu-item" data-content="wholesale-split">批销拆单</a></li>
+                            <li><a href="#" class="submenu-item" data-content="wholesale-split-confirm">批销拆单确认</a></li>
+                            <li><a href="#" class="submenu-item" data-content="wholesale-reconciliation">批销对账</a></li>
+                            <li><a href="#" class="submenu-item" data-content="wholesale-query">批销查询</a></li>
+                            <li><a href="#" class="submenu-item" data-content="wholesale-hall">批销大厅设置</a></li>
+                            <li><a href="#" class="submenu-item" data-content="customer-profile">客户档案</a></li>
+                            <li><a href="#" class="submenu-item" data-content="floating-discount">浮动折扣定义</a></li>
+                        </ul>
+                    </li>
+                    
+                    <!-- 统计分析 -->
+                    <li>
+                        <div class="sidebar-item analysis" data-menu="statistical-analysis">
+                            <i class="fa fa-bar-chart w-6"></i>
+                            <span>统计分析</span>
+                            <i class="fa fa-chevron-down ml-auto"></i>
+                        </div>
+                        <ul class="submenu analysis hidden mt-2 space-y-1" id="statistical-analysis-submenu">
+                            <li><a href="#" class="submenu-item analysis" data-content="business-analysis">业务分析</a></li>
+                            <li><a href="#" class="submenu-item" data-content="purchase-sales">进货销售情况</a></li>
+                            <li><a href="#" class="submenu-item" data-content="order-statistics">订货统计</a></li>
+                            <li><a href="#" class="submenu-item" data-content="arrival-statistics">到货情况</a></li>
+                            <li><a href="#" class="submenu-item" data-content="inventory-statistics">库存情况</a></li>
+                            <li><a href="#" class="submenu-item" data-content="area-inventory">货区库存情况</a></li>
+                            <li><a href="#" class="submenu-item" data-content="sales-statistics">销售情况</a></li>
+                            <li><a href="#" class="submenu-item" data-content="area-sales">货区销售情况</a></li>
+                            <li><a href="#" class="submenu-item" data-content="sales-ranking">销售排行</a></li>
+                            <li><a href="#" class="submenu-item" data-content="source-sales">货源销售情况</a></li>
+                            <li><a href="#" class="submenu-item" data-content="scrap-statistics">报废统计</a></li>
+                            <li><a href="#" class="submenu-item" data-content="profit-loss-statistics">损益统计</a></li>
+                            <li><a href="#" class="submenu-item" data-content="source-profit-loss">货源损益查询</a></li>
+                            <li><a href="#" class="submenu-item" data-content="source-return">货源退货情况</a></li>
+                            <li><a href="#" class="submenu-item" data-content="workload-statistics">工作量统计</a></li>
+                            <li><a href="#" class="submenu-item" data-content="area-info">货区相关信息</a></li>
+                            <li><a href="#" class="submenu-item" data-content="consignment-sales">联营商品销售统计</a></li>
+                            <li><a href="#" class="submenu-item" data-content="payment-sales">按付款方式销售统计</a></li>
+                            <li><a href="#" class="submenu-item" data-content="document-summary">出入库单据汇总统计</a></li>
+                            <li><a href="#" class="submenu-item" data-content="customer-query">顾客查询</a></li>
+                            <li><a href="#" class="submenu-item" data-content="stored-value-card">储值卡消费分店统计</a></li>
+                            <li><a href="#" class="submenu-item" data-content="stored-value-recharge">储值卡充值查询</a></li>
+                            <li><a href="#" class="submenu-item" data-content="internal-sales">内部销售查询</a></li>
+                        </ul>
+                    </li>
+                    
+                    <!-- 前台结账及查询 -->
+                    <li>
+                        <div class="sidebar-item checkout" data-menu="checkout-query">
+                            <i class="fa fa-cash-register w-6"></i>
+                            <span>前台结账及查询</span>
+                            <i class="fa fa-chevron-down ml-auto"></i>
+                        </div>
+                        <ul class="submenu checkout hidden mt-2 space-y-1" id="checkout-query-submenu">
+                            <li><a href="#" class="submenu-item" data-content="front-sales-query">前台销售查询</a></li>
+                            <li><a href="#" class="submenu-item" data-content="real-time-monitoring">前台销售实时监控</a></li>
+                            <li><a href="#" class="submenu-item" data-content="front-payment-query">前台收款查询</a></li>
+                            <li><a href="#" class="submenu-item" data-content="special-payment">特殊缴款方式统计</a></li>
+                            <li><a href="#" class="submenu-item" data-content="consignment-payment">联营缴款查询</a></li>
+                            <li><a href="#" class="submenu-item" data-content="consignment-sales-query">联营销售查询</a></li>
+                            <li><a href="#" class="submenu-item" data-content="backend-checkout">后台结账</a></li>
+                            <li><a href="#" class="submenu-item" data-content="print-checkout">打印后台结帐单</a></li>
+                        </ul>
+                    </li>
+                    
+                    <!-- 财务管理 -->
+                    <li>
+                        <div class="sidebar-item financial" data-menu="financial-management">
+                            <i class="fa fa-money w-6"></i>
+                            <span>财务管理</span>
+                            <i class="fa fa-chevron-down ml-auto"></i>
+                        </div>
+                        <ul class="submenu financial hidden mt-2 space-y-1" id="financial-management-submenu">
+                            <li><a href="#" class="submenu-item" data-content="invoice-maintenance">发票维护</a></li>
+                            <li><a href="#" class="submenu-item" data-content="chain-reconciliation">连锁店按单对账</a></li>
+                            <li><a href="#" class="submenu-item" data-content="chain-payment">连锁店付款确认</a></li>
+                            <li><a href="#" class="submenu-item" data-content="financial-report">上市财务报表</a></li>
+                            <li><a href="#" class="submenu-item" data-content="self-purchase-reconciliation">自进货按单对账</a></li>
+                            <li><a href="#" class="submenu-item" data-content="self-purchase-settlement">自进货按单结算</a></li>
+                            <li><a href="#" class="submenu-item" data-content="invoice-audit">发票信息审核</a></li>
+                            <li><a href="#" class="submenu-item" data-content="settlement-cancellation">已结账撤销</a></li>
+                            <li><a href="#" class="submenu-item" data-content="beipei-reconciliation">北配对账</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </nav>
+        </aside>
+        
+        <!-- 主内容区 -->
+        <div class="flex-1 flex flex-col overflow-hidden">
+            <!-- 顶部导航栏 -->
+            <header class="bg-white shadow-sm">
+                <div class="flex items-center justify-between p-4">
+                    <div class="flex items-center">
+                        <button id="mobile-menu-button" class="md:hidden mr-4 text-gray-600">
+                            <i class="fa fa-bars text-xl"></i>
+                        </button>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <div class="relative">
+                            <input type="text" id="search-input" placeholder="搜索..." class="pl-10 pr-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary">
+                            <i class="fa fa-search absolute left-3 top-3 text-gray-400"></i>
+                        </div>
+                        <button id="theme-toggle" class="p-2 rounded-full hover:bg-gray-200">
+                            <i class="fa fa-moon-o text-gray-600"></i>
+                        </button>
+                    </div>
+                </div>
+            </header>
+            
+            <!-- 内容区域 -->
+            <main class="flex-1 overflow-y-auto p-6" id="content-area">
+                <!-- 欢迎页面 -->
+                <div id="welcome-content" class="content-card">
+                    <h2 class="content-title">欢迎使用图书业务系统参考资料</h2>
+                    <div class="content-text">
+                        <p>本网站提供图书业务系统的详细功能说明和操作指南，帮助您快速了解和使用系统的各项功能。</p>
+                        <p>请通过左侧菜单浏览各个功能模块的详细说明。</p>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mt-8">
+                        <div class="bg-blue-50 p-6 rounded-lg shadow-sm">
+                            <div class="flex items-center mb-4">
+                                <div class="bg-blue-100 p-3 rounded-full">
+                                    <i class="fa fa-cog text-primary text-xl"></i>
+                                </div>
+                                <h3 class="ml-4 text-lg font-semibold text-gray-800">系统设置</h3>
+                            </div>
+                            <p class="text-gray-600">管理系统权限、用户、字典表等基础设置</p>
+                        </div>
+                        
+                        <div class="bg-green-50 p-6 rounded-lg shadow-sm">
+                            <div class="flex items-center mb-4">
+                                <div class="bg-green-100 p-3 rounded-full">
+                                    <i class="fa fa-exchange text-green-600 text-xl"></i>
+                                </div>
+                                <h3 class="ml-4 text-lg font-semibold text-gray-800">商流管理</h3>
+                            </div>
+                            <p class="text-gray-600">处理订货、退货等商品流转业务</p>
+                        </div>
+                        
+                        <div class="bg-yellow-50 p-6 rounded-lg shadow-sm">
+                            <div class="flex items-center mb-4">
+                                <div class="bg-yellow-100 p-3 rounded-full">
+                                    <i class="fa fa-truck text-yellow-600 text-xl"></i>
+                                </div>
+                                <h3 class="ml-4 text-lg font-semibold text-gray-800">到货管理</h3>
+                            </div>
+                            <p class="text-gray-600">处理商品到货、验货、分书等业务</p>
+                        </div>
+                        
+                        <div class="bg-red-50 p-6 rounded-lg shadow-sm">
+                            <div class="flex items-center mb-4">
+                                <div class="bg-red-100 p-3 rounded-full">
+                                    <i class="fa fa-cubes text-red-600 text-xl"></i>
+                                </div>
+                                <h3 class="ml-4 text-lg font-semibold text-gray-800">物流管理</h3>
+                            </div>
+                            <p class="text-gray-600">处理商品上架、下架、货位调整等物流业务</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 系统设置内容 -->
+                <div id="system-settings-content" class="hidden">
+                    <!-- 权限设定/新增角色 -->
+                    <div id="permissions-content" class="content-card hidden">
+                        <h2 class="content-title">权限设定/新增角色</h2>
+                        <div class="content-text">
+                            <p>本功能用于设置系统角色及其对应的操作权限。</p>
+                        </div>
+                        <div class="content-subtitle">操作步骤</div>
+                        <ol class="list-decimal pl-6 mb-4 text-gray-700">
+                            <li>点击"新增角色"按钮</li>
+                            <li>输入角色编号（两位数字）</li>
+                            <li>输入角色名称</li>
+                            <li>为角色分配相应的权限</li>
+                            <li>点击"保存"按钮完成设置</li>
+                        </ol>
+                        <div class="content-note">
+                            <p><strong>注意：</strong>双击或点击修改可更改角色权限。</p>
+                        </div>
+                    </div>
+                    
+                    <!-- 操作员定义 -->
+                    <div id="operators-content" class="content-card hidden">
+                        <h2 class="content-title">操作员定义</h2>
+                        <div class="content-text">
+                            <p>本功能用于添加和管理系统操作员账号。</p>
+                        </div>
+                        <div class="content-subtitle">操作步骤</div>
+                        <ol class="list-decimal pl-6 mb-4 text-gray-700">
+                            <li>点击"新增用户"按钮</li>
+                            <li>输入用户编号（四位数字）</li>
+                            <li>输入用户姓名</li>
+                            <li>选择用户角色</li>
+                            <li>设置初始密码</li>
+                            <li>配置POS系统的打折授权</li>
+                            <li>点击"保存"按钮完成设置</li>
+                        </ol>
+                        <div class="content-note">
+                            <p><strong>注意：</strong>每个工作人员要初始密码进行修改，并对自己的密码要妥善保管。</p>
+                        </div>
+                    </div>
+                    
+                    <!-- 更多系统设置内容... -->
+                    <div id="accounting-units-content" class="content-card hidden">
+                        <h2 class="content-title">一般字典/核算单位</h2>
+                        <div class="content-text">
+                            <p>本功能用于设置系统中的核算单位信息。</p>
+                        </div>
+                        <div class="content-subtitle">操作步骤</div>
+                        <ol class="list-decimal pl-6 mb-4 text-gray-700">
+                            <li>点击"新增"按钮</li>
+                            <li>输入核算单位编号（三位数字）</li>
+                            <li>输入核算单位名称</li>
+                            <li>填写其他相关信息</li>
+                            <li>点击"保存"按钮完成设置</li>
+                        </ol>
+                    </div>
+                    
+                    <div id="warehouses-content" class="content-card hidden">
+                        <h2 class="content-title">库房设定</h2>
+                        <div class="content-text">
+                            <p>本功能用于设置系统中的库房信息。</p>
+                        </div>
+                        <div class="content-subtitle">操作步骤</div>
+                        <ol class="list-decimal pl-6 mb-4 text-gray-700">
+                            <li>点击"新增"按钮</li>
+                            <li>系统自动生成随机编号</li>
+                            <li>输入库房名称</li>
+                            <li>选择所属核算单位</li>
+                            <li>填写其他相关信息</li>
+                            <li>点击"保存"按钮完成设置</li>
+                        </ol>
+                    </div>
+                    
+                    <div id="area-dictionary-content" class="content-card hidden">
+                        <h2 class="content-title">一般字典/货区字典表</h2>
+                        <div class="content-text">
+                            <p>本功能用于设置系统中的货区信息。</p>
+                        </div>
+                        <div class="content-subtitle">操作步骤</div>
+                        <ol class="list-decimal pl-6 mb-4 text-gray-700">
+                            <li>点击"新增"按钮</li>
+                            <li>输入货区编号（四位数字）</li>
+                            <li>输入货区名称</li>
+                            <li>选择所属库房</li>
+                            <li>填写其他相关信息</li>
+                            <li>点击"保存"按钮完成设置</li>
+                        </ol>
+                    </div>
+                    
+                    <div id="location-dictionary-content" class="content-card hidden">
+                        <h2 class="content-title">一般字典/货位</h2>
+                        <div class="content-text">
+                            <p>本功能用于设置系统中的货位信息。</p>
+                        </div>
+                        <div class="content-subtitle">操作步骤</div>
+                        <ol class="list-decimal pl-6 mb-4 text-gray-700">
+                            <li>点击"新增"按钮</li>
+                            <li>输入货位编号（八位数字）</li>
+                            <li>输入货位名称</li>
+                            <li>选择所属货区</li>
+                            <li>填写其他相关信息</li>
+                            <li>点击"保存"按钮完成设置</li>
+                        </ol>
+                        <div class="content-note">
+                            <p><strong>注意：</strong>暂不能使用批量增加功能。</p>
+                        </div>
+                    </div>
+                    
+                    <div id="container-dictionary-content" class="content-card hidden">
+                        <h2 class="content-title">一般字典/容器字典表</h2>
+                        <div class="content-text">
+                            <p>本功能用于设置系统中的容器信息。</p>
+                        </div>
+                        <div class="content-subtitle">操作步骤</div>
+                        <ol class="list-decimal pl-6 mb-4 text-gray-700">
+                            <li>点击"新增"按钮</li>
+                            <li>输入容器编号（五位数字）</li>
+                            <li>输入容器名称</li>
+                            <li>填写容器容量等信息</li>
+                            <li>点击"保存"按钮完成设置</li>
+                        </ol>
+                    </div>
+                    
+                    <div id="area-settings-content" class="content-card hidden">
+                        <h2 class="content-title">货区综合设置</h2>
+                        <div class="content-text">
+                            <p>本功能用于增加或修改货区的分类信息。</p>
+                        </div>
+                        <div class="content-subtitle">操作步骤</div>
+                        <ol class="list-decimal pl-6 mb-4 text-gray-700">
+                            <li>选择需要设置的货区</li>
+                            <li>点击"修改"按钮</li>
+                            <li>添加或修改货区的分类信息</li>
+                            <li>点击"保存"按钮完成设置</li>
+                        </ol>
+                    </div>
+                    
+                    <div id="salesman-category-content" class="content-card hidden">
+                        <h2 class="content-title">分类业务员对照</h2>
+                        <div class="content-text">
+                            <p>本功能用于增加或修改业务员所属的分类信息。</p>
+                        </div>
+                        <div class="content-subtitle">操作步骤</div>
+                        <ol class="list-decimal pl-6 mb-4 text-gray-700">
+                            <li>选择业务员</li>
+                            <li>点击"修改"按钮</li>
+                            <li>添加或修改业务员所属的分类</li>
+                            <li>点击"保存"按钮完成设置</li>
+                        </ol>
+                    </div>
+                    
+                    <div id="salesman-location-content" class="content-card hidden">
+                        <h2 class="content-title">营业员货位归属</h2>
+                        <div class="content-text">
+                            <p>本功能用于选择或修改营业员管理的货位信息。</p>
+                        </div>
+                        <div class="content-subtitle">操作步骤</div>
+                        <ol class="list-decimal pl-6 mb-4 text-gray-700">
+                            <li>选择营业员</li>
+                            <li>点击"修改"按钮</li>
+                            <li>选择或修改营业员管理的货位</li>
+                            <li>点击"保存"按钮完成设置</li>
+                        </ol>
+                    </div>
+                    
+                    <div id="pos-definition-content" class="content-card hidden">
+                        <h2 class="content-title">POS机定义</h2>
+                        <div class="content-text">
+                            <p>本功能用于新增POS机并进行相关设置。</p>
+                        </div>
+                        <div class="content-subtitle">操作步骤</div>
+                        <ol class="list-decimal pl-6 mb-4 text-gray-700">
+                            <li>点击"新增"按钮</li>
+                            <li>输入POS机编号（两位数字）</li>
+                            <li>选择核算单位</li>
+                            <li>选择所管库房</li>
+                            <li>点击"保存"按钮，系统生成注册编号</li>
+                        </ol>
+                        <div class="content-note">
+                            <p><strong>注意：</strong>必须选定所管库房，否则后台结账提示错误。类型字段可不选。</p>
+                        </div>
+                    </div>
+                    
+                    <div id="smart-replenishment-content" class="content-card hidden">
+                        <h2 class="content-title">智能添货参数</h2>
+                        <div class="content-text">
+                            <p>本功能用于设置智能添货的相关参数。</p>
+                        </div>
+                        <div class="content-subtitle">操作步骤</div>
+                        <ol class="list-decimal pl-6 mb-4 text-gray-700">
+                            <li>进入智能添货参数设置页面</li>
+                            <li>根据实际需求调整各项参数</li>
+                            <li>点击"保存"按钮完成设置</li>
+                        </ol>
+                        <div class="content-note">
+                            <p><strong>注意：</strong>业务员应科学合理的添加修改每项参数，分析出来的数据更加科学准确。</p>
+                        </div>
+                    </div>
+                    
+                    <div id="login-release-content" class="content-card hidden">
+                        <h2 class="content-title">解除登陆占用</h2>
+                        <div class="content-text">
+                            <p>本功能用于在用户不能登陆系统时提示已登陆的情况下删除该用户的登录状态。</p>
+                        </div>
+                        <div class="content-subtitle">操作步骤</div>
+                        <ol class="list-decimal pl-6 mb-4 text-gray-700">
+                            <li>进入解除登陆占用页面</li>
+                            <li>查找并选择需要解除登录状态的用户</li>
+                            <li>点击"解除"按钮</li>
+                        </ol>
+                    </div>
+                    
+                    <div id="常备书参数-content" class="content-card hidden">
+                        <h2 class="content-title">常备书参数设置</h2>
+                        <div class="content-text">
+                            <p>本功能用于设定常备书的相关参数。</p>
+                        </div>
+                        <div class="content-subtitle">操作步骤</div>
+                        <ol class="list-decimal pl-6 mb-4 text-gray-700">
+                            <li>进入常备书参数设置页面</li>
+                            <li>根据业务需求设定具体数值</li>
+                            <li>点击"保存"按钮完成设置</li>
+                        </ol>
+                        <div class="content-note">
+                            <p><strong>注意：</strong>由业务员或营业员设定具体数值，利于业务工作的开展。</p>
+                        </div>
+                    </div>
+                    
+                    <div id="system-parameters-content" class="content-card hidden">
+                        <h2 class="content-title">系统参数设置</h2>
+                        <div class="content-text">
+                            <p>本功能用于设置系统的基础参数。</p>
+                        </div>
+                        <div class="content-subtitle">操作步骤</div>
+                        <ol class="list-decimal pl-6 mb-4 text-gray-700">
+                            <li>进入系统参数设置页面</li>
+                            <li>根据系统需求调整各项参数</li>
+                            <li>点击"保存"按钮完成设置</li>
+                        </ol>
+                        <div class="content-warning">
+                            <p><strong>警告：</strong>由管理员在系统初建时设置，一般不允许更改其数值。</p>
+                        </div>
+                    </div>
+                    
+                    <div id="discount-definition-content" class="content-card hidden">
+                        <h2 class="content-title">前台折扣定义</h2>
+                        <div class="content-text">
+                            <p>本功能用于设定前台销售的折扣规则。</p>
+                        </div>
+                        <div class="content-subtitle">操作步骤</div>
+                        <ol class="list-decimal pl-6 mb-4 text-gray-700">
+                            <li>进入前台折扣定义页面</li>
+                            <li>设置不同商品类别的折扣规则</li>
+                            <li>点击"保存"按钮完成设置</li>
+                        </ol>
+                        <div class="content-note">
+                            <p><strong>注意：</strong>由卖场经理或主管负责设定折扣。该人员所设定折扣为最低折扣，可授权打折的为大于等于最低折扣数值。</p>
+                        </div>
+                    </div>
+                    
+                    <div id="consignment-salesman-content" class="content-card hidden">
+                        <h2 class="content-title">联营营业员设置</h2>
+                        <div class="content-text">
+                            <p>本功能用于设置联营商户的营业员信息。</p>
+                        </div>
+                        <div class="content-subtitle">操作步骤</div>
+                        <ol class="list-decimal pl-6 mb-4 text-gray-700">
+                            <li>进入联营营业员设置页面</li>
+                            <li>点击"新增"按钮</li>
+                            <li>选择联营商户</li>
+                            <li>输入营业员信息</li>
+                            <li>点击"保存"按钮完成设置</li>
+                        </ol>
+                        <div class="content-note">
+                            <p><strong>注意：</strong>联营商户由集团信息中心关联合同依据添加。</p>
+                        </div>
+                    </div>
+                    
+                    <div id="supplier-salesman-content" class="content-card hidden">
+                        <h2 class="content-title">供应商业务员对照</h2>
+                        <div class="content-text">
+                            <p>本功能用于设置业务员与供应商的对应关系。</p>
+                        </div>
+                        <div class="content-subtitle">操作步骤</div>
+                        <ol class="list-decimal pl-6 mb-4 text-gray-700">
+                            <li>进入供应商业务员对照页面</li>
+                            <li>点击"新增"按钮</li>
+                            <li>选择业务员</li>
+                            <li>选择供应商</li>
+                            <li>点击"保存"按钮完成设置</li>
+                        </ol>
+                        <div class="content-note">
+                            <p><strong>注意：</strong>按业务员所管不同供应商分别添加。</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 商流管理内容 -->
+                <div id="business-flow-content" class="hidden">
+                    <div id="smart-replenishment-business-content" class="content-card hidden">
+                        <h2 class="content-title">智能添货</h2>
+                        <div class="content-text">
+                            <p>系统依据相关参数设置自动筛选出满足添货条件的数据，供业务员参考添货。</p>
+                        </div>
+                        <div class="content-subtitle">操作步骤</div>
+                        <ol class="list-decimal pl-6 mb-4 text-gray-700">
+                            <li>进入智能添货页面</li>
+                            <li>设置筛选条件（如分类、销售周期等）</li>
+                            <li>点击"查询"按钮获取推荐添货数据</li>
+                            <li>根据实际需求调整添货数量</li>
+                            <li>点击"生成订单"按钮完成添货</li>
+                        </ol>
+                    </div>
+                    
+                    <div id="future-order-content" class="content-card hidden">
+                        <h2 class="content-title">期货订货</h2>
+                        <div class="content-text">
+                            <p>省店下发题材选择，输入更新日期后查询，然后选择需要的书目题材进行添货。</p>
+                        </div>
+                        <div class="content-subtitle">操作步骤</div>
+                        <ol class="list-decimal pl-6 mb-4 text-gray-700">
+                            <li>进入期货订货页面</li>
+                            <li>输入更新日期</li>
+                            <li>点击"查询"按钮获取题材列表</li>
+                            <li>选择需要的书目题材</li>
+                            <li>点击"添货"按钮</li>
+                            <li>进行题材添货审核</li>
+                        </ol>
+                        <div class="content-note">
+                            <p><strong>注意：</strong></p>
+                            <ul class="list-disc pl-6">
+                                <li>必须进行题材添货审核</li>
+                                <li>题材选择同一货源书目才能选到添货界面</li>
+                                <li>有效日期为最早时间，但分类可能不准确</li>
+                                <li>未上报的是等待形成订单的，在途的是已生成订单的</li>
+                                <li>大客户订货时需注明，到货后自动分流到预留库</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div id="manual-replenishment-content" class="content-card hidden">
+                        <h2 class="content-title">手动添货</h2>
+                        <div class="content-text">
+                            <p>分为按总部库存和本部库存两种方式添货。</p>
+                        </div>
+                        <div class="content-subtitle">操作步骤</div>
+                        <ol class="list-decimal pl-6 mb-4 text-gray-700">
+                            <li>进入手动添货页面</li>
+                            <li>选择添货方式（总部库存/本部库存）</li>
+                            <li>输入查询条件（如书号、书名、分类等）</li>
+                            <li>点击"查询"按钮获取书目信息</li>
+                            <li>输入添货数量</li>
+                            <li>点击"保存"按钮</li>
+                        </ol>
+                        <div class="content-note">
+                            <p><strong>注意：</strong></p>
+                            <ul class="list-disc pl-6">
+                                <li>如果添货数大于系统设置单品种最大添货数量，则必须进行订货审核</li>
+                                <li>销售日期填写，有销售才有意义，系统默认两个月</li>
+                                <li>推荐的题材是期货题材</li>
+                                <li>具体操作应看未上报和在途的数据防止重复添货</li>
+                                <li>变红的书目是多货源进货书目，变红的订数是订货数量超出系统设置的订数</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div id="order-audit-content" class="content-card hidden">
+                        <h2 class="content-title">订货审核</h2>
+                        <div class="content-text">
+                            <p>在手动添货和智能添货中遇到要审核的单据，在此功能中审核并报订。</p>
+                        </div>
+                        <div class="content-subtitle">操作步骤</div>
+                        <ol class="list-decimal pl-6 mb-4 text-gray-700">
+                            <li>进入订货审核页面</li>
+                            <li>选择待审核的订单</li>
+                            <li>查看订单详情</li>
+                            <li>点击"审核通过"按钮</li>
+                            <li>选择同一货源的订单进行合并（可选）</li>
+                            <li>点击"报订"按钮真正形成报订单</li>
+                        </ol>
+                        <div class="content-note">
+                            <p><strong>注意：</strong></p>
+                            <ul class="list-disc pl-6">
+                                <li>不允许修改订数，不允许删除</li>
+                                <li>自己的订单可合并，同一货源可勾选</li>
+                                <li>当主管上级选择待审批次时，未审核通过的则打回重新报订</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div id="return-task-content" class="content-card hidden">
+                        <h2 class="content-title">主动下达退货任务</h2>
+                        <div class="content-text">
+                            <p>本部的管理人员，结合本部的滞销品种和库存情况或其他原因等需要退货时，设置任务数并生成下架任务。</p>
+                        </div>
+                        <div class="content-subtitle">操作步骤</div>
+                        <ol class="list-decimal pl-6 mb-4 text-gray-700">
+                            <li>进入主动下达退货任务页面</li>
+                            <li>点击"筛选品种"按钮</li>
+                            <li>设置筛选条件（如总部部门、分类、库存天数等）</li>
+                            <li>点击"查询"按钮获取符合条件的品种</li>
+                            <li>在任务数一栏填写退货数</li>
+                            <li>勾选需要退货的品种</li>
+                            <li>点击"确定"按钮生成下架任务</li>
+                        </ol>
+                        <div class="content-note">
+                            <p><strong>注意：</strong></p>
+                            <ul class="list-disc pl-6">
+                                <li>如果选择了删除未确认数据则系统清除上一次筛选结果，否则筛选结构自动累加</li>
+                                <li>确认成功后，即可在RF（退货下架）或PC端（退货下架-按任务下架）执行下架操作</li>
+                                <li>操作员所属的下架货区可在系统设置里操作员定义里选择指令退货全部货区是或否</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div id="supplier-info-content" class="content-card hidden">
+                        <h2 class="content-title">供商信息查询</h2>
+                        <div class="content-text">
+                            <p>用于对总部供应商的信息查询。</p>
+                        </div>
+                        <div class="content-subtitle">操作步骤</div>
+                        <ol class="list-decimal pl-6 mb-4 text-gray-700">
+                            <li>进入供商信息查询页面</li>
+                            <li>输入供应商名称或拼音的关键字</li>
+                            <li>点击"查询"按钮</li>
+                            <li>查看供应商详细信息</li>
+                        </ol>
+                    </div>
+                </div>
+                
+                <!-- 到货管理内容 -->
+                <div id="arrival-management-content" class="hidden">
+                    <div id="package-registration-content" class="content-card hidden">
+                        <h2 class="content-title">包件登记</h2>
+                        <div class="content-text">
+                            <p>(北配或平台发货或批销接收)到货后核实包件情况，对包件进行登记，登记发运信息及收货包件数情况，转为正式到货单据。</p>
+                        </div>
+                        <div class="content-subtitle">操作步骤</div>
+                        <ol class="list-decimal pl-6 mb-4 text-gray-700">
+                            <li>进入包件登记页面</li>
+                            <li>在"发运批次号/包件号"输入框内输入对应到货单据号</li>
+                            <li>点击"提取运单"按钮</li>
+                            <li>系统显示发运批次的相关信息和包件详细情况</li>
+                            <li>补录收货信息</li>
+                            <li>填写破损件数</li>
+                            <li>将已到货的对应包件流水号设置为"打勾"状态</li>
+                            <li>点击"保存"按钮完成登记</li>
+                        </ol>
+                        <div class="content-note">
+                            <p><strong>注意：</strong>目前北配发货因有平台数据对接，可以直接在到货后不需要拆包录入书目等信息，由集团公司统一将书目信息维护到系统内，可直接接收到货信息。</p>
+                        </div>
+                    </div>
+                    
+                    <div id="self-purchase-entry-content" class="content-card hidden">
+                        <h2 class="content-title">自进货到货录入</h2>
+                        <div class="content-text">
+                            <p>自进货货源由于没有发货信息，需要自行录入收货单据和书目信息。</p>
+                        </div>
+                        <div class="content-subtitle">操作步骤</div>
+                        <ol class="list-decimal pl-6 mb-4 text-gray-700">
+                            <li>进入自进货到货录入页面</li>
+                            <li>点击"新增"按钮</li>
+                            <li>输入到货单据信息（根据"随货通行单"）</li>
+                            <li>点击"保存"按钮生成暂存的到货单据</li>
+                            <li>选中该单据，点击"单据明细"按钮</li>
+                            <li>在弹出窗口内输入书目信息</li>
+                            <li>点击"保存"按钮完成录入</li>
+                        </ol>
+                        <div class="content-note">
+                            <p><strong>注意：</strong></p>
+                            <ul class="list-disc pl-6">
+                                <li>可按整单给出依据，如果一个依据只发一部分，下次还可以按照此依据发剩余部分</li>
+                                <li>不能一个依据含有多个依据</li>
+                                <li>图书税率统一为13%，非图书商品统一为17%</li>
+                                <li>品号：书号或者条码号，是货品的唯一编码</li>
+                                <li>到货明细录入时，应收数按随货通行单据的数量录入，缺收数应在到货分流-验货中录入</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <!-- 更多到货管理内容... -->
+                    <div id="business-distribution-content" class="content-card hidden">
+                        <h2 class="content-title">业务分书</h2>
+                        <div class="content-text">
+                            <p>在自进货录入或包件登记后，需要业务员进行图书到某个核算单位（即库房或卖场）的预分配。</p>
+                        </div>
+                        <div class="content-subtitle">分书方式</div>
+                        <ul class="list-disc pl-6 mb-4 text-gray-700">
+                            <li><strong>单卖场自动方式：</strong>本店只有一个卖场，到货后系统自动按照分类将书分配到卖场的各个货区，此步骤由系统自动完成</li>
+                            <li><strong>有依据的自动方式：</strong>到货数据能够关联到添货信息（订货依据），按照添货时登记的部门直接分书，此步骤也由系统自动完成</li>
+                            <li><strong>手动分书：</strong>需要手动指定分配方案</li>
+                        </ul>
+                        <div class="content-subtitle">手动分书操作步骤</div>
+                        <ol class="list-decimal pl-6 mb-4 text-gray-700">
+                            <li>进入业务分书页面</li>
+                            <li>点击"选单"按钮</li>
+                            <li>查询已经登记或自录的"到货单据"</li>
+                            <li>点击"确认"按钮</li>
+                            <li>添加相应的参与分书门市</li>
+                            <li>输入对应的比例数</li>
+                            <li>点击"分书"按钮进行预分</li>
+                            <li>根据实际需求修改预分数</li>
+                            <li>点击"打印预分单"预览分书情况</li>
+                            <li>确认无误后点击"提交"按钮</li>
+                        </ol>
+                    </div>
+                    
+                    <div id="arrival-distribution-content" class="content-card hidden">
+                        <h2 class="content-title">到货分流</h2>
+                        <div class="content-text">
+                            <p>验货流程，对已收到包件进行指定上架去向，也是验货的环节，并且为物流上架做准备。</p>
+                        </div>
+                        <div class="content-subtitle">单个卖场店操作说明</div>
+                        <ol class="list-decimal pl-6 mb-4 text-gray-700">
+                            <li>选中登记后的原始单据</li>
+                            <li>点击"验货"按钮</li>
+                            <li>在已经分流选项卡内，按照系统分流的箱号，打印出"装箱单"</li>
+                            <li>分发给营业员按照箱单明细上架</li>
+                            <li>由营业员在装箱单上填写应上架的货位号和差异数</li>
+                            <li>返回系统完成验货</li>
+                        </ol>
+                        <div class="content-subtitle">多门店操作说明</div>
+                        <ol class="list-decimal pl-6 mb-4 text-gray-700">
+                            <li>进入到货分流页面</li>
+                            <li>选中原始单据点击"验货"按钮</li>
+                            <li>对照实物输入实收数、箱号、破损数、破损箱号</li>
+                            <li>点击回车确认</li>
+                            <li>当单据上的书目全部验完后，点击"分流完成"按钮</li>
+                            <li>在物流管理里输入箱号后打印"装箱单"</li>
+                            <li>将"装箱单"放入箱内一并送往对应卖场或库房</li>
+                        </ol>
+                        <div class="content-note">
+                            <p><strong>注意：</strong>预分数=卖场上架+破损上架+缺收</p>
+                        </div>
+                    </div>
+                    
+                    <div id="print-transfer-content" class="content-card hidden">
+                        <h2 class="content-title">打印调拨单</h2>
+                        <div class="content-text">
+                            <p>调拨单的作用是物流部门和各个库房的移交手续。</p>
+                        </div>
+                        <div class="content-subtitle">操作步骤</div>
+                        <ol class="list-decimal pl-6 mb-4 text-gray-700">
+                            <li>进入打印调拨单页面</li>
+                            <li>输入日期筛选条件</li>
+                            <li>选择调拨单号</li>
+                            <li>点击"调拨单"按钮进行打印，或选择调拨批次号查看"调拨单汇总"</li>
+                        </ol>
+                    </div>
+                    
+                    <div id="print-documents-content" class="content-card hidden">
+                        <h2 class="content-title">单据打印</h2>
+                        <div class="content-text">
+                            <p>打印到货清单、进货汇总单、收货差异单。是财务购进的依据。</p>
+                        </div>
+                        <div class="content-subtitle">操作步骤</div>
+                        <ol class="list-decimal pl-6 mb-4 text-gray-700">
+                            <li>进入单据打印页面</li>
+                            <li>输入日期范围</li>
+                            <li>选择查询单据类型</li>
+                            <li>点击"查询"按钮</li>
+                            <li>系统显示此时间段内的相应单据列表</li>
+                            <li>选择要打印的单据</li>
+                            <li>点击"打印"按钮</li>
+                        </ol>
+                    </div>
+                </div>
+                
+                <!-- 物流管理内容 -->
+                <div id="logistics-management-content" class="hidden">
+                    <div id="arrival-shelving-content" class="content-card hidden">
+                        <h2 class="content-title">到货上架</h2>
+                        <div class="mb-6">
+                            <img src="https://p3-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/super_tool/84c9d04dc61b4bdfba6d66ab042b9df2~tplv-a9rns2rl98-image.image?rcl=20251231160656496BA01493A6BF90CA1C&rk3s=8e244e95&rrcfp=f06b921b&x-expires=1769760466&x-signature=VmDVp9MX%2B2T2daH3ZiUUL%2Bu3ii8%3D" alt="图书仓库物流管理系统" class="w-full max-w-2xl mx-auto rounded-lg shadow-lg">
+                        </div>
+                        <div class="content-text">
+                            <p>在到货分流之后做到货上架操作，是图书从到货到销售的关键环节。</p>
+                        </div>
+                        <div class="content-subtitle">操作指南</div>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                            <div class="step-card">
+                                <div class="step-number">1</div>
+                                <div class="step-title">RF终端操作流程</div>
+                                <div class="step-text">
+                                    <ol class="list-decimal pl-5">
+                                        <li>货区操作员登录RF手持终端业务系统</li>
+                                        <li>在主菜单选择"到货上架"功能</li>
+                                        <li>系统显示待上架任务列表</li>
+                                        <li>选择对应任务，扫描箱号条码</li>
+                                        <li>逐一扫描图书ISBN条码</li>
+                                        <li>输入实际上架数量</li>
+                                        <li>扫描目标货位条码</li>
+                                        <li>确认上架完成</li>
+                                    </ol>
+                                </div>
+                            </div>
+                            
+                            <div class="step-card">
+                                <div class="step-number">2</div>
+                                <div class="step-title">PC端操作流程</div>
+                                <div class="step-text">
+                                    <ol class="list-decimal pl-5">
+                                        <li>登录系统，进入"物流管理-到货上架"</li>
+                                        <li>筛选待上架任务（按日期、批次等）</li>
+                                        <li>选择对应批次，点击"开始上架"</li>
+                                        <li>在弹出界面输入货位信息</li>
+                                        <li>核对图书信息和数量</li>
+                                        <li>点击"确认上架"完成操作</li>
+                                        <li>可批量处理多个图书上架</li>
+                                    </ol>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div id="return-removal-content" class="content-card hidden">
+                        <h2 class="content-title">退货下架</h2>
+                        <div class="content-text">
+                            <p>退货下架是处理图书退货流程的重要环节，用于将需要退货的图书从销售区域下架并准备退回供应商。</p>
+                        </div>
+                        <div class="content-subtitle">操作流程</div>
+                        <div class="content-list">
+                            <li>登录系统，进入"物流管理-退货下架"</li>
+                            <li>选择退货类型（供应商退货、内部退货等）</li>
+                            <li>扫描图书ISBN条码或选择退货清单</li>
+                            <li>系统显示图书信息和退货数量</li>
+                            <li>扫描当前货位条码确认下架位置</li>
+                            <li>确认下架完成，生成退货单据</li>
+                            <li>可批量处理多个图书的退货下架</li>
+                        </div>
+                    </div>
+                    
+                    <div id="print-return-content" class="content-card hidden">
+                        <h2 class="content-title">打印退货单据</h2>
+                        <div class="content-text">
+                            <p>用于打印图书退货相关的各类单据，包括退货清单、退货凭证等，便于与供应商进行退货交接。</p>
+                        </div>
+                        <div class="content-subtitle">功能说明</div>
+                        <div class="content-list">
+                            <li>支持按退货单号、供应商、日期等条件筛选</li>
+                            <li>可打印退货清单、退货凭证、退货明细等多种单据</li>
+                            <li>支持批量打印多张退货单据</li>
+                            <li>提供不同的打印模板选择</li>
+                            <li>可导出退货数据为Excel格式</li>
+                        </div>
+                    </div>
+                    
+                    <div id="print-boxing-content" class="content-card hidden">
+                        <h2 class="content-title">打印装箱单</h2>
+                        <div class="content-text">
+                            <p>装箱单打印功能用于生成图书装箱的详细清单，便于物流运输和仓库管理。</p>
+                        </div>
+                        <div class="content-subtitle">操作步骤</div>
+                        <div class="content-list">
+                            <li>登录系统，进入"物流管理-打印装箱单"</li>
+                            <li>输入箱号或选择装箱任务</li>
+                            <li>系统显示该箱内图书的详细信息</li>
+                            <li>核对图书信息和数量</li>
+                            <li>点击"打印装箱单"生成纸质单据</li>
+                            <li>可选择不同的打印格式（标准、简洁等）</li>
+                        </div>
+                    </div>
+                    
+                    <div id="general-transfer-content" class="content-card hidden">
+                        <h2 class="content-title">一般转移</h2>
+                        <div class="content-text">
+                            <p>一般转移功能用于图书在不同库房、货区或货位之间的转移操作，实现库存的合理调配。</p>
+                        </div>
+                        <div class="content-subtitle">转移类型</div>
+                        <div class="content-list">
+                            <li>库房间转移：图书在不同库房之间的移动</li>
+                            <li>货区间转移：同一库房内不同货区之间的移动</li>
+                            <li>货位间转移：同一货区内不同货位之间的移动</li>
+                            <li>临时转移：临时性的库存位置调整</li>
+                        </div>
+                        <div class="content-subtitle">操作流程</div>
+                        <div class="content-list">
+                            <li>选择转移类型和转移原因</li>
+                            <li>扫描或选择需要转移的图书</li>
+                            <li>输入转移数量和目标位置信息</li>
+                            <li>确认转移信息并提交</li>
+                            <li>系统自动更新库存位置信息</li>
+                        </div>
+                    </div>
+                    
+                    <div id="location-adjustment-content" class="content-card hidden">
+                        <h2 class="content-title">货位调整(日常)</h2>
+                        <div class="content-text">
+                            <p>日常货位调整用于对图书货位进行日常的微调，优化库存布局和空间利用。</p>
+                        </div>
+                        <div class="content-subtitle">调整原因</div>
+                        <div class="content-list">
+                            <li>优化空间利用：根据图书销售情况调整货位</li>
+                            <li>分类整理：按图书类别重新安排货位</li>
+                            <li>畅销品调整：将畅销图书调整到更醒目的位置</li>
+                            <li>季节性调整：根据季节变化调整图书陈列</li>
+                        </div>
+                    </div>
+                    
+                    <div id="batch-location-adjustment-content" class="content-card hidden">
+                        <h2 class="content-title">货位调整（批量）</h2>
+                        <div class="content-text">
+                            <p>批量货位调整用于对多个图书货位进行批量调整，适用于大规模的库存优化和调整。</p>
+                        </div>
+                        <div class="content-subtitle">批量调整场景</div>
+                        <div class="content-list">
+                            <li>库房整体搬迁或改造</li>
+                            <li>大规模的库存结构调整</li>
+                            <li>新货区投入使用</li>
+                            <li>季节性商品大规模调整</li>
+                        </div>
+                        <div class="content-subtitle">批量操作优势</div>
+                        <div class="content-list">
+                            <li>提高工作效率：一次操作处理多个图书</li>
+                            <li>减少人为错误：系统化批量处理</li>
+                            <li>便于跟踪：完整记录调整过程</li>
+                            <li>优化资源：合理安排人力资源</li>
+                        </div>
+                    </div>
+                    
+                    <div id="print-transfer-loss-content" class="content-card hidden">
+                        <h2 class="content-title">打印转移单及损益、报废单</h2>
+                        <div class="content-text">
+                            <p>用于打印各类物流单据，包括转移单、损益单和报废单，为库存管理提供完整的纸质记录。</p>
+                        </div>
+                        <div class="content-subtitle">可打印单据类型</div>
+                        <div class="content-list">
+                            <li>库存转移单：记录图书在不同位置间的转移</li>
+                            <li>库存损益单：记录库存盘点中的盈亏情况</li>
+                            <li>图书报废单：记录因损坏、过期等原因报废的图书</li>
+                            <li>调整凭证：各类库存调整的凭证单据</li>
+                        </div>
+                    </div>
+                    
+                    <div id="shelving-query-content" class="content-card hidden">
+                        <h2 class="content-title">上下架数据查询</h2>
+                        <div class="content-text">
+                            <p>提供图书上下架操作的历史记录查询功能，便于追溯和分析库存变动情况。</p>
+                        </div>
+                        <div class="content-subtitle">查询条件</div>
+                        <div class="content-list">
+                            <li>时间范围：选择特定时间段</li>
+                            <li>操作类型：上架、下架、调整等</li>
+                            <li>图书信息：ISBN、书名、作者等</li>
+                            <li>操作员：执行操作的人员</li>
+                            <li>货区/货位：特定区域的操作记录</li>
+                        </div>
+                        <div class="content-subtitle">查询结果</div>
+                        <div class="content-list">
+                            <li>详细的操作记录列表</li>
+                            <li>操作时间、类型、数量等信息</li>
+                            <li>相关图书和位置信息</li>
+                            <li>支持导出和打印功能</li>
+                        </div>
+                    </div>
+                    
+                    <div id="box-occupation-content" class="content-card hidden">
+                        <h2 class="content-title">箱号占用情况</h2>
+                        <div class="content-text">
+                            <p>用于查询和管理图书装箱的箱号使用情况，确保箱号的唯一性和可追溯性。</p>
+                        </div>
+                        <div class="content-subtitle">功能说明</div>
+                        <div class="content-list">
+                            <li>查询箱号当前状态（已使用/未使用）</li>
+                            <li>查看箱号对应的图书信息</li>
+                            <li>箱号使用历史记录</li>
+                            <li>箱号分配和回收管理</li>
+                            <li>异常箱号处理</li>
+                        </div>
+                    </div>
+                    
+                    <div id="location-adjustment-query-content" class="content-card hidden">
+                        <h2 class="content-title">货位调整查询</h2>
+                        <div class="content-text">
+                            <p>提供货位调整操作的历史记录查询，便于跟踪和分析货位变动情况。</p>
+                        </div>
+                        <div class="content-subtitle">查询功能</div>
+                        <div class="content-list">
+                            <li>按时间、图书、货位等条件筛选</li>
+                            <li>查看调整前后的货位信息</li>
+                            <li>调整原因和操作人员</li>
+                            <li>调整频率和趋势分析</li>
+                            <li>支持数据导出和报表生成</li>
+                        </div>
+                    </div>
+                    
+                    <div id="data-correction-content" class="content-card hidden">
+                        <h2 class="content-title">数据更正</h2>
+                        <div class="content-text">
+                            <p>数据更正功能用于修正系统中的库存数据错误，确保库存信息的准确性。</p>
+                        </div>
+                        <div class="content-subtitle">更正类型</div>
+                        <div class="content-list">
+                            <li>数量更正：修正图书库存数量</li>
+                            <li>位置更正：修正图书存放位置</li>
+                            <li>状态更正：修正图书状态信息</li>
+                            <li>属性更正：修正图书其他属性信息</li>
+                        </div>
+                        <div class="content-subtitle">操作规范</div>
+                        <div class="content-list">
+                            <li>需经过授权才能进行数据更正</li>
+                            <li>更正前需记录原始数据</li>
+                            <li>更正后需保存更正记录</li>
+                            <li>定期审核数据更正情况</li>
+                        </div>
+                        
+                        <div class="content-subtitle">操作要点</div>
+                        <div class="content-list">
+                            <li><strong>货位准确性：</strong>确保图书上架到正确的货位，避免后续查找困难</li>
+                            <li><strong>数量一致性：</strong>实际上架数量必须与系统显示数量一致，如有差异需及时记录</li>
+                            <li><strong>条码扫描：</strong>优先使用条码扫描功能，减少手动输入错误</li>
+                            <li><strong>任务状态：</strong>完成上架后，系统会自动更新任务状态为"已完成"</li>
+                            <li><strong>异常处理：</strong>遇到图书信息不符或数量差异，应及时联系业务部门处理</li>
+                        </div>
+                        
+                        <div class="content-note">
+                            <p><strong>注意事项：</strong></p>
+                            <ul class="list-disc pl-6">
+                                <li>上架完成后，系统会自动更新库存信息</li>
+                                <li>建议优先使用RF终端进行上架操作，效率更高</li>
+                                <li>定期核对上架任务完成情况，确保所有图书及时上架</li>
+                                <li>新到货图书应在24小时内完成上架操作</li>
+                            </ul>
+                        </div>
+                            <li>可以用批量设置选择同一货位的书目较快的上架</li>
+                        </ol>
+                        <div class="content-note">
+                            <p><strong>注意：</strong>如有上架时数量与实际数量如有差异，默认上架方损益。</p>
+                        </div>
+                    </div>
+                    
+                    <div id="return-removal-content" class="content-card hidden">
+                        <h2 class="content-title">退货下架</h2>
+                        <div class="content-text">
+                            <p>退货下架分为卖场的主动下架和按任务下架两种方式。</p>
+                        </div>
+                        <div class="content-subtitle">主动下架操作步骤</div>
+                        <ol class="list-decimal pl-6 mb-4 text-gray-700">
+                            <li>点击"主动下架"按钮</li>
+                            <li>输入退货货源、商品特征、转出库房、转出货区、退货库房信息</li>
+                            <li>系统生成一个下架批次号并弹出下架操作窗口</li>
+                            <li>根据需要退货的货源及品种、数量等进行筛选下架</li>
+                            <li>操作够一整包后，立即确认，生成预退批次</li>
+                            <li>不够包装的可以点"需并包"选项，确认后到退货并包功能与其他符合条件和包的品种并包</li>
+                        </ol>
+                        <div class="content-subtitle">按任务下架操作步骤</div>
+                        <ol class="list-decimal pl-6 mb-4 text-gray-700">
+                            <li>选择按任务下架单选按钮</li>
+                            <li>弹出选任务窗口，选择任务</li>
+                            <li>打印任务清单</li>
+                            <li>卖场人员根据任务清单到按货区到货位下架</li>
+                            <li>下架后到包装区打包</li>
+                            <li>对下架品种操作，操作品种够一个包装后，直接确认生成一预退批次</li>
+                            <li>包装，打印贴头</li>
+                            <li>继续下一个品种的操作，直至本次任务全部完成</li>
+                        </ol>
+                        <div class="content-note">
+                            <p><strong>注意：</strong>不同退货通知的任务的下架品种不能混包。按任务下架，只能同一个退货批次的才能并包。</p>
+                        </div>
+                    </div>
+                    
+                    <!-- 更多物流管理内容... -->
+                </div>
+                
+                <!-- 批销管理内容 -->
+                <div id="wholesale-management-content" class="hidden">
+                    <div id="wholesale-billing-content" class="content-card hidden">
+                        <h2 class="content-title">批销开单</h2>
+                        <div class="mb-6">
+                            <img src="https://p3-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/super_tool/a22856b04ba841b1bac7036f6da395ef~tplv-a9rns2rl98-image.image?rcl=20251231160656496BA01493A6BF90CA1C&rk3s=8e244e95&rrcfp=f06b921b&x-expires=1769760493&x-signature=kbWu49BB%2BaXir%2F%2BebyKSf3U8T1I%3D" alt="图书批销管理系统" class="w-full max-w-2xl mx-auto rounded-lg shadow-lg">
+                        </div>
+                        <div class="content-text">
+                            <p>批销开单是图书批发销售业务的核心功能，用于为客户创建销售订单并跟踪订单执行情况。</p>
+                        </div>
+                        <div class="content-subtitle">详细操作流程</div>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                            <div class="step-card">
+                                <div class="step-number">1</div>
+                                <div class="step-title">订单创建</div>
+                                <div class="step-text">
+                                    <ol class="list-decimal pl-5">
+                                        <li>登录系统，进入"批销管理-批销开单"</li>
+                                        <li>点击"新增"按钮，创建新订单</li>
+                                        <li>在"客户"字段输入客户名称关键字，系统自动联想</li>
+                                        <li>选择正确的客户信息</li>
+                                        <li>选择订单类型（普通批销/集团采购等）</li>
+                                        <li>设置订单备注信息（可选）</li>
+                                    </ol>
+                                </div>
+                            </div>
+                            
+                            <div class="step-card">
+                                <div class="step-number">2</div>
+                                <div class="step-title">图书添加</div>
+                                <div class="step-text">
+                                    <ol class="list-decimal pl-5">
+                                        <li>在图书明细区域点击"添加图书"</li>
+                                        <li>通过ISBN、书名、作者等信息搜索图书</li>
+                                        <li>在搜索结果中选择目标图书</li>
+                                        <li>输入销售数量</li>
+                                        <li>系统自动计算金额和折扣</li>
+                                        <li>重复操作添加多本图书</li>
+                                    </ol>
+                                </div>
+                            </div>
+                            
+                            <div class="step-card">
+                                <div class="step-number">3</div>
+                                <div class="step-title">订单确认</div>
+                                <div class="step-text">
+                                    <ol class="list-decimal pl-5">
+                                        <li>核对订单总金额和图书清单</li>
+                                        <li>选择结算方式（现结/账期）</li>
+                                        <li>确认配送方式和交货日期</li>
+                                        <li>点击"保存并审核"按钮</li>
+                                        <li>系统生成正式批销订单</li>
+                                        <li>可选择打印订单或发送给客户</li>
+                                    </ol>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="content-subtitle">功能亮点</div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                            <div class="feature-card">
+                                <div class="feature-icon">
+                                    <i class="fa fa-search"></i>
+                                </div>
+                                <div class="feature-title">智能图书检索</div>
+                                <div class="feature-text">支持多维度检索图书，快速找到目标商品</div>
+                            </div>
+                            
+                            <div class="feature-card">
+                                <div class="feature-icon">
+                                    <i class="fa fa-calculator"></i>
+                                </div>
+                                <div class="feature-title">自动折扣计算</div>
+                                <div class="feature-text">根据客户等级和图书类别自动应用折扣规则</div>
+                            </div>
+                            
+                            <div class="feature-card">
+                                <div class="feature-icon">
+                                    <i class="fa fa-bar-chart"></i>
+                                </div>
+                                <div class="feature-title">库存实时检查</div>
+                                <div class="feature-text">实时显示图书库存状态，避免超卖情况</div>
+                            </div>
+                            
+                            <div class="feature-card">
+                                <div class="feature-icon">
+                                    <i class="fa fa-print"></i>
+                                </div>
+                                <div class="feature-title">多格式打印</div>
+                                <div class="feature-text">支持多种订单格式打印，满足不同需求</div>
+                            </div>
+                        </div>
+                        
+                        <div class="content-subtitle">操作技巧</div>
+                        <div class="content-list">
+                            <li><strong>快速添加：</strong>使用条码扫描枪快速添加图书，提高效率</li>
+                            <li><strong>批量修改：</strong>选中多行图书记录，可批量修改折扣或数量</li>
+                            <li><strong>价格查询：</strong>鼠标悬停在图书上可查看历史销售价格</li>
+                            <li><strong>客户历史：</strong>点击客户名称可查看该客户历史订单记录</li>
+                            <li><strong>订单复制：</strong>可复制历史订单快速创建类似订单</li>
+                        </div>
+                        
+                        <div class="content-warning">
+                            <p><strong>重要提醒：</strong></p>
+                            <ul class="list-disc pl-6">
+                                <li>订单一旦审核通过，将自动扣减库存，请确保信息准确</li>
+                                <li>对于账期客户，请确认其信用额度是否充足</li>
+                                <li>特殊折扣需获得相应授权才能应用</li>
+                                <li>订单保存后，可在"批销查询"中查看和管理</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <!-- 更多批销管理内容... -->
+                </div>
+                
+                <!-- 统计分析内容 -->
+                <div id="statistical-analysis-content" class="hidden">
+                    <!-- 业务分析 -->
+                    <div id="business-analysis-content" class="content-card hidden">
+                        <h2 class="content-title">业务分析</h2>
+                        <div class="mb-6">
+                            <img src="https://p3-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/super_tool/b57b5f11ca61461cbc0132a766fd10b2~tplv-a9rns2rl98-image.image?rcl=20251231160656496BA01493A6BF90CA1C&rk3s=8e244e95&rrcfp=f06b921b&x-expires=1769760443&x-signature=4Xe0c9uaaKsgCMpWvQiD6P9Y1Nk%3D" alt="图书管理系统数据分析" class="w-full max-w-2xl mx-auto rounded-lg shadow-lg">
+                        </div>
+                        <div class="content-text">
+                            <p>业务分析是系统中最全面的数据分析工具，用于统计分析全店在特定时间段内的到货、销售、退货等关键业务数据，帮助管理者全面了解业务状况。</p>
+                        </div>
+                        
+                        <div class="content-subtitle">核心功能</div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                            <div class="step-card">
+                                <div class="step-number">📊</div>
+                                <div class="step-title">多维度统计分析</div>
+                                <div class="step-text">
+                                    <ul class="list-disc pl-5">
+                                        <li><strong>版别统计：</strong>按图书出版社进行数据分析</li>
+                                        <li><strong>一级分类统计：</strong>按图书一级分类进行统计</li>
+                                        <li><strong>业务员统计：</strong>按负责业务员进行业绩分析</li>
+                                        <li><strong>供应商统计：</strong>按供应商进行业务往来分析</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            
+                            <div class="step-card">
+                                <div class="step-number">💰</div>
+                                <div class="step-title">关键指标计算</div>
+                                <div class="step-text">
+                                    <ul class="list-disc pl-5">
+                                        <li><strong>毛利率分析：</strong>自动计算并展示不同维度的毛利率</li>
+                                        <li><strong>退货率统计：</strong>监控并分析退货情况</li>
+                                        <li><strong>库存周转率：</strong>评估库存健康状况</li>
+                                        <li><strong>销售增长率：</strong>同比环比销售增长分析</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="content-subtitle">操作指南</div>
+                        <ol class="list-decimal pl-6 mb-6 text-gray-700">
+                            <li>进入"统计分析-业务分析"模块</li>
+                            <li>选择统计时间范围（起始日期和结束日期）</li>
+                            <li>选择统计方式（版别/一级分类/业务员等）</li>
+                            <li>选择是否包含联营商品</li>
+                            <li>点击"查询"按钮生成分析报表</li>
+                            <li>可选择"导出Excel"进行深入分析</li>
+                            <li>使用"打印"功能输出纸质报表</li>
+                        </ol>
+                        
+                        <div class="content-subtitle">数据解读</div>
+                        <div class="content-list">
+                            <li><strong>到货金额：</strong>统计期间内的总进货金额</li>
+                            <li><strong>销售金额：</strong>统计期间内的总销售金额</li>
+                            <li><strong>退货金额：</strong>统计期间内的总退货金额</li>
+                            <li><strong>库存金额：</strong>统计截止日的库存总价值</li>
+                            <li><strong>毛利率：</strong>（销售收入-销售成本）/销售收入×100%</li>
+                            <li><strong>退货率：</strong>退货金额/销售金额×100%</li>
+                        </div>
+                        
+                        <div class="content-warning">
+                            <p><strong>重要提示：</strong></p>
+                            <ul class="list-disc pl-6">
+                                <li>为保证数据准确性，建议使用"一级分类统计"而非"十大类统计"</li>
+                                <li>统计时间范围不宜过长，建议按月或季度进行分析</li>
+                                <li>可结合其他报表（如销售排行）进行综合分析</li>
+                                <li>定期生成业务分析报表，建立数据监控机制</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="content-subtitle">应用场景</div>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div class="bg-blue-50 p-4 rounded-lg">
+                                <h4 class="font-semibold text-blue-800 mb-2">月度经营分析</h4>
+                                <p class="text-sm text-gray-600">用于月度经营会议，全面了解月度业务状况</p>
+                            </div>
+                            <div class="bg-green-50 p-4 rounded-lg">
+                                <h4 class="font-semibold text-green-800 mb-2">业务员业绩考核</h4>
+                                <p class="text-sm text-gray-600">作为业务员绩效考核的重要数据依据</p>
+                            </div>
+                            <div class="bg-purple-50 p-4 rounded-lg">
+                                <h4 class="font-semibold text-purple-800 mb-2">供应商评估</h4>
+                                <p class="text-sm text-gray-600">评估不同供应商的合作效果和贡献度</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 进货销售情况 -->
+                    <div id="purchase-sales-content" class="content-card hidden">
+                        <h2 class="content-title">进货销售情况</h2>
+                        <div class="content-text">
+                            <p>可根据单据日期或调拨日期查询统计分析某货源的进销存退情况(可显示库存实洋)，也可以查询统计某一种图书商品的进销存情况。</p>
+                        </div>
+                        <div class="content-subtitle">查询内容</div>
+                        <ul class="list-disc pl-6 mb-4 text-gray-700">
+                            <li>进货数量及进价折扣或折价</li>
+                            <li>销售数量及销售折扣</li>
+                            <li>退货数量及退货折扣</li>
+                            <li>报废数量</li>
+                            <li>损益数量</li>
+                            <li>调整数量</li>
+                            <li>库存数量及库存码洋和库存实洋</li>
+                        </ul>
+                    </div>
+                    
+                    <!-- 更多统计分析内容 -->
+                    <div id="order-statistics-content" class="content-card hidden">
+                        <h2 class="content-title">订货统计</h2>
+                        <div class="content-text">
+                            <p>可查询某一业务员在一定时间段内针对某一货源的订货情况。</p>
+                        </div>
+                    </div>
+                    
+                    <div id="arrival-statistics-content" class="content-card hidden">
+                        <h2 class="content-title">到货情况</h2>
+                        <div class="content-text">
+                            <p>可以查看在途情况、未入库单据和收货情况查询。</p>
+                        </div>
+                    </div>
+                    
+                    <div id="inventory-statistics-content" class="content-card hidden">
+                        <h2 class="content-title">库存情况</h2>
+                        <div class="content-text">
+                            <p>可以无货位查询(此处无货位商品即已到货分流但目前没有上架的商品品种)，也可点击筛选条件按特定条件查询。</p>
+                        </div>
+                    </div>
+                    
+                    <!-- 其他统计分析子项 -->
+                    <div id="area-inventory-content" class="content-card hidden">
+                        <h2 class="content-title">货区库存情况</h2>
+                        <div class="content-text">
+                            <p>可以按货区查看一书多货位的情况，也可以查询某货区的在架库存情况。</p>
+                        </div>
+                    </div>
+                    
+                    <div id="sales-statistics-content" class="content-card hidden">
+                        <h2 class="content-title">销售情况</h2>
+                        <div class="content-text">
+                            <p>点击筛选条件可以按销售时间段查看某库房的销售数据，或按特定折价情况及销售数量查询销售数据。</p>
+                        </div>
+                    </div>
+                    
+                    <div id="area-sales-content" class="content-card hidden">
+                        <h2 class="content-title">货区销售情况</h2>
+                        <div class="content-text">
+                            <p>点击筛选条件可以按销售时间段查看某个货区或者货位的销售数据，但前提条件必须是销售后台已经结账完成。</p>
+                        </div>
+                    </div>
+                    
+                    <div id="sales-ranking-content" class="content-card hidden">
+                        <h2 class="content-title">销售排行</h2>
+                        <div class="content-text">
+                            <p>点击筛选条件输入销售时间范围，可以按分类以及货区查询销售数据排行前或销售数据排行后N名的销售明细情况。</p>
+                        </div>
+                    </div>
+                    
+                    <div id="source-sales-content" class="content-card hidden">
+                        <h2 class="content-title">货源销售情况</h2>
+                        <div class="content-text">
+                            <p>点击筛选条件输入销售时间范围，可查询货源销售、损益和报废等数据。</p>
+                        </div>
+                    </div>
+                    
+                    <div id="scrap-statistics-content" class="content-card hidden">
+                        <h2 class="content-title">报废统计</h2>
+                        <div class="content-text">
+                            <p>根据报废日期、库房及商品特征等可查询其报废数据。</p>
+                        </div>
+                    </div>
+                    
+                    <div id="profit-loss-statistics-content" class="content-card hidden">
+                        <h2 class="content-title">损益统计</h2>
+                        <div class="content-text">
+                            <p>根据损益日期、库房及商品特征等可查询其损益数据。</p>
+                        </div>
+                    </div>
+                    
+                    <div id="source-profit-loss-content" class="content-card hidden">
+                        <h2 class="content-title">货源损益查询</h2>
+                        <div class="content-text">
+                            <p>点击筛选条件输入销售日期范围，可查询供货单位损益数据情况。</p>
+                        </div>
+                    </div>
+                    
+                    <div id="source-return-content" class="content-card hidden">
+                        <h2 class="content-title">货源退货情况</h2>
+                        <div class="content-text">
+                            <p>点击筛选条件输入退货日期范围，可按货区查询供货单位退货数据情况。</p>
+                        </div>
+                    </div>
+                    
+                    <div id="workload-statistics-content" class="content-card hidden">
+                        <h2 class="content-title">工作量统计</h2>
+                        <div class="content-text">
+                            <p>统计项目分别有到货录入、书目录入、零售收款和批销销售四种，输入操作日期等相关数据可以进行统计分析。</p>
+                        </div>
+                    </div>
+                    
+                    <div id="area-info-content" class="content-card hidden">
+                        <h2 class="content-title">货区相关信息</h2>
+                        <div class="content-text">
+                            <p>选定库房及货区，输入日期范围即可查询该货区相关信息，但不能超过一个月。</p>
+                        </div>
+                    </div>
+                    
+                    <div id="consignment-sales-content" class="content-card hidden">
+                        <h2 class="content-title">联营商品销售统计</h2>
+                        <div class="content-text">
+                            <p>输入销售日期范围，选择核算单位、收款员可统计联营商户的销售情况。</p>
+                        </div>
+                    </div>
+                    
+                    <div id="payment-sales-content" class="content-card hidden">
+                        <h2 class="content-title">按付款方式销售统计</h2>
+                        <div class="content-text">
+                            <p>输入销售日期范围，选择统计项目POS机或收款员，点击查询可统计联营产品或图书音像或全部的销售情况。</p>
+                        </div>
+                    </div>
+                    
+                    <div id="document-summary-content" class="content-card hidden">
+                        <h2 class="content-title">出入库单据汇总统计</h2>
+                        <div class="content-text">
+                            <p>输入统计日期范围，选择库房和统计方式和单据格式可统计查看相关数据。</p>
+                        </div>
+                    </div>
+                    
+                    <div id="customer-query-content" class="content-card hidden">
+                        <h2 class="content-title">顾客查询</h2>
+                        <div class="content-text">
+                            <p>专门为卖场顾客提供查询服务功能。</p>
+                        </div>
+                    </div>
+                    
+                    <div id="stored-value-card-content" class="content-card hidden">
+                        <h2 class="content-title">储值卡消费分店统计</h2>
+                        <div class="content-text">
+                            <p>输入销售日期范围，选择消费形式可统计出储值卡消费情况或者查询消费明细情况。</p>
+                        </div>
+                    </div>
+                    
+                    <div id="stored-value-recharge-content" class="content-card hidden">
+                        <h2 class="content-title">储值卡充值查询</h2>
+                        <div class="content-text">
+                            <p>可统计出某一时间内本店储值卡充值情况(只可以统计本店的充值情况)。</p>
+                        </div>
+                    </div>
+                    
+                    <div id="internal-sales-content" class="content-card hidden">
+                        <h2 class="content-title">内部销售查询</h2>
+                        <div class="content-text">
+                            <p>点击查询条件选择内部客户即系统内各旗县区店，选定对账日期或批销日期和库房后点击确认，可查询该内部客户的相关批销数据。</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 前台结账及查询内容 -->
+                <div id="checkout-query-content" class="hidden">
+                    <!-- 前台销售查询 -->
+                    <div id="front-sales-query-content" class="content-card hidden">
+                        <h2 class="content-title">前台销售查询</h2>
+                        <div class="content-text">
+                            <p>输入核算单位和销售日期范围，不需要后台结账即可查询销售情况，包括书券超付金额、销售小票号及具体销售时间及收银员和POS机号等。</p>
+                        </div>
+                    </div>
+                    
+                    <!-- 前台销售实时监控 -->
+                    <div id="real-time-monitoring-content" class="content-card hidden">
+                        <h2 class="content-title">前台销售实时监控</h2>
+                        <div class="content-text">
+                            <p>点击即可查看所属店号的全部卖场POS机的实时销售统计数据。</p>
+                        </div>
+                    </div>
+                    
+                    <!-- 前台收款查询 -->
+                    <div id="front-payment-query-content" class="content-card hidden">
+                        <h2 class="content-title">前台收款查询</h2>
+                        <div class="content-text">
+                            <p>具体查询某收银员按付款方式的收款统计情况，不需要后台结账即可查询销售情况。</p>
+                        </div>
+                    </div>
+                    
+                    <!-- 特殊缴款方式统计 -->
+                    <div id="special-payment-content" class="content-card hidden">
+                        <h2 class="content-title">特殊缴款方式统计</h2>
+                        <div class="content-text">
+                            <p>即统计查询所属店号全部收银员在此期间的全部特殊缴款情况。包括储值卡和会员卡、退货以及打折消费笔数。</p>
+                        </div>
+                    </div>
+                    
+                    <!-- 联营缴款查询 -->
+                    <div id="consignment-payment-content" class="content-card hidden">
+                        <h2 class="content-title">联营缴款查询</h2>
+                        <div class="content-text">
+                            <p>具体查询某收银员按付款方式针对联营商户的收款统计情况，不需要后台结账即可查询销售情况。</p>
+                        </div>
+                    </div>
+                    
+                    <!-- 联营销售查询 -->
+                    <div id="consignment-sales-query-content" class="content-card hidden">
+                        <h2 class="content-title">联营销售查询</h2>
+                        <div class="content-text">
+                            <p>具体查询联营商户在此期间的销售情况，包括销售小票号及具体销售时间和POS机号等。</p>
+                        </div>
+                    </div>
+                    
+                    <!-- 后台结账 -->
+                    <div id="backend-checkout-content" class="content-card hidden">
+                        <h2 class="content-title">后台结账</h2>
+                        <div class="content-text">
+                            <p>输入核算单位后，点击查询未结账数据，选中销售日期双击后可把当日该核算单位所有有销售的POS机选出，再次勾选要结账的POS机号点击结账即可。</p>
+                        </div>
+                    </div>
+                    
+                    <!-- 打印后台结帐单 -->
+                    <div id="print-checkout-content" class="content-card hidden">
+                        <h2 class="content-title">打印后台结帐单</h2>
+                        <div class="content-text">
+                            <p>可查看已结账单据和未结账单据。打印后台结帐单时，选定结账日期范围（注意此处非销售日期）及核算单位后点击筛选即可。</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 财务管理内容 -->
+                <div id="financial-management-content" class="hidden">
+                    <!-- 发票维护 -->
+                    <div id="invoice-maintenance-content" class="content-card hidden">
+                        <h2 class="content-title">发票维护</h2>
+                        <div class="content-text">
+                            <p>待供货单位寄来发票可以在此新增发票，也可进行修改及删除发票。确保发票信息准确下一步和供货单位的对账信息做关关联。</p>
+                        </div>
+                    </div>
+                    
+                    <!-- 连锁店按单对账 -->
+                    <div id="chain-reconciliation-content" class="content-card hidden">
+                        <h2 class="content-title">连锁店按单对账</h2>
+                        <div class="content-text">
+                            <p>暂时不用</p>
+                        </div>
+                    </div>
+                    
+                    <!-- 连锁店付款确认 -->
+                    <div id="chain-payment-content" class="content-card hidden">
+                        <h2 class="content-title">连锁店付款确认</h2>
+                        <div class="content-text">
+                            <p>暂时不用</p>
+                        </div>
+                    </div>
+                    
+                    <!-- 上市财务报表 -->
+                    <div id="financial-report-content" class="content-card hidden">
+                        <h2 class="content-title">上市财务报表</h2>
+                        <div class="content-text">
+                            <p>输入日期范围后可以按以下八种情况分别统计报表：可以查看以前任意日期的库存码洋及实洋。</p>
+                            <ol class="list-decimal pl-6 mb-4 text-gray-700">
+                                <li>单品种进销存</li>
+                                <li>发出商品明细表</li>
+                                <li>发出商品汇总表（按客户）</li>
+                                <li>财务帐与业务帐核对</li>
+                                <li>商品进销存按商品特征汇总</li>
+                                <li>商品进销存按十大类汇总</li>
+                                <li>商品进销存按营销类汇总</li>
+                                <li>商品进销存安货源汇总</li>
+                            </ol>
+                        </div>
+                    </div>
+                    
+                    <!-- 自进货按单对账 -->
+                    <div id="self-purchase-reconciliation-content" class="content-card hidden">
+                        <h2 class="content-title">自进货按单对账</h2>
+                        <div class="content-text">
+                            <p>根据以销定结、滚动结算的原则，勾发货、退货单据，形成对帐批次并生成对账单，进行对账。</p>
+                        </div>
+                    </div>
+                    
+                    <!-- 自进货按单结算 -->
+                    <div id="self-purchase-settlement-content" class="content-card hidden">
+                        <h2 class="content-title">自进货按单结算</h2>
+                        <div class="content-text">
+                            <p>将与供货单位对账后的到货、退货单据与发票信息进行关联，完成对账。</p>
+                        </div>
+                    </div>
+                    
+                    <!-- 发票信息审核 -->
+                    <div id="invoice-audit-content" class="content-card hidden">
+                        <h2 class="content-title">发票信息审核</h2>
+                        <div class="content-text">
+                            <p>全部流程和签字后，对审核单进审核通过的操作，完成结算工作。</p>
+                        </div>
+                    </div>
+                    
+                    <!-- 已结账撤销 -->
+                    <div id="settlement-cancellation-content" class="content-card hidden">
+                        <h2 class="content-title">已结账撤销</h2>
+                        <div class="content-text">
+                            <p>对发现有问题的已经承付的的对账单据和发票进行撤销操作。此操作需要相关批复或流程后再进行操作。</p>
+                        </div>
+                    </div>
+                    
+                    <!-- 北配对账 -->
+                    <div id="beipei-reconciliation-content" class="content-card hidden">
+                        <h2 class="content-title">北配对账</h2>
+                        <div class="content-text">
+                            <p>输入上报日期，点'查询'，会出现销售批次，勾选后点击确认完成上报。</p>
+                        </div>
+                    </div>
+                </div>
+                </div>
+            </main>
+        </div>
+    </div>
+    
+    <!-- 移动端侧边栏 -->
+    <div id="mobile-sidebar" class="fixed inset-0 bg-gray-600 bg-opacity-75 z-50 hidden">
+        <div class="w-64 h-full bg-white overflow-y-auto">
+            <div class="p-4 bg-primary text-white flex justify-between items-center">
+                <h1 class="text-xl font-bold">图书业务系统</h1>
+                <button id="close-mobile-menu" class="text-white">
+                    <i class="fa fa-times"></i>
+                </button>
+            </div>
+
+            <nav class="p-4">
+                <!-- 移动端菜单内容，与桌面端相同 -->
+                <ul class="space-y-2">
+                    <!-- 系统设置 -->
+                    <li>
+                        <div class="sidebar-item" data-menu="mobile-system-settings">
+                            <i class="fa fa-cog w-6"></i>
+                            <span>系统设置</span>
+                            <i class="fa fa-chevron-down ml-auto"></i>
+                        </div>
+                        <ul class="submenu system hidden mt-2 space-y-1" id="mobile-system-settings-submenu">
+                            <li><a href="#" class="submenu-item" data-content="permissions">权限设定/新增角色</a></li>
+                            <li><a href="#" class="submenu-item" data-content="operators">操作员定义</a></li>
+                            <li><a href="#" class="submenu-item" data-content="accounting-units">核算单位</a></li>
+                            <!-- 更多子菜单项 -->
+                        </ul>
+                    </li>
+                    
+                    <!-- 其他菜单项 -->
+                </ul>
+            </nav>
+        </div>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 菜单展开/收起
+            const menuItems = document.querySelectorAll('[data-menu]');
+            menuItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    const menuId = this.getAttribute('data-menu');
+                    const submenu = document.getElementById(menuId + '-submenu');
+                    
+                    // 切换子菜单显示状态
+                    if (submenu) {
+                        submenu.classList.toggle('hidden');
+                        
+                        // 切换箭头方向
+                        const arrow = this.querySelector('.fa-chevron-down');
+                        if (arrow) {
+                            if (submenu.classList.contains('hidden')) {
+                                arrow.classList.remove('fa-chevron-up');
+                                arrow.classList.add('fa-chevron-down');
+                            } else {
+                                arrow.classList.remove('fa-chevron-down');
+                                arrow.classList.add('fa-chevron-up');
+                            }
+                        }
+                    }
+                });
+            });
+            
+            // 移动端菜单
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const closeMobileMenuButton = document.getElementById('close-mobile-menu');
+            const mobileSidebar = document.getElementById('mobile-sidebar');
+            
+            mobileMenuButton.addEventListener('click', function() {
+                mobileSidebar.classList.remove('hidden');
+            });
+            
+            closeMobileMenuButton.addEventListener('click', function() {
+                mobileSidebar.classList.add('hidden');
+            });
+            
+            // 内容切换
+            const submenuItems = document.querySelectorAll('.submenu-item');
+            submenuItems.forEach(item => {
+                item.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    // 移除所有子菜单项的活动状态
+                    submenuItems.forEach(i => i.classList.remove('active'));
+                    
+                    // 添加当前子菜单项的活动状态
+                    this.classList.add('active');
+                    
+                    // 获取内容ID
+                    const contentId = this.getAttribute('data-content');
+                    
+                    // 隐藏所有内容区域
+                    const allMainContents = document.querySelectorAll('#content-area > div');
+                    allMainContents.forEach(content => {
+                        content.classList.add('hidden');
+                    });
+                    
+                    // 隐藏所有子内容区域
+                    const allSubContents = document.querySelectorAll('#content-area .content-card');
+                    allSubContents.forEach(content => {
+                        content.classList.add('hidden');
+                    });
+                    
+                    // 显示选中的内容
+                    const selectedContent = document.getElementById(contentId + '-content');
+                    if (selectedContent) {
+                        // 显示父级内容区域
+                        const parentContent = selectedContent.closest('#content-area > div');
+                        if (parentContent) {
+                            parentContent.classList.remove('hidden');
+                        }
+                        // 显示选中的内容区域
+                        selectedContent.classList.remove('hidden');
+                    } else {
+                        // 如果内容不存在，显示欢迎页面
+                        document.getElementById('welcome-content').classList.remove('hidden');
+                    }
+                    
+                    // 在移动端关闭侧边栏
+                    mobileSidebar.classList.add('hidden');
+                });
+            });
+            
+            // 搜索功能
+            const searchInput = document.getElementById('search-input');
+            
+            // 搜索图标点击事件
+            const searchIcon = searchInput.nextElementSibling;
+            searchIcon.addEventListener('click', performSearch);
+            
+            // 回车键搜索
+            searchInput.addEventListener('keyup', function(e) {
+                if (e.key === 'Enter') {
+                    performSearch();
+                }
+            });
+            
+            function performSearch() {
+                const searchTerm = searchInput.value.toLowerCase().trim();
+                
+                // 清除之前的搜索结果
+                clearSearchResults();
+                
+                if (searchTerm) {
+                    const allContentCards = document.querySelectorAll('#content-area .content-card');
+                    let found = false;
+                    const results = [];
+                    
+                    // 搜索所有内容卡片
+                    allContentCards.forEach(card => {
+                        const title = card.querySelector('.content-title')?.textContent.toLowerCase() || '';
+                        const contentText = card.textContent.toLowerCase();
+                        const moduleType = card.classList.contains('logistics') ? '物流管理' : 
+                                         card.classList.contains('system') ? '系统设置' :
+                                         card.classList.contains('business') ? '商流管理' :
+                                         card.classList.contains('arrival') ? '到货管理' :
+                                         card.classList.contains('wholesale') ? '批销管理' :
+                                         card.classList.contains('analysis') ? '统计分析' :
+                                         card.classList.contains('checkout') ? '前台结账' :
+                                         card.classList.contains('financial') ? '财务管理' : '其他';
+                        
+                        // 计算匹配度
+                        const titleMatch = title.includes(searchTerm) ? 2 : 0;
+                        const contentMatch = contentText.includes(searchTerm) ? 1 : 0;
+                        const totalMatch = titleMatch + contentMatch;
+                        
+                        if (totalMatch > 0) {
+                            results.push({
+                                card: card,
+                                title: card.querySelector('.content-title')?.textContent || '未命名',
+                                module: moduleType,
+                                matchScore: totalMatch,
+                                titleMatch: titleMatch > 0
+                            });
+                            found = true;
+                        }
+                    });
+                    
+                    // 按匹配度排序
+                    results.sort((a, b) => b.matchScore - a.matchScore);
+                    
+                    if (found) {
+                        displaySearchResults(results, searchTerm);
+                    } else {
+                        showNoResultsMessage(searchTerm);
+                    }
+                } else {
+                    // 如果搜索框为空，显示欢迎页面
+                    showWelcomePage();
+                }
+            }
+            
+            function displaySearchResults(results, searchTerm) {
+                // 隐藏所有内容
+                const allMainContents = document.querySelectorAll('#content-area > div');
+                allMainContents.forEach(content => content.classList.add('hidden'));
+                
+                // 创建搜索结果容器
+                let searchResultsContainer = document.getElementById('search-results-container');
+                if (!searchResultsContainer) {
+                    searchResultsContainer = document.createElement('div');
+                    searchResultsContainer.id = 'search-results-container';
+                    searchResultsContainer.className = 'content-card';
+                    document.getElementById('content-area').appendChild(searchResultsContainer);
+                }
+                
+                // 清空并重新填充搜索结果
+                searchResultsContainer.innerHTML = '';
+                
+                // 添加搜索结果标题
+                const header = document.createElement('div');
+                header.innerHTML = `
+                    <h2 class="content-title flex items-center gap-3">
+                        <i class="fa fa-search text-primary"></i>
+                        搜索结果 (${results.length})
+                    </h2>
+                    <div class="content-text">
+                        <p>搜索关键词: <span class="font-semibold text-primary">"${searchTerm}"</span></p>
+                    </div>
+                `;
+                searchResultsContainer.appendChild(header);
+                
+                // 添加结果列表
+                const resultsList = document.createElement('div');
+                resultsList.className = 'mt-6 space-y-4';
+                
+                results.forEach(result => {
+                    const resultItem = document.createElement('div');
+                    resultItem.className = `p-4 rounded-lg border border-gray-200 hover:shadow-md transition-all duration-300 cursor-pointer ${result.titleMatch ? 'bg-primary/5 border-primary/30' : 'bg-gray-50'}`;
+                    
+                    // 高亮匹配的文本
+                    let highlightedTitle = result.title;
+                    if (result.title.toLowerCase().includes(searchTerm)) {
+                        const regex = new RegExp(`(${escapeRegExp(searchTerm)})`, 'gi');
+                        highlightedTitle = result.title.replace(regex, '<mark class="bg-yellow-200 px-1 rounded">$1</mark>');
+                    }
+                    
+                    resultItem.innerHTML = `
+                        <div class="flex items-start justify-between">
+                            <div>
+                                <h3 class="text-lg font-semibold mb-1">${highlightedTitle}</h3>
+                                <p class="text-sm text-gray-600 mb-2">
+                                    <i class="fa fa-folder text-primary mr-2"></i>${result.module}
+                                </p>
+                            </div>
+                            <span class="text-xs px-2 py-1 rounded-full ${result.titleMatch ? 'bg-primary/20 text-primary' : 'bg-gray-200 text-gray-600'}">
+                                ${result.titleMatch ? '标题匹配' : '内容匹配'}
+                            </span>
+                        </div>
+                    `;
+                    
+                    // 点击结果项跳转到对应内容
+                    resultItem.addEventListener('click', () => {
+                        showContentCard(result.card);
+                    });
+                    
+                    resultsList.appendChild(resultItem);
+                });
+                
+                searchResultsContainer.appendChild(resultsList);
+                searchResultsContainer.classList.remove('hidden');
+            }
+            
+            function showNoResultsMessage(searchTerm) {
+                // 隐藏所有内容
+                const allMainContents = document.querySelectorAll('#content-area > div');
+                allMainContents.forEach(content => content.classList.add('hidden'));
+                
+                // 创建无结果提示
+                let noResultsContainer = document.getElementById('no-results-container');
+                if (!noResultsContainer) {
+                    noResultsContainer = document.createElement('div');
+                    noResultsContainer.id = 'no-results-container';
+                    noResultsContainer.className = 'content-card text-center py-12';
+                    document.getElementById('content-area').appendChild(noResultsContainer);
+                }
+                
+                noResultsContainer.innerHTML = `
+                    <div class="max-w-md mx-auto">
+                        <div class="w-20 h-20 mx-auto mb-6 rounded-full bg-red-50 flex items-center justify-center">
+                            <i class="fa fa-search text-red-400 text-3xl"></i>
+                        </div>
+                        <h3 class="text-xl font-semibold mb-3">未找到匹配的内容</h3>
+                        <p class="text-gray-600 mb-6">没有找到与 <span class="font-semibold text-primary">"${searchTerm}"</span> 相关的内容</p>
+                        <button id="back-to-welcome" class="px-6 py-2 bg-primary text-white rounded-md hover:bg-primary/90 transition-colors duration-300">
+                            返回首页
+                        </button>
+                    </div>
+                `;
+                
+                // 添加返回首页按钮事件
+                document.getElementById('back-to-welcome').addEventListener('click', showWelcomePage);
+                
+                noResultsContainer.classList.remove('hidden');
+            }
+            
+            function showWelcomePage() {
+                // 隐藏搜索结果相关容器
+                const searchContainers = ['search-results-container', 'no-results-container'];
+                searchContainers.forEach(id => {
+                    const container = document.getElementById(id);
+                    if (container) container.classList.add('hidden');
+                });
+                
+                // 显示欢迎页面
+                const allMainContents = document.querySelectorAll('#content-area > div');
+                allMainContents.forEach(content => content.classList.add('hidden'));
+                document.getElementById('welcome-content').classList.remove('hidden');
+            }
+            
+            function showContentCard(card) {
+                // 隐藏搜索结果容器
+                const searchContainers = ['search-results-container', 'no-results-container'];
+                searchContainers.forEach(id => {
+                    const container = document.getElementById(id);
+                    if (container) container.classList.add('hidden');
+                });
+                
+                // 显示对应的父级内容区域和卡片
+                const parentContent = card.closest('#content-area > div');
+                if (parentContent) {
+                    parentContent.classList.remove('hidden');
+                }
+                
+                // 隐藏同区域的其他卡片
+                const siblingCards = parentContent ? parentContent.querySelectorAll('.content-card') : [];
+                siblingCards.forEach(c => c.classList.add('hidden'));
+                
+                // 显示选中的卡片
+                card.classList.remove('hidden');
+            }
+            
+            function clearSearchResults() {
+                const searchContainers = ['search-results-container', 'no-results-container'];
+                searchContainers.forEach(id => {
+                    const container = document.getElementById(id);
+                    if (container) container.classList.add('hidden');
+                });
+            }
+            
+            function escapeRegExp(string) {
+                return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            }
+            
+            function showWelcomePage() {
+                // 隐藏所有内容
+                const allMainContents = document.querySelectorAll('#content-area > div');
+                allMainContents.forEach(content => content.classList.add('hidden'));
+                
+                // 隐藏搜索结果容器
+                clearSearchResults();
+                
+                // 显示欢迎页面
+                document.getElementById('welcome-content').classList.remove('hidden');
+            }
+            
+            // 主题切换
+            const themeToggle = document.getElementById('theme-toggle');
+            themeToggle.addEventListener('click', function() {
+                const body = document.body;
+                const icon = this.querySelector('i');
+                
+                if (body.classList.contains('dark')) {
+                    body.classList.remove('dark');
+                    body.classList.add('bg-gray-50');
+                    icon.classList.remove('fa-sun-o');
+                    icon.classList.add('fa-moon-o');
+                } else {
+                    body.classList.add('dark');
+                    body.classList.remove('bg-gray-50');
+                    icon.classList.remove('fa-moon-o');
+                    icon.classList.add('fa-sun-o');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
