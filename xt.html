@@ -1042,8 +1042,7 @@
                             <li>创建和管理系统角色</li>
                             <li>为角色分配功能权限</li>
                             <li>设置数据访问权限</li>
-                            <li>权限继承和覆盖规则</li>
-                            <li>权限生效和刷新机制</li>
+                            <li>双击或点击修改可更改角色权限</li>
                         </div>
                     </div>
                     
@@ -1059,7 +1058,7 @@
                             <li>分配用户角色和权限</li>
                             <li>设置账号状态和有效期</li>
                             <li>重置密码和账号锁定</li>
-                            <li>操作员信息维护</li>
+                            <li>POS系统的打折授权在此处增加或更改。每个工作人员要初始密码进行修改，并对自己的密码要妥善保管</li>
                         </div>
                     </div>
                     
@@ -1071,11 +1070,7 @@
                         </div>
                         <div class="content-subtitle system">功能说明</div>
                         <div class="content-list">
-                            <li>创建和管理核算单位</li>
-                            <li>设置核算单位属性</li>
-                            <li>配置核算关系</li>
-                            <li>核算单位数据隔离</li>
-                            <li>核算单位报表生成</li>
+                            <li>一般字典/核算单位/新增(三位数编号)</li>
                         </div>
                     </div>
                     
@@ -1087,11 +1082,7 @@
                         </div>
                         <div class="content-subtitle system">功能说明</div>
                         <div class="content-list">
-                            <li>创建和管理仓库信息</li>
-                            <li>设置仓库属性和容量</li>
-                            <li>配置仓库区域划分</li>
-                            <li>仓库权限管理</li>
-                            <li>仓库状态监控</li>
+                            <li>库房设定/新增(随机编号)</li>
                         </div>
                     </div>
                     
@@ -1099,28 +1090,28 @@
                     <div id="area-dictionary-content" class="content-card system hidden">
                         <h2 class="content-title system">货区字典表</h2>
                         <div class="content-text">
-                            <p>货区字典表功能用于管理系统中的货区信息，为库存管理提供基础数据支持。</p>
+                            <p>货区字典表功能用于管理系统中的货区信息，为库存管理提供基础数据支持。新增(四位数编号)</p>
                         </div>
                     </div>
                     
                     <div id="location-dictionary-content" class="content-card system hidden">
                         <h2 class="content-title system">货位字典表</h2>
                         <div class="content-text">
-                            <p>货位字典表功能用于管理系统中的货位信息，支持精细化库存管理。</p>
+                            <p>货位字典表功能用于管理系统中的货位信息，支持精细化库存管理。新增(八位数编号)/，暂不能使用批量增加</p>
                         </div>
                     </div>
                     
                     <div id="container-dictionary-content" class="content-card system hidden">
                         <h2 class="content-title system">容器字典表</h2>
                         <div class="content-text">
-                            <p>容器字典表功能用于管理系统中的容器信息，支持物流容器标准化管理。</p>
+                            <p>容器字典表功能用于管理系统中的容器信息，支持物流容器标准化管理。新增(五位数编号)</p>
                         </div>
                     </div>
                     
                     <div id="area-settings-content" class="content-card system hidden">
                         <h2 class="content-title system">货区综合设置</h2>
                         <div class="content-text">
-                            <p>货区综合设置功能用于配置货区的综合属性和参数。</p>
+                            <p>货区综合设置功能用于配置货区的综合属性和参数。货区综合设置，可增加或修改该货区的分类</p>
                         </div>
                     </div>
                     
@@ -1141,56 +1132,56 @@
                     <div id="pos-definition-content" class="content-card system hidden">
                         <h2 class="content-title system">POS机定义</h2>
                         <div class="content-text">
-                            <p>POS机定义功能用于管理系统中的POS终端设备信息。</p>
+                            <p>POS机定义功能用于管理系统中的POS终端设备信息。可新增POS机，录入编号(两位数编号)，类型可不选，选择核算单位后点保存，生成注册编号(用于新的POS机登陆系统)。必须选定所管库房，否则后台结账提示错误，可修改核算单位。</p>
                         </div>
                     </div>
                     
                     <div id="smart-replenishment-content" class="content-card system hidden">
                         <h2 class="content-title system">智能添货参数</h2>
                         <div class="content-text">
-                            <p>智能添货参数功能用于配置智能添货系统的运行参数。</p>
+                            <p>智能添货参数功能用于配置智能添货系统的运行参数。业务员应科学合理的添加修改每项参数，分析出来的数据更加科学准确</p>
                         </div>
                     </div>
                     
                     <div id="login-release-content" class="content-card system hidden">
                         <h2 class="content-title system">解除登陆占用</h2>
                         <div class="content-text">
-                            <p>解除登陆占用功能用于解决用户账号被锁定的问题。</p>
+                            <p>解除登陆占用功能用于解决用户账号被锁定的问题。解除登陆占用，可在用户不能登陆系统时提示已登陆的情况下删除该用户</p>
                         </div>
                     </div>
                     
                     <div id="常备书参数-content" class="content-card system hidden">
                         <h2 class="content-title system">常备书参数设置</h2>
                         <div class="content-text">
-                            <p>常备书参数设置功能用于配置常备书管理的相关参数。</p>
+                            <p>常备书参数设置功能用于配置常备书管理的相关参数。由业务员或营业员设定具体数值，利于业务工作的开展</p>
                         </div>
                     </div>
                     
                     <div id="system-parameters-content" class="content-card system hidden">
                         <h2 class="content-title system">系统参数设置</h2>
                         <div class="content-text">
-                            <p>系统参数设置功能用于配置系统的全局参数和选项。</p>
+                            <p>系统参数设置功能用于配置系统的全局参数和选项。由管理员在系统初建时设置，一般不允许更改其数值。</p>
                         </div>
                     </div>
                     
                     <div id="discount-definition-content" class="content-card system hidden">
                         <h2 class="content-title system">前台折扣定义</h2>
                         <div class="content-text">
-                            <p>前台折扣定义功能用于设置前台销售的折扣规则。</p>
+                            <p>前台折扣定义功能用于设置前台销售的折扣规则。可由卖场经理或主管负责设定折扣。该人员所设定折扣为最低折扣，可授权打折的为大于等于最低折扣数值</p>
                         </div>
                     </div>
                     
                     <div id="consignment-salesman-content" class="content-card system hidden">
                         <h2 class="content-title system">联营营业员设置</h2>
                         <div class="content-text">
-                            <p>联营营业员设置功能用于管理联营商品的营业员信息。</p>
+                            <p>联营营业员设置功能用于管理联营商品的营业员信息。由网管设定联营商户的营业员。联营商户由集团信息中心关联合同依据添加。</p>
                         </div>
                     </div>
                     
                     <div id="supplier-salesman-content" class="content-card system hidden">
                         <h2 class="content-title system">供应商业务员对照</h2>
                         <div class="content-text">
-                            <p>供应商业务员对照功能用于建立供应商与业务员的对应关系。</p>
+                            <p>供应商业务员对照功能用于建立供应商与业务员的对应关系。按业务员所管不同供应商分别添加</p>
                         </div>
                     </div>
                 </div>
@@ -2609,3 +2600,4 @@
     </script>
 </body>
 </html>
+
