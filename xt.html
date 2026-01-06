@@ -2004,7 +2004,7 @@
                     <div id="invoice-maintenance-content" class="content-card financial hidden">
                         <h2 class="content-title financial">发票维护</h2>
                         <div class="content-text">
-                            <p>发票维护功能用于管理和维护系统中的发票信息，确保财务数据的准确性。</p>
+                            <p>待供货单位寄来发票可以在此新增发票，也可进行修改及删除发票。确保发票信息准确下一步和供货单位的对账信息做关关联。</p>
                         </div>
                         <div class="content-subtitle financial">功能说明</div>
                         <div class="content-list">
@@ -2034,21 +2034,32 @@
                     <div id="financial-report-content" class="content-card financial hidden">
                         <h2 class="content-title financial">上市财务报表</h2>
                         <div class="content-text">
-                            <p>上市财务报表功能用于生成符合上市要求的财务报表。</p>
+                            <p>输入日期范围后可以按以下八种情况分别统计报表：可以查看以前任意日期的库存码洋及实洋。1)	单品种进销存2)	发出商品明细表3)	发出商品汇总表（按客户）4)	财务帐与业务帐核对5)	商品进销存按商品特征汇总6)	商品进销存按十大类汇总7)	商品进销存按营销类汇总8)	商品进销存安货源汇总</p>
                         </div>
                     </div>
                     
                     <div id="self-purchase-reconciliation-content" class="content-card financial hidden">
                         <h2 class="content-title financial">自进货按单对账</h2>
                         <div class="content-text">
-                            <p>自进货按单对账功能用于与供应商进行自进货的按单对账。</p>
+                            <p>自进货按单对账功能用于与供应商进行自进货的按单对账。财务对账--》自进货对账--》发票维护--》自进货结算--》发票信息审核。根据以销定结、滚动结算的原则，勾发货、退货单据，形成对帐批次并生成对账单，进行对账。进入[自进货按单对账]菜单 默认选项卡就是[确定对账单据]，再此查询到要对账的供货单位，点击【筛选】按钮通过条件筛选出该货源未结账的到货单据和未抵扣的退货单据，打勾选择需要与供货单位的单据单据，点击【生成对账单】，再进入[维护对账单]的选项卡内将刚才生成的对账单打印或者导出。传送予供货单位。</p>
                         </div>
                     </div>
                     
                     <div id="self-purchase-settlement-content" class="content-card financial hidden">
                         <h2 class="content-title financial">自进货按单结算</h2>
                         <div class="content-text">
-                            <p>自进货按单结算功能用于处理自进货的按单结算。</p>
+                            <p>自进货按单结算功能用于处理自进货的按单结算。将与供货单位对账后的到货、退货单据与发票信息进行关联，完成对账。
+对账单据选择：
+1：选择对账的供货单位，对账日期等检索条件后，点按【查询】按钮进行对账单据检索。
+2：点按【保存】按钮，对本次选择参加结算的单据进行保存并返回上级窗口。
+2：发票选择：选择当前供货单位开具的发票。
+3：选择要参加本次结算的到货单和退货单。
+4：点击【发票提审】，弹出《付款审核申请单》打印窗口，打印后走相关流程、签字最后交于财务人员等待审核。
+退货单据删除：选择退货单据，点按【退货单据删除】按钮，删除选择的退货单据。
+发票放弃：对于选择的发票存在问题时，可以选择放弃，重新选择发票。
+点按【付款审核单】进行打印《付款审核申请单》，打印后走相关流程、签字最后交于财务人员等待审核。
+点按【否决单据】来查询被财务审核时否决的结算单据，对其进行修改后在提交进行发票审核申请。
+注意：在选择发票信息后，再选择本次参加结算的到货、退货单据。</p>
                         </div>
                     </div>
                     
@@ -2606,6 +2617,7 @@
     </script>
 </body>
 </html>
+
 
 
 
