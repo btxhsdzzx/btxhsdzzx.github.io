@@ -1505,7 +1505,7 @@
                             <img src="https://p3-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/super_tool/a22856b04ba841b1bac7036f6da395ef~tplv-a9rns2rl98-image.image?rcl=20251231160656496BA01493A6BF90CA1C&rk3s=8e244e95&rrcfp=f06b921b&x-expires=1769760493&x-signature=kbWu49BB%2BaXir%2F%2BebyKSf3U8T1I%3D" alt="图书批销管理系统" class="w-full max-w-2xl mx-auto rounded-lg shadow-lg">
                         </div>
                         <div class="content-text">
-                            <p>批销开单是图书批发销售业务的核心功能，用于为客户创建销售订单并跟踪订单执行情况。</p>
+                            <p>批销开单是图书批发销售业务的核心功能，批销是通过库房的库存生成一个批量销售的订单，作用于大客户批量购买后期付款的结账。</p>
                         </div>
                         <div class="content-subtitle wholesale">详细操作流程</div>
                         
@@ -1516,11 +1516,11 @@
                                 <div class="step-text">
                                     <ol class="list-decimal pl-5">
                                         <li>登录系统，进入"批销管理-批销开单"</li>
-                                        <li>点击"新增"按钮，创建新订单</li>
-                                        <li>在"客户"字段输入客户名称关键字，系统自动联想</li>
-                                        <li>选择正确的客户信息</li>
-                                        <li>选择订单类型（普通批销/集团采购等）</li>
-                                        <li>设置订单备注信息（可选）</li>
+                                        <li>输入批销书目的条码（或按F4查找书目），输入批销册数后回车，也可以按F2键提取到货或转移批次进行整单批销。</li>
+                                        <li>以上流程可以打印配货单来查看和校核，整单无误后点击F12确认</li>
+                                        <li>如果是托收客户虽显示付款界面但不需要操作，现金客户可填入金额。</li>
+                                        <li>如果操作而未确认数据会暂存该账号内，同时库存数量也被占用。确认后库存和货区库存同时减掉。</li>
+                                        <li>说明：按折扣进货方式的品种在输入购货单位前，如果勾选一书一折，则批销的折扣=发货折扣+上浮折扣，且折扣可以随意改动（需要修改的权限及密码）；如果勾选的是整单折扣，则批销的折扣=客户档案中定义的固定折扣，后期修改折扣时需要修改权限及密码。批销开单人员必须是在【批销大厅设置】中设置的该批销库房的批销人员。</li>
                                     </ol>
                                 </div>
                             </div>
@@ -1530,8 +1530,7 @@
                                 <div class="step-title">图书添加</div>
                                 <div class="step-text">
                                     <ol class="list-decimal pl-5">
-                                        <li>在图书明细区域点击"添加图书"</li>
-                                        <li>通过ISBN、书名、作者等信息搜索图书</li>
+                                        <li>通过ISBN信息搜索图书</li>
                                         <li>在搜索结果中选择目标图书</li>
                                         <li>输入销售数量</li>
                                         <li>系统自动计算金额和折扣</li>
@@ -1548,9 +1547,9 @@
                                         <li>核对订单总金额和图书清单</li>
                                         <li>选择结算方式（现结/账期）</li>
                                         <li>确认配送方式和交货日期</li>
-                                        <li>点击"保存并审核"按钮</li>
+                                        <li>点击"确认"按钮</li>
                                         <li>系统生成正式批销订单</li>
-                                        <li>可选择打印订单或发送给客户</li>
+                                        <li>可选择打印订单送给客户</li>
                                     </ol>
                                 </div>
                             </div>
@@ -1594,7 +1593,7 @@
                         <div class="content-subtitle wholesale">操作技巧</div>
                         <div class="content-list">
                             <li><strong>快速添加：</strong>使用条码扫描枪快速添加图书，提高效率</li>
-                            <li><strong>批量修改：</strong>选中多行图书记录，可批量修改折扣或数量</li>
+                            <li><strong>单条修改：</strong>选中一行图书记录，可修改品种或数量</li>
                             <li><strong>价格查询：</strong>鼠标悬停在图书上可查看历史销售价格</li>
                             <li><strong>客户历史：</strong>点击客户名称可查看该客户历史订单记录</li>
                             <li><strong>订单复制：</strong>可复制历史订单快速创建类似订单</li>
@@ -1615,14 +1614,11 @@
                     <div id="later-verification-content" class="content-card wholesale hidden">
                         <h2 class="content-title wholesale">后期核销</h2>
                         <div class="content-text">
-                            <p>后期核销功能用于处理批销订单的款项结算和核销工作，确保财务流程的完整性和准确性。</p>
+                            <p>后期核销功能用于处理批销订单的款项结算和核销工作，确保财务流程的完整性和准确性。据选出未交款的单据，在本次交款中输入交款金额后回车，勾选核销单后点击交款/核销确认 </p>
                         </div>
                         <div class="content-subtitle wholesale">功能说明</div>
                         <div class="content-list">
-                            <li>支持多种结算方式的核销处理</li>
-                            <li>可按客户、订单号等条件筛选待核销订单</li>
-                            <li>提供批量核销功能，提高工作效率</li>
-                            <li>核销完成后自动更新订单状态和财务数据</li>
+                            <li>点击进入后期核销之前，需要在批销后期核销中选择购货单位，否则无法进入后期核销；在后期核销时，必须有本次交款+总余额>=核销单据实洋。</li>
                         </div>
                     </div>
                     
@@ -1630,7 +1626,7 @@
                     <div id="wholesale-return-content" class="content-card wholesale hidden">
                         <h2 class="content-title wholesale">批销退货</h2>
                         <div class="content-text">
-                            <p>批销退货功能用于处理客户的退货请求，包括退货申请、审核、退款等流程。</p>
+                            <p>批销后如需退货，可以在此模块操作。需注意对应的批销客户及批销大厅，所退货数量及品种由之前批销完成的数据有所限制，简单的说就是只有批销过的数据才能做批销退货。备注：客户结算后也可以退货。</p>
                         </div>
                         <div class="content-subtitle wholesale">操作流程</div>
                         <ol class="list-decimal pl-6 mb-4 text-gray-700">
@@ -1647,7 +1643,7 @@
                     <div id="wholesale-split-content" class="content-card wholesale hidden">
                         <h2 class="content-title wholesale">批销拆单</h2>
                         <div class="content-text">
-                            <p>批销拆单功能用于将一个大订单拆分成多个小订单，便于分批次发货和管理。</p>
+                            <p>批销拆单功能用于将一个大订单拆分成多个小订单，便于分批次发货和管理。当账期就要到了，但客户还无法结算时，可使用此功能向总部申请结算延期，延期的单据可以整单，也可以拆单，申请延期的客户不能进行其他操作。</p>
                         </div>
                         <div class="content-subtitle wholesale">适用场景</div>
                         <div class="content-list">
@@ -1666,10 +1662,7 @@
                         </div>
                         <div class="content-subtitle wholesale">功能说明</div>
                         <div class="content-list">
-                            <li>查看拆分后的订单详情</li>
-                            <li>确认拆分订单的发货信息</li>
-                            <li>调整拆分订单的图书数量和价格</li>
-                            <li>确认拆分订单的客户信息和配送方式</li>
+                            <li>当拆单申请总部同意并下发，连锁店需使用此功能确认后，才算延期成功。</li>
                         </div>
                     </div>
                     
@@ -1693,7 +1686,7 @@
                     <div id="wholesale-query-content" class="content-card wholesale hidden">
                         <h2 class="content-title wholesale">批销查询</h2>
                         <div class="content-text">
-                            <p>批销查询功能用于查询和管理批销订单，支持多种查询条件和查询方式。</p>
+                            <p>批销查询功能用于查询和管理批销订单，支持多种查询条件和查询方式。对已批销的单据可按确认状态和对账状态进行查看单据情况。</p>
                         </div>
                         <div class="content-subtitle wholesale">查询条件</div>
                         <div class="content-list">
@@ -1710,15 +1703,11 @@
                     <div id="wholesale-hall-content" class="content-card wholesale hidden">
                         <h2 class="content-title wholesale">批销大厅设置</h2>
                         <div class="content-text">
-                            <p>批销大厅设置功能用于配置批销大厅的相关参数和选项，优化批销业务流程。</p>
+                            <p>批销大厅设置功能用于配置批销大厅的相关参数和选项，优化批销业务流程。一个批销大厅只能对应一个库房，只有改库房类型为销售卖场的时候才可以添加，只有该库房的所属人员，通过批销大厅设置中所属人员功能设定后，才能使用此批销大厅 。</p>
                         </div>
                         <div class="content-subtitle wholesale">设置项</div>
                         <div class="content-list">
-                            <li>批销大厅显示选项</li>
-                            <li>默认折扣规则设置</li>
-                            <li>批销订单流程配置</li>
-                            <li>权限控制设置</li>
-                            <li>打印模板配置</li>
+                            <li>操作方式：添加，输入编号，名称，核算单位，然后保存后，双击该条目信息，选择库房，选择管理人员。</li>
                         </div>
                     </div>
                     
@@ -1732,7 +1721,7 @@
                         <div class="content-list">
                             <li>客户基本信息维护</li>
                             <li>联系方式和地址管理</li>
-                            <li>信用额度设置和调整</li>
+                            <li>新增和修改客户单位的名称，设置客户的缴款类型，固定折扣，音像折扣和音像浮动比例，注意缴款类型的设置，一般为托收客户，现金客户是指直接结算交钱的客户，批销中很少有这样的</li>
                             <li>结算方式和账期设置</li>
                             <li>客户分类和标签管理</li>
                         </div>
@@ -1742,15 +1731,11 @@
                     <div id="floating-discount-content" class="content-card wholesale hidden">
                         <h2 class="content-title wholesale">浮动折扣定义</h2>
                         <div class="content-text">
-                            <p>浮动折扣定义功能用于设置和管理批销业务中的浮动折扣规则，根据不同条件自动应用相应的折扣。</p>
+                            <p>浮动折扣定义功能用于设置和管理批销业务中的浮动折扣规则，根据不同条件自动应用相应的折扣。浮动折扣定义是指根据需要增加不同的客户类型及浮动折扣以及浮动比例，同时可在此维护客户类型。</p>
                         </div>
                         <div class="content-subtitle wholesale">折扣规则设置</div>
                         <div class="content-list">
-                            <li>按客户等级设置折扣</li>
-                            <li>按图书类别设置折扣</li>
-                            <li>按销售数量设置阶梯折扣</li>
-                            <li>按时间段设置促销折扣</li>
-                            <li>特殊客户特殊折扣设置</li>
+                            <li>浮动折扣定义】中选择“音像制品批价制定规则”按（客户固定折扣及零售价）推算，则选取整单折扣和一书一折批销音像制品，推算得出的价格=（售价*该客户音像固定折扣）+（售价*浮动比例）；如选择按(按客户类型浮动折扣及零售价)推算，则选取整单折扣和一书一折批销音像制品，推算得出的价格=进价+（售价*浮动折扣），</li>
                         </div>
                     </div>
                 </div>
@@ -2064,21 +2049,32 @@
                     <div id="invoice-audit-content" class="content-card financial hidden">
                         <h2 class="content-title financial">发票信息审核</h2>
                         <div class="content-text">
-                            <p>发票信息审核功能用于审核发票信息的准确性和合规性。</p>
+                            <p>全部流程和签字后，对审核单进审核通过的操作，完成结算工作。</p>
+                            </p>1)	点按【未审核发票查询】按钮，查询未审核的发票数据信息。双击要审核的发票，系统关闭当前窗体，返回上级窗体。同时显示与选择发票相关联的到货信息和退货信息。 </p>
+                            </p>2)	如果选择的发票符合审批提交，则点按【审核通过】，完成自进货财务结算工作。 </p>
+                            </p>3)	如果选择的发票信息存在问题，则点按【否决】按钮，将否决的发票返回到《自进货结算》窗体，通过【否决单据】按钮查询，进行修改发票相关信息。 </p>
+                            </p>4)	如果在《自进货结算》窗体忘记打印《付款审核申请单》，则点按【付款审核单】按钮，打印《付款审核申请单》。 </p>
+
                         </div>
                     </div>
                     
                     <div id="settlement-cancellation-content" class="content-card financial hidden">
                         <h2 class="content-title financial">已结账撤销</h2>
                         <div class="content-text">
-                            <p>已结账撤销功能用于撤销已完成的结账操作。</p>
+                            <p>对发现有问题的已经承付的的对账单据和发票进行撤销操作。此操作需要相关批复或流程后再进行操作。</p>
+                            </p>输入查询条件，点按【查询】按钮，检索满足条件的已经审核通过的发票信息。</p>
+                            </p>双击选择要撤销的发票号，点击【撤销】按钮，发票状态回退到未审核状态。在 《发票信息审核》窗体内，可以查询到发票信息。</p>
                         </div>
                     </div>
                     
                     <div id="beipei-reconciliation-content" class="content-card financial hidden">
                         <h2 class="content-title financial">北配对账</h2>
                         <div class="content-text">
-                            <p>北配对账功能用于与北配进行对账操作。</p>
+                            <p>入上报日期，点‘查询’，会出现销售批次，勾选后点击确认完成上报。</p>
+                            </p>由于结算部分和自进货对账一样的流程，故不多做说明</p>
+                            </p>注意事项</p>
+                            </p>当结算时，发现实付金额(勾单金额)小于供货单位开出发票的金额，可在业务系统内改写发票金额为勾单金额，剩余货款在财务做调整。当结算时，实付金额(勾单金额)大于发票金额，可差价调整金额(系统自动显示)，此时调整金额为负数。(供货单位同意少付货款)</p>
+                            </p>打印结账单据必须在【已结账查询及撤销】里操作。</p>
                         </div>
                     </div>
                 </div>
@@ -2090,7 +2086,7 @@
     <div id="mobile-sidebar" class="fixed inset-0 bg-gray-600 bg-opacity-75 z-50 hidden">
         <div class="w-64 h-full bg-white overflow-y-auto">
             <div class="p-4 bg-primary text-white flex justify-between items-center">
-                <h1 class="text-xl font-bold">图书业务系统</h1>
+                <h1 class="text-xl font-bold">一般图书ERP管理系统>yi'b
                 <button id="close-mobile-menu" class="text-white">
                     <i class="fa fa-times"></i>
                 </button>
@@ -2615,6 +2611,7 @@
     </script>
 </body>
 </html>
+
 
 
 
