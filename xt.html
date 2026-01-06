@@ -1518,9 +1518,6 @@
                                         <li>登录系统，进入"批销管理-批销开单"</li>
                                         <li>输入批销书目的条码（或按F4查找书目），输入批销册数后回车，也可以按F2键提取到货或转移批次进行整单批销。</li>
                                         <li>以上流程可以打印配货单来查看和校核，整单无误后点击F12确认</li>
-                                        <li>如果是托收客户虽显示付款界面但不需要操作，现金客户可填入金额。</li>
-                                        <li>如果操作而未确认数据会暂存该账号内，同时库存数量也被占用。确认后库存和货区库存同时减掉。</li>
-                                        <li>说明：按折扣进货方式的品种在输入购货单位前，如果勾选一书一折，则批销的折扣=发货折扣+上浮折扣，且折扣可以随意改动（需要修改的权限及密码）；如果勾选的是整单折扣，则批销的折扣=客户档案中定义的固定折扣，后期修改折扣时需要修改权限及密码。批销开单人员必须是在【批销大厅设置】中设置的该批销库房的批销人员。</li>
                                     </ol>
                                 </div>
                             </div>
@@ -1603,9 +1600,9 @@
                             <p><strong>重要提醒：</strong></p>
                             <ul class="list-disc pl-6">
                                 <li>订单一旦审核通过，将自动扣减库存，请确保信息准确</li>
-                                <li>对于账期客户，请确认其信用额度是否充足</li>
-                                <li>特殊折扣需获得相应授权才能应用</li>
-                                <li>订单保存后，可在"批销查询"中查看和管理</li>
+                                <li>如果是托收客户虽显示付款界面但不需要操作，现金客户可填入金额。</li>
+                                <li>如果操作而未确认数据会暂存该账号内，同时库存数量也被占用。确认后库存和货区库存同时减掉。</li>
+                                <li>说明：按折扣进货方式的品种在输入购货单位前，如果勾选一书一折，则批销的折扣=发货折扣+上浮折扣，且折扣可以随意改动（需要修改的权限及密码）；如果勾选的是整单折扣，则批销的折扣=客户档案中定义的固定折扣，后期修改折扣时需要修改权限及密码。批销开单人员必须是在【批销大厅设置】中设置的该批销库房的批销人员。</li>
                             </ul>
                         </div>
                     </div>
@@ -1746,15 +1743,12 @@
                     <div id="business-analysis-content" class="content-card analysis hidden">
                         <h2 class="content-title analysis">业务分析</h2>
                         <div class="content-text">
-                            <p>业务分析功能提供全面的业务数据分析和报表，帮助管理层了解业务状况和趋势。</p>
+                            <p>这个模块功能是统计分析全店号在一个时间段内的到货、销售、退货的相关所有数据，可以统计出这个时间段内的毛利率及退货率等，分别有版别、十大类、业务员及一级分类等几种统计方式。</p>
                         </div>
                         <div class="content-subtitle analysis">功能说明</div>
                         <div class="content-list">
-                            <li>销售数据分析</li>
-                            <li>库存周转率分析</li>
-                            <li>客户购买行为分析</li>
-                            <li>图书类别销售分析</li>
-                            <li>供应商表现评估</li>
+                            <li>目前为止业务分析中统计方式避免用“十大类”统计，（业务分析中的十大类统计的到货与到货情况不符，尽量统一都用一级分类）</li>
+                            <li>可在此模块下查询某日期范围的到货情况、销售情况、退货情况等，但是库存情况是实时的库存统计，并非是该日期范围截止时的库存数据。</li>
                         </div>
                     </div>
                     
@@ -1762,154 +1756,171 @@
                     <div id="purchase-sales-content" class="content-card analysis hidden">
                         <h2 class="content-title analysis">进货销售情况</h2>
                         <div class="content-text">
-                            <p>进货销售情况功能用于分析图书的进货和销售数据，评估采购效果。</p>
+                            <p>可根据单据日期或调拨日期查询统计分析某货源的进销存退情况(可显示库存实洋)，也可以查询统计某一种图书商品的进销存情况。查询的明细是进、销、存、退、报废、损益、调整、库存的数量及进价折扣或折价，以及到货的码洋、库存码洋和库存实洋。统计则有进、销、退、报废、损益、调整、库存的码洋以及库存的实洋。</p>
+                        </div>
+                        <div class="content-subtitle analysis">功能说明</div>
+                        <div class="content-list">
+                            <li>库存码洋=进货码洋-销售码洋-退货码洋-报废码洋+损益+调整</li>
+                            <li>注意【进货销售情况】里的销售码洋是指某一货源在这个选定时间段内进货的商品销售情况，而【货源销售情况】里的销售码洋是指某一货源在这个选定的时间段内所有该货源的商品销售情况，其中包含这个时间段内的进货和这之前所有的进货。所以在同一时间段内统计某货源【货源销售情况】应大于其【进货销售情况】</li>
                         </div>
                     </div>
                     
                     <div id="order-statistics-content" class="content-card analysis hidden">
                         <h2 class="content-title analysis">订货统计</h2>
                         <div class="content-text">
-                            <p>订货统计功能用于统计和分析订货数据，优化订货策略。</p>
+                            <p>可查询某一业务员在一定时间段内针对某一货源的订货情况。</p>
+                            <li>分别可按供货单位、录入员、报订批次、版别、书名、订货日期、上报前后、添货方式等查询。<li>
                         </div>
                     </div>
                     
                     <div id="arrival-statistics-content" class="content-card analysis hidden">
                         <h2 class="content-title analysis">到货情况</h2>
                         <div class="content-text">
-                            <p>到货情况功能用于统计和分析图书到货数据，监控供应链效率。</p>
+                            <p>可以点击【在途情况】里查看可接收而未接收的数据，例如辽批到货未接收数据、物流公司和图书大厦到货未接收数据等。双击某条目可查询明细。</p>
+                            <li>【未入库单据】有已登记和未登记两种状态。已登记状态双击可看明细，未登记状态双击则看不到明细。如果显示已登记，但在业务分书中查不到，则需等待几分钟后再查看。<li>
+                            <li>【收货情况查询】里可根据条件查询已接收的数据。如：对账日期和对账批次号、结算日期和批次号以及发票号等。<li>
+                            <li>【到货情况】按筛选条件可查询商品折扣或折价到货情况，或者按商品特征及文种、版别、供货单位、业务批次号等查询到货情况，可查看发行卡。按书号可以模糊查询。<li>
                         </div>
                     </div>
                     
                     <div id="inventory-statistics-content" class="content-card analysis hidden">
                         <h2 class="content-title analysis">库存情况</h2>
                         <div class="content-text">
-                            <p>库存情况功能用于统计和分析库存数据，优化库存管理。</p>
+                            <p>【库存情况】可以无货位查询(此处无货位商品即已到货分流但目前没有上架的商品品种)，也可点击【筛选条件】按特定条件查询。如：可按流水号-ID号（9787010165516001）查询某种商品，也可按文种、版别、库房、十大类、库存数量范围等条件查询，双击明细条目可在下方查看货位情况，并可查看发行卡。按书号可以模糊查询。</p>
                         </div>
                     </div>
                     
                     <div id="area-inventory-content" class="content-card analysis hidden">
                         <h2 class="content-title analysis">货区库存情况</h2>
                         <div class="content-text">
-                            <p>货区库存情况功能用于分析不同货区的库存分布和利用情况。</p>
+                            <p>【货区库存情况】可以按货区查看一书多货位的情况，也可以查询某货区的在架库存情况，如：可按流水号-ID（9787010165516001）号查询某种商品，也可按价格或者折扣、商品特征、文种、版别、库房、十大类、库存数量范围等条件查询，双击明细条目可在下方查看货位情况，并可查看发行卡。也可模糊货位查询及模糊书号查询。货区库存情况和库存情况主要区别在于货区商品是否上架和是否后台结账，如有未上架数据则库存数量大于货区库存数量；如有未结账数据则库存数量小于货区库存数量。货区库存情况里可按库房和货区查看库存数量，而库存情况里只能按库房或者核算单位查看库存数量。</p>
                         </div>
                     </div>
                     
                     <div id="sales-statistics-content" class="content-card analysis hidden">
                         <h2 class="content-title analysis">销售情况</h2>
                         <div class="content-text">
-                            <p>销售情况功能用于统计和分析销售数据，了解销售趋势。</p>
+                            <p>【销售情况】点击筛选条件可以按销售时间段查看某库房的销售数据，或按特定折价情况及销售数量查询销售数据，销售形式如选择现批可以选择客户。也可按模糊书号查询。也可按会员号或会员卡类型查询销售明细。销售情况可在收银台确认销售后稍后即可查到，无需后台结账。</p>
                         </div>
                     </div>
                     
                     <div id="area-sales-content" class="content-card analysis hidden">
                         <h2 class="content-title analysis">货区销售情况</h2>
                         <div class="content-text">
-                            <p>货区销售情况功能用于分析不同货区的销售表现。</p>
+                            <p>【货区销售情况】点击筛选条件可以按销售时间段查看某个货区或者货位的销售数据，但前提条件必须是销售后台已经结账完成。不同于销售情况此处可按收款员查询销售数据；也可按流水ID号具体查询某种商品的销售数据。其他类似【销售情况】。</p>
                         </div>
                     </div>
                     
                     <div id="sales-ranking-content" class="content-card analysis hidden">
                         <h2 class="content-title analysis">销售排行</h2>
                         <div class="content-text">
-                            <p>销售排行功能用于展示图书销售排名，识别畅销和滞销图书。</p>
+                            <p>【销售排行】点击筛选条件输入销售时间范围，可以按分类以及货区查询销售数据排行前或销售数据排行后N名的销售明细情况。可按销售类型和核算单位分别查询。统计方式有品种、版别、类别以及大类；排行原则有数量、码洋、实洋和销售笔数。</p>
                         </div>
                     </div>
                     
                     <div id="source-sales-content" class="content-card analysis hidden">
                         <h2 class="content-title analysis">货源销售情况</h2>
                         <div class="content-text">
-                            <p>货源销售情况功能用于分析不同供应商图书的销售表现。</p>
+                            <p>货源销售情况功能用于分析不同供应商图书的销售表现。【货源销售查询】点击筛选条件输入销售时间范围，可查询货源销售、损益和报废等数据。也可按库房查询某货源的销售情况。</p>
                         </div>
                     </div>
                     
                     <div id="scrap-statistics-content" class="content-card analysis hidden">
                         <h2 class="content-title analysis">报废统计</h2>
                         <div class="content-text">
-                            <p>报废统计功能用于统计和分析图书报废数据，控制损耗。</p>
+                            <p>报废统计功能用于统计和分析图书报废数据，控制损耗。【报废统计】根据报废日期、库房及商品特征等可查询其报废数据。</p>
                         </div>
                     </div>
                     
                     <div id="profit-loss-statistics-content" class="content-card analysis hidden">
                         <h2 class="content-title analysis">损益统计</h2>
                         <div class="content-text">
-                            <p>损益统计功能用于统计和分析图书损益数据，评估经营状况。</p>
+                            <p>损益统计功能用于统计和分析图书损益数据，评估经营状况。【损益统计】根据损益日期、库房及商品特征等可查询其损益数据。分别可统计查询日常损益和盘库损益码洋和实洋数据。</p>
                         </div>
                     </div>
                     
                     <div id="source-profit-loss-content" class="content-card analysis hidden">
                         <h2 class="content-title analysis">货源损益查询</h2>
                         <div class="content-text">
-                            <p>货源损益查询功能用于查询不同供应商图书的损益情况。</p>
+                            <p>货源损益查询功能用于查询不同供应商图书的损益情况。【货源损益查询】点击筛选条件输入销售日期范围，可查询供货单位损益数据情况。</p>
                         </div>
                     </div>
                     
                     <div id="source-return-content" class="content-card analysis hidden">
                         <h2 class="content-title analysis">货源退货情况</h2>
                         <div class="content-text">
-                            <p>货源退货情况功能用于分析不同供应商图书的退货情况。</p>
+                            <p>货源退货情况功能用于分析不同供应商图书的退货情况。【货源退货情况】点击筛选条件输入退货日期范围，可按货区查询供货单位退货数据情况，并可以根据结算抵扣情况进行统计查询。</p>
                         </div>
                     </div>
                     
                     <div id="workload-statistics-content" class="content-card analysis hidden">
                         <h2 class="content-title analysis">工作量统计</h2>
                         <div class="content-text">
-                            <p>工作量统计功能用于统计和分析员工工作量，评估工作效率。</p>
+                            <p>工作量统计功能用于统计和分析员工工作量，评估工作效率。【工作量统计】的统计项目分别有到货录入、书目录入、零售收款和批销销售四种，输入操作日期等相关数据可以进行统计分析。</p>
                         </div>
                     </div>
                     
                     <div id="area-info-content" class="content-card analysis hidden">
                         <h2 class="content-title analysis">货区相关信息</h2>
                         <div class="content-text">
-                            <p>货区相关信息功能用于查询和分析货区的相关数据。</p>
+                            <p>货区相关信息功能用于查询和分析货区的相关数据。【货区相关信息】选定库房及货区，输入日期范围即可查询该货区相关信息，但不能超过一个月。包括入库信息、退货信息、转移信息和损益信息等。双击上方统计条目在下面可显示具体明细数据。</p>
                         </div>
                     </div>
                     
                     <div id="consignment-sales-content" class="content-card analysis hidden">
                         <h2 class="content-title analysis">联营商品销售统计</h2>
                         <div class="content-text">
-                            <p>联营商品销售统计功能用于统计和分析联营商品的销售数据。</p>
+                            <p>联营商品销售统计功能用于统计和分析联营商品的销售数据。【联营商品销售统计】输入销售日期范围，选择核算单位、收款员可统计联营商户的销售情况。</p>
                         </div>
                     </div>
                     
                     <div id="payment-sales-content" class="content-card analysis hidden">
                         <h2 class="content-title analysis">按付款方式销售统计</h2>
                         <div class="content-text">
-                            <p>按付款方式销售统计功能用于分析不同付款方式的销售情况。</p>
+                            <p>按付款方式销售统计功能用于分析不同付款方式的销售情况。【按付款方式销售统计】输入销售日期范围，选择统计项目POS机或收款员，点击查询可统计联营产品或图书音像或全部的销售情况。</p>
                         </div>
                     </div>
                     
                     <div id="document-summary-content" class="content-card analysis hidden">
                         <h2 class="content-title analysis">出入库单据汇总统计</h2>
                         <div class="content-text">
-                            <p>出入库单据汇总统计功能用于汇总和分析出入库单据数据。</p>
+                            <p>出入库单据汇总统计功能用于汇总和分析出入库单据数据。【出入库单据汇总统计】输入统计日期范围，选择库房和统计方式和单据格式可统计查看相关数据。</p>
+                            <li>如果统计方式为业务流转，单据格式为按部门汇总，则统计出来的为该库房在此期间和各部门间的调入调出数据，其中储备库房的调入一般视同到货。<li>
+                            <li>如果统计方式为业务流转，单据格式为按大类汇总，则统计出来的为改库房在此期间的按分类统计的调入调出数据。<li>
+                            <li>如果统计方式为到货分配，单据格式为按部门汇总，则统计出来的为该库房在此期间的按货源到货的到货数据。<li>
+                            <li>如果统计方式为日常损益，单据格式为按部门汇总，则统计出来的为该库房在此期间日常损益和盘点损益的数据合计。<li>
+                            <li>如果统计方式为报废处理，单据格式为按部门汇总，则统计出来的为该库房在此期间报废的数据。<li>
+                            <li>如果统计方式为部门业务，单据格式为默认，则统计出来的为所有库房在此期间的调入调出、到货分配、损益情况以及报废处理的数据。<li>
+                            <li>如果统计方式为部门入库，单据格式为默认，则统计处理的为所有库房在此期间的调入、调出和损益的数据。<li>
+                            <li>如果统计方式为一般转移，单据格式为按部门汇总，则统计出来的为该库房在此期间的调入、调出数据。<li>
                         </div>
                     </div>
                     
                     <div id="customer-query-content" class="content-card analysis hidden">
                         <h2 class="content-title analysis">顾客查询</h2>
                         <div class="content-text">
-                            <p>顾客查询功能用于查询和分析顾客购买行为和偏好。</p>
+                            <p>顾客查询功能用于查询和分析顾客购买行为和偏好。【顾客查询】专门为卖场顾客提供查询服务功能。</p>
                         </div>
                     </div>
                     
                     <div id="stored-value-card-content" class="content-card analysis hidden">
                         <h2 class="content-title analysis">储值卡消费分店统计</h2>
                         <div class="content-text">
-                            <p>储值卡消费分店统计功能用于统计不同分店的储值卡消费情况。</p>
+                            <p>储值卡消费分店统计功能用于统计不同分店的储值卡消费情况。储值卡消费分店统计】输入销售日期范围，选择消费形式可统计出储值卡消费情况或者查询消费明细情况。消费形式包括：本店开卡、本店消费、本店卡异地消费和异店卡本店消费四种。卡类型分为：全区卡、地区卡和本店卡三种。无需后台结账即可查询相当于实时查询。</p>
                         </div>
                     </div>
                     
                     <div id="stored-value-recharge-content" class="content-card analysis hidden">
                         <h2 class="content-title analysis">储值卡充值查询</h2>
                         <div class="content-text">
-                            <p>储值卡充值查询功能用于查询储值卡的充值记录和金额。</p>
+                            <p>储值卡充值查询功能用于查询储值卡的充值记录和金额。【储值卡充值查询】可统计出某一时间内本店储值卡充值情况(只可以统计本店的充值情况)。</p>
                         </div>
                     </div>
                     
                     <div id="internal-sales-content" class="content-card analysis hidden">
                         <h2 class="content-title analysis">内部销售查询</h2>
                         <div class="content-text">
-                            <p>内部销售查询功能用于查询内部销售的相关数据。</p>
+                            <p>内部销售查询功能用于查询内部销售的相关数据。【内部销售查询】点击查询条件选择内部客户即系统内各旗县区店，选定对账日期或批销日期和库房后点击确认，稍后会出现统计条目数，再次点击统计可以按供货单位等条件查询出该内部客户的相关批销码洋和实洋、库存码洋和实洋以及销售码洋和实洋。此功能只针对盟市店开放，旗县区店业务系统无法打开。</p>
                         </div>
                     </div>
                 </div>
@@ -1920,15 +1931,13 @@
                     <div id="front-sales-query-content" class="content-card checkout hidden">
                         <h2 class="content-title checkout">前台销售查询</h2>
                         <div class="content-text">
-                            <p>前台销售查询功能用于查询和分析前台销售数据，了解门店销售情况。</p>
+                            <p>输入核算单位和销售日期范围，不需要后台结账即可查询销售情况，包括书券超付金额、销售小票号及具体销售时间及收银员和POS机号等，双击可查看缴款方式、书目等明细情况。</p>
                         </div>
                         <div class="content-subtitle checkout">功能说明</div>
                         <div class="content-list">
                             <li>按时间段查询销售数据</li>
                             <li>按门店、收银员筛选</li>
                             <li>销售明细和汇总查询</li>
-                            <li>销售报表生成</li>
-                            <li>异常销售记录查询</li>
                         </div>
                     </div>
                     
@@ -1936,49 +1945,49 @@
                     <div id="real-time-monitoring-content" class="content-card checkout hidden">
                         <h2 class="content-title checkout">前台销售实时监控</h2>
                         <div class="content-text">
-                            <p>前台销售实时监控功能用于实时监控前台销售活动和数据。</p>
+                            <p>前台销售实时监控功能用于实时监控前台销售活动和数据。点击即可查看所属店号的全部卖场POS机的实时销售统计数据。</p>
                         </div>
                     </div>
                     
                     <div id="front-payment-query-content" class="content-card checkout hidden">
                         <h2 class="content-title checkout">前台收款查询</h2>
                         <div class="content-text">
-                            <p>前台收款查询功能用于查询前台收款记录和金额。</p>
+                            <p>前台收款查询功能用于查询前台收款记录和金额。具体查询某收银员按付款方式的收款统计情况，不需要后台结账即可查询销售情况。</p>
                         </div>
                     </div>
                     
                     <div id="special-payment-content" class="content-card checkout hidden">
                         <h2 class="content-title checkout">特殊缴款方式统计</h2>
                         <div class="content-text">
-                            <p>特殊缴款方式统计功能用于统计特殊缴款方式的使用情况。</p>
+                            <p>特殊缴款方式统计功能用于统计特殊缴款方式的使用情况。即统计查询所属店号全部收银员在此期间的全部特殊缴款情况。包括储值卡和会员卡、退货以及打折消费笔数。不需要后台结账即可查询销售情况。</p>
                         </div>
                     </div>
                     
                     <div id="consignment-payment-content" class="content-card checkout hidden">
                         <h2 class="content-title checkout">联营缴款查询</h2>
                         <div class="content-text">
-                            <p>联营缴款查询功能用于查询联营商品的缴款记录和金额。</p>
+                            <p>联营缴款查询功能用于查询联营商品的缴款记录和金额。具体查询某收银员按付款方式针对联营商户的收款统计情况，不需要后台结账即可查询销售情况。</p>
                         </div>
                     </div>
                     
                     <div id="consignment-sales-query-content" class="content-card checkout hidden">
                         <h2 class="content-title checkout">联营销售查询</h2>
                         <div class="content-text">
-                            <p>联营销售查询功能用于查询联营商品的销售数据。</p>
+                            <p>联营销售查询功能用于查询联营商品的销售数据。具体查询联营商户在此期间的销售情况，包括销售小票号及具体销售时间和POS机号等。</p>
                         </div>
                     </div>
                     
                     <div id="backend-checkout-content" class="content-card checkout hidden">
                         <h2 class="content-title checkout">后台结账</h2>
                         <div class="content-text">
-                            <p>后台结账功能用于在系统后台进行结账操作和管理。</p>
+                            <p>后台结账功能用于在系统后台进行结账操作和管理。输入核算单位后，点击查询未结账数据，选中销售日期双击后可把当日该核算单位所有有销售的POS机选出，（随便双击该日期任何一部收款机即可）再次勾选要结账的POS机号(一般情况下应全部勾选)点击结账即可。在日常的【后台结账】中，不能结账则会出现“id=9787*********001没有物理货位”的情况，这时可以在【查看已销售但无货位书目信息】查看，需在【物流管理】下【货位调整(日常)】增加这个id号的货位即可，值得注意的是这个ID号后三位是不需要输入的，增加货位后数量默认为零，所以对库存没有什么影响。如果增加货位时提示有未完成的上架任务，说明此书是在上架任务中，需货区操作员看上架任务选择后完成此上架任务。</p>
                         </div>
                     </div>
                     
                     <div id="print-checkout-content" class="content-card checkout hidden">
                         <h2 class="content-title checkout">打印后台结帐单</h2>
                         <div class="content-text">
-                            <p>打印后台结帐单功能用于生成和打印后台结账的相关单据。</p>
+                            <p>打印后台结帐单功能用于生成和打印后台结账的相关单据。打印后台结帐单时，选定结账日期范围（注意此处非销售日期）及核算单位后点击筛选即可。选中需要打印的结账批次点击打印，在出现的界面中会有三个版面，F1是销售汇总单，显示卖场及联营的销售统计情况，并单独列出包装物的销售合计。F2是后台结账交款明细单，分别显示POS机号、收款员对应的图书及联营销售及退货金额F3</p>
                         </div>
                     </div>
                 </div>
@@ -2611,6 +2620,7 @@
     </script>
 </body>
 </html>
+
 
 
 
