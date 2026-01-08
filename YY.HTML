@@ -436,6 +436,14 @@
                     </span>
                     <span class="absolute inset-0 bg-gradient-to-r from-secondary/30 to-primary/30 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
                 </button>
+                
+                <button id="deleteBtn" class="px-4 py-3 rounded-xl glass dark-mode hover:bg-opacity-80 transition-all flex items-center gap-2 group relative overflow-hidden opacity-60 cursor-not-allowed">
+                    <span class="relative z-10 flex items-center gap-2">
+                        <i class="fa fa-trash transform group-hover:scale-110 transition-transform duration-300"></i>
+                        <span>删除</span>
+                    </span>
+                    <span class="absolute inset-0 bg-gradient-to-r from-red-500/30 to-orange-500/30 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
+                </button>
             </div>
         </div>
         
@@ -701,6 +709,7 @@
                     searchInput: document.getElementById('searchInput'),
                     searchBtn: document.getElementById('searchBtn'),
                     addBtn: document.getElementById('addBtn'),
+                    deleteBtn: document.getElementById('deleteBtn'),
                     addForm: document.getElementById('addForm'),
                     appForm: document.getElementById('appForm'),
                     cancelBtn: document.getElementById('cancelBtn'),
@@ -848,6 +857,9 @@
                 // 主题切换
                 this.elements.themeToggle.addEventListener('click', () => this.toggleTheme());
                 
+                // 删除功能
+                this.elements.deleteBtn.addEventListener('click', () => this.showDeleteDialog());
+                
                 // 分类按钮事件委托
                 this.elements.categoryContainer.addEventListener('click', (e) => {
                     const btn = e.target.closest('.category-btn');
@@ -892,7 +904,7 @@
                 this.elements.noResults.classList.add('hidden');
                 
                 const cardsHTML = appsToRender.map((app, index) => `
-                    <div class="glass ${this.currentTheme}-mode link-card p-5 rounded-xl fade-in card-hover gradient-border relative overflow-hidden cursor-pointer transition-all duration-300 hover:shadow-xl" style="animation-delay: ${0.1 * index}s;" data-category="${app.category}" onclick="appManager.openApp(${app.id})">
+                    <div class="glass ${this.currentTheme}-mode link-card p-5 rounded-xl fade-in card-hover gradient-border relative overflow-hidden cursor-pointer transition-all duration-300 hover:shadow-xl" style="animation-delay: ${0.1 * index}s;" data-category="${app.category}" onclick="appManager.toggleAppSelection(${app.id}, event)">
                         <div class="relative z-10 h-full flex flex-col">
                             <!-- 头部：图标和标题区域 -->
                             <div class="flex items-start gap-3 mb-3">
@@ -910,7 +922,7 @@
                             <!-- 中间：描述文本 -->
                             <p class="text-gray-400 dark-mode text-sm mb-4 leading-relaxed line-clamp-2 flex-grow">${app.description}</p>
                             
-                            <!-- 底部：统计信息和操作按钮 -->
+                            <!-- 底部：统计信息 -->
                             <div class="flex items-center justify-between pt-2 border-t border-gray-700/30">
                                 <div class="flex items-center gap-2">
                                     <span class="text-xs px-2 py-1 rounded-full bg-secondary/20 text-secondary flex items-center gap-1">
@@ -918,16 +930,22 @@
                                         <span>${app.visits}</span>
                                     </span>
                                 </div>
-                                <button onclick="event.stopPropagation(); appManager.deleteApp(${app.id})" 
-                                        class="w-8 h-8 rounded-full flex items-center justify-center text-gray-400 hover:bg-red-500/20 hover:text-red-500 transition-all transform hover:scale-110">
-                                    <i class="fa fa-trash"></i>
-                                </button>
+                                <div class="w-8 h-8 rounded-full flex items-center justify-center text-gray-400">
+                                    <i class="fa fa-external-link"></i>
+                                </div>
                             </div>
                         </div>
                         
                         <!-- 背景装饰图标 -->
                         <div class="absolute bottom-3 right-3 w-16 h-16 opacity-5">
                             <i class="fa fa-${app.icon || this.getIconForCategory(app.category)} text-primary text-5xl"></i>
+                        </div>
+                        
+                        <!-- 选择框 -->
+                        <div class="absolute top-3 right-3 w-6 h-6 rounded-full border-2 border-gray-500 bg-transparent transition-all duration-300 select-checkbox opacity-0 pointer-events-none" data-app-id="${app.id}">
+                            <div class="w-full h-full rounded-full bg-red-500 flex items-center justify-center opacity-0 transition-opacity duration-300">
+                                <i class="fa fa-check text-white text-xs"></i>
+                            </div>
                         </div>
                     </div>
                 `).join('');
@@ -1034,15 +1052,112 @@
                 this.showToast('应用添加成功！', 'success');
             }
             
-            // 删除应用
-            deleteApp(id) {
-                if (confirm('确定要删除这个应用吗？')) {
-                    this.apps = this.apps.filter(app => app.id !== id);
-                    this.renderApps();
-                    this.updateStats();
-                    this.saveAppsToStorage();
-                    this.showToast('应用删除成功！', 'info');
+            // 切换应用选择状态
+            toggleAppSelection(id, event) {
+                // 检查是否处于选择模式
+                const isSelectMode = document.body.classList.contains('select-mode');
+                
+                if (isSelectMode) {
+                    event.preventDefault();
+                    
+                    // 切换选择状态
+                    const card = event.currentTarget;
+                    const checkbox = card.querySelector('.select-checkbox');
+                    const checkmark = checkbox.querySelector('div');
+                    
+                    card.classList.toggle('selected');
+                    
+                    if (card.classList.contains('selected')) {
+                        checkbox.style.borderColor = '#ef4444';
+                        checkmark.style.opacity = '1';
+                        card.style.borderColor = 'rgba(239, 68, 68, 0.5)';
+                        card.style.boxShadow = '0 0 20px rgba(239, 68, 68, 0.3)';
+                    } else {
+                        checkbox.style.borderColor = '#6b7280';
+                        checkmark.style.opacity = '0';
+                        card.style.borderColor = '';
+                        card.style.boxShadow = '';
+                    }
+                    
+                    // 更新删除按钮状态
+                    this.updateDeleteButtonState();
+                } else {
+                    // 正常模式下打开应用
+                    this.openApp(id);
                 }
+            }
+            
+            // 显示删除对话框
+            showDeleteDialog() {
+                const selectedCards = document.querySelectorAll('.link-card.selected');
+                
+                if (selectedCards.length === 0) {
+                    // 进入选择模式
+                    document.body.classList.add('select-mode');
+                    // 显示所有选择框
+                    document.querySelectorAll('.select-checkbox').forEach(checkbox => {
+                        checkbox.style.opacity = '1';
+                        checkbox.style.pointerEvents = 'auto';
+                    });
+                    this.showToast('请选择要删除的应用', 'info');
+                    return;
+                }
+                
+                if (confirm(`确定要删除选中的 ${selectedCards.length} 个应用吗？`)) {
+                    if (confirm('再次确认删除操作，此操作不可撤销！')) {
+                        const selectedIds = Array.from(selectedCards).map(card => 
+                            parseInt(card.getAttribute('onclick').match(/\d+/)[0])
+                        );
+                        
+                        this.deleteSelectedApps(selectedIds);
+                    }
+                }
+            }
+            
+            // 删除选中的应用
+            deleteSelectedApps(ids) {
+                this.apps = this.apps.filter(app => !ids.includes(app.id));
+                this.renderApps();
+                this.updateStats();
+                this.saveAppsToStorage();
+                this.showToast(`成功删除 ${ids.length} 个应用！`, 'success');
+                
+                // 退出选择模式
+                this.exitSelectMode();
+            }
+            
+            // 更新删除按钮状态
+            updateDeleteButtonState() {
+                const selectedCards = document.querySelectorAll('.link-card.selected');
+                const deleteBtn = this.elements.deleteBtn;
+                
+                if (selectedCards.length > 0) {
+                    deleteBtn.style.opacity = '1';
+                    deleteBtn.style.cursor = 'pointer';
+                } else {
+                    deleteBtn.style.opacity = '0.6';
+                    deleteBtn.style.cursor = 'not-allowed';
+                }
+            }
+            
+            // 退出选择模式
+            exitSelectMode() {
+                document.body.classList.remove('select-mode');
+                document.querySelectorAll('.link-card.selected').forEach(card => {
+                    card.classList.remove('selected');
+                    const checkbox = card.querySelector('.select-checkbox');
+                    const checkmark = checkbox.querySelector('div');
+                    checkbox.style.borderColor = '#6b7280';
+                    checkmark.style.opacity = '0';
+                    card.style.borderColor = '';
+                    card.style.boxShadow = '';
+                });
+                // 隐藏所有选择框
+                document.querySelectorAll('.select-checkbox').forEach(checkbox => {
+                    checkbox.style.opacity = '0';
+                    checkbox.style.pointerEvents = 'none';
+                });
+                this.updateDeleteButtonState();
             }
             
             // 增加访问次数
