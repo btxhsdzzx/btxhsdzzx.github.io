@@ -892,39 +892,42 @@
                 this.elements.noResults.classList.add('hidden');
                 
                 const cardsHTML = appsToRender.map((app, index) => `
-                    <div class="glass ${this.currentTheme}-mode link-card p-4 rounded-xl fade-in card-hover gradient-border relative overflow-hidden" style="animation-delay: ${0.1 * index}s;" data-category="${app.category}">
-                        <div class="relative z-10">
-                            <div class="flex items-center gap-3 mb-4">
-                                <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center overflow-hidden border border-primary/30 shadow-lg">
-                                    <i class="fa fa-${app.icon || this.getIconForCategory(app.category)} text-primary text-lg"></i>
+                    <div class="glass ${this.currentTheme}-mode link-card p-5 rounded-xl fade-in card-hover gradient-border relative overflow-hidden cursor-pointer transition-all duration-300 hover:shadow-xl" style="animation-delay: ${0.1 * index}s;" data-category="${app.category}" onclick="appManager.openApp(${app.id})">
+                        <div class="relative z-10 h-full flex flex-col">
+                            <!-- 头部：图标和标题区域 -->
+                            <div class="flex items-start gap-3 mb-3">
+                                <div class="w-12 h-12 rounded-lg bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center overflow-hidden border border-primary/30 shadow-lg flex-shrink-0">
+                                    <i class="fa fa-${app.icon || this.getIconForCategory(app.category)} text-primary text-xl"></i>
                                 </div>
-                                <div>
-                                    <h3 class="font-semibold text-sm ${this.currentTheme === 'dark' ? 'text-white' : 'text-gray-800'} mb-1">${app.name}</h3>
-                                    <span class="text-xs px-1.5 py-0.5 rounded-full bg-primary/20 text-primary text-xs">${this.getCategoryName(app.category)}</span>
+                                <div class="flex-1 min-w-0">
+                                    <h3 class="font-semibold text-base ${this.currentTheme === 'dark' ? 'text-white' : 'text-gray-800'} mb-1 line-clamp-1">${app.name}</h3>
+                                    <div class="flex items-center gap-2">
+                                        <span class="text-xs px-2 py-0.5 rounded-full bg-primary/20 text-primary">${this.getCategoryName(app.category)}</span>
+                                    </div>
                                 </div>
                             </div>
-                            <p class="text-gray-400 dark-mode text-xs mb-3 leading-relaxed line-clamp-2">${app.description}</p>
-                            <div class="flex items-center justify-between">
-                                <a href="${app.url}" target="_blank" rel="noopener noreferrer" 
-                                   class="text-primary hover:text-secondary transition-colors text-sm break-all flex items-center gap-1 group"
-                                   onclick="appManager.incrementVisits(${app.id})">
-                                    <i class="fa fa-external-link transform group-hover:translate-x-1 transition-transform"></i>
-                                    <span>${this.truncateUrl(app.url)}</span>
-                                </a>
-                                <div class="flex items-center gap-3">
+                            
+                            <!-- 中间：描述文本 -->
+                            <p class="text-gray-400 dark-mode text-sm mb-4 leading-relaxed line-clamp-2 flex-grow">${app.description}</p>
+                            
+                            <!-- 底部：统计信息和操作按钮 -->
+                            <div class="flex items-center justify-between pt-2 border-t border-gray-700/30">
+                                <div class="flex items-center gap-2">
                                     <span class="text-xs px-2 py-1 rounded-full bg-secondary/20 text-secondary flex items-center gap-1">
-                                        <i class="fa fa-eye"></i>
-                                        ${app.visits}
+                                        <i class="fa fa-eye text-xs"></i>
+                                        <span>${app.visits}</span>
                                     </span>
-                                    <button onclick="appManager.deleteApp(${app.id})" 
-                                            class="w-8 h-8 rounded-full flex items-center justify-center text-gray-400 hover:bg-red-500/20 hover:text-red-500 transition-all transform hover:scale-110">
-                                        <i class="fa fa-trash"></i>
-                                    </button>
                                 </div>
+                                <button onclick="event.stopPropagation(); appManager.deleteApp(${app.id})" 
+                                        class="w-8 h-8 rounded-full flex items-center justify-center text-gray-400 hover:bg-red-500/20 hover:text-red-500 transition-all transform hover:scale-110">
+                                    <i class="fa fa-trash"></i>
+                                </button>
                             </div>
                         </div>
-                        <div class="absolute bottom-4 right-4 w-20 h-20 opacity-5">
-                            <i class="fa fa-${app.icon || this.getIconForCategory(app.category)} text-primary text-6xl"></i>
+                        
+                        <!-- 背景装饰图标 -->
+                        <div class="absolute bottom-3 right-3 w-16 h-16 opacity-5">
+                            <i class="fa fa-${app.icon || this.getIconForCategory(app.category)} text-primary text-5xl"></i>
                         </div>
                     </div>
                 `).join('');
@@ -1048,6 +1051,19 @@
                 if (app) {
                     app.visits++;
                     this.saveAppsToStorage();
+                }
+            }
+            
+            // 打开应用
+            openApp(id) {
+                const app = this.apps.find(a => a.id === id);
+                if (app) {
+                    // 增加访问次数
+                    this.incrementVisits(id);
+                    // 打开新窗口
+                    window.open(app.url, '_blank', 'noopener,noreferrer');
+                    // 更新显示
+                    this.renderApps();
                 }
             }
             
