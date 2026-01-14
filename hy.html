@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>新华会员管理系统操作指南</title>
+    <!-- Tailwind CSS v3 -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome -->
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <!-- 统一的 Tailwind 配置 -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#0066cc',
+                        secondary: '#ff6600',
+                        accent: '#00cc99',
+                        dark: '#0a192f',
+                        light: '#f8fafc',
+                        neutral: {
+                            100: '#f3f4f6',
+                            200: '#e5e7eb',
+                            300: '#d1d5db',
+                            400: '#9ca3af',
+                            500: '#6b7280',
+                            600: '#4b5563',
+                            700: '#374151',
+                            800: '#1f2937',
+                            900: '#111827',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                    boxShadow: {
+                        'card': '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+                        'card-hover': '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
+                        'btn': '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+                        'btn-hover': '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
+                    },
+                    backgroundImage: {
+                        'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
+                        'gradient-conic': 'conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))',
+                    }
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .transition-all-300 {
+                transition: all 0.3s ease;
+            }
+            .card {
+                @apply bg-white rounded-xl shadow-card p-8 transition-all duration-300 hover:-translate-y-1;
+            }
+            .card:hover {
+                @apply shadow-card-hover;
+            }
+            .btn {
+                @apply px-6 py-3 rounded-lg font-medium transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 shadow-btn hover:shadow-btn-hover;
+            }
+            .btn-primary {
+                @apply bg-gradient-to-r from-primary to-blue-500 text-white hover:from-blue-600 hover:to-blue-700 focus:ring-blue-500;
+            }
+            .btn-secondary {
+                @apply bg-gradient-to-r from-secondary to-orange-500 text-white hover:from-orange-600 hover:to-orange-700 focus:ring-orange-500;
+            }
+            .btn-outline {
+                @apply border border-neutral-300 text-neutral-700 hover:bg-neutral-100 focus:ring-neutral-500;
+            }
+            .btn-accent {
+                @apply bg-gradient-to-r from-accent to-teal-500 text-white hover:from-teal-600 hover:to-teal-700 focus:ring-teal-500;
+            }
+            .step-number {
+                @apply flex items-center justify-center w-10 h-10 rounded-full bg-gradient-to-r from-primary to-blue-500 text-white font-bold mr-4 shadow-md;
+            }
+            .tab-active {
+                @apply border-b-2 border-primary text-primary;
+            }
+            .hero-bg {
+                @apply bg-gradient-to-br from-blue-50 to-indigo-100;
+            }
+            .glass-effect {
+                @apply bg-white bg-opacity-80 backdrop-blur-lg;
+            }
+            .text-gradient {
+                @apply bg-clip-text text-transparent bg-gradient-to-r from-primary to-blue-500;
+            }
+            .animate-float {
+                animation: float 6s ease-in-out infinite;
+            }
+            @keyframes float {
+                0% { transform: translateY(0px); }
+                50% { transform: translateY(-20px); }
+                100% { transform: translateY(0px); }
+            }
+            .animate-pulse-slow {
+                animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-blue-50 to-indigo-100 font-sans text-neutral-800 min-h-screen">
+    <!-- 导航栏 -->
+    <header class="bg-white bg-opacity-90 backdrop-blur-lg shadow-md sticky top-0 z-50 border-b border-blue-100">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="flex items-center">
+                <i class="fa fa-users text-primary text-3xl mr-3"></i>
+                <h1 class="text-2xl font-bold text-gradient">新华会员管理系统操作指南</h1>
+            </div>
+            <nav class="hidden md:flex space-x-6">
+                <a href="#积分会员" class="nav-link tab-active py-2 px-4 rounded-md transition-all duration-300">积分会员</a>
+                <a href="#打折会员" class="nav-link py-2 px-4 rounded-md text-neutral-600 hover:text-primary hover:bg-blue-50 transition-all duration-300">打折会员</a>
+                <a href="#借阅会员" class="nav-link py-2 px-4 rounded-md text-neutral-600 hover:text-primary hover:bg-blue-50 transition-all duration-300">借阅会员</a>
+            </nav>
+            <button id="mobile-menu-button" class="md:hidden text-neutral-600 focus:outline-none p-2 rounded-full hover:bg-blue-50 transition-all duration-300">
+                <i class="fa fa-bars text-2xl"></i>
+            </button>
+        </div>
+        <!-- 移动端菜单 -->
+        <div id="mobile-menu" class="md:hidden hidden bg-white bg-opacity-95 backdrop-blur-lg border-t border-blue-100 shadow-lg">
+            <div class="container mx-auto px-4 py-2 flex flex-col space-y-2">
+                <a href="#积分会员" class="mobile-nav-link tab-active py-2 px-1">积分会员</a>
+                <a href="#打折会员" class="mobile-nav-link py-2 px-1 text-neutral-600 hover:text-primary">打折会员</a>
+                <a href="#借阅会员" class="mobile-nav-link py-2 px-1 text-neutral-600 hover:text-primary">借阅会员</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- 主内容区域 -->
+    <main class="container mx-auto px-4 py-8">
+        <!-- 首屏区域 -->
+        <section class="mb-12 text-center">
+            <h2 class="text-4xl md:text-5xl font-bold mb-6 text-gradient">欢迎使用会员管理系统</h2>
+            <p class="text-lg text-neutral-600 max-w-3xl mx-auto">
+                欢迎您使用！本指南将详细介绍积分会员、打折会员和借阅会员的设置与管理流程。
+            </p>
+            <div class="mt-10 flex flex-wrap justify-center gap-6">
+                <a href="#积分会员" class="btn btn-primary group">
+                    <i class="fa fa-star mr-2 group-hover:rotate-12 transition-transform duration-300"></i>积分会员
+                </a>
+                <a href="#打折会员" class="btn btn-secondary group">
+                    <i class="fa fa-tag mr-2 group-hover:rotate-12 transition-transform duration-300"></i>打折会员
+                </a>
+                <a href="#借阅会员" class="btn btn-accent group">
+                    <i class="fa fa-book mr-2 group-hover:rotate-12 transition-transform duration-300"></i>借阅会员
+                </a>
+            </div>
+        </section>
+
+        <!-- 会员类型选项卡 -->
+        <div class="mb-10 glass-effect rounded-xl p-2">
+            <div class="flex border-b border-blue-100">
+                <button class="tab-button tab-active py-4 px-8 font-medium text-center flex-1 md:flex-none rounded-t-lg transition-all duration-300" data-tab="积分会员">
+                    <i class="fa fa-star mr-2"></i>积分会员
+                </button>
+                <button class="tab-button py-4 px-8 font-medium text-center text-neutral-600 flex-1 md:flex-none rounded-t-lg hover:bg-blue-50 transition-all duration-300" data-tab="打折会员">
+                    <i class="fa fa-tag mr-2"></i>打折会员
+                </button>
+                <button class="tab-button py-4 px-8 font-medium text-center text-neutral-600 flex-1 md:flex-none rounded-t-lg hover:bg-blue-50 transition-all duration-300" data-tab="借阅会员">
+                    <i class="fa fa-book mr-2"></i>借阅会员
+                </button>
+            </div>
+        </div>
+
+        <!-- 选项卡内容 -->
+        <div class="tab-content">
+            <!-- 积分会员 -->
+            <div id="积分会员" class="tab-pane active">
+                <div class="card mb-8">
+                    <h3 class="text-3xl font-bold mb-8 text-gradient flex items-center">
+                        <i class="fa fa-star mr-4 text-2xl animate-pulse-slow"></i>积分会员操作指南
+                    </h3>
+                    <div class="space-y-8">
+                        <div class="step">
+                            <div class="flex items-start">
+                                <div class="step-number">1</div>
+                                <div>
+                                    <h4 class="text-lg font-semibold mb-2">会员类别与卡类型设置</h4>
+                                    <p class="text-neutral-600">登录系统后，首先需要在【会员类别设置】中创建积分会员类别，然后在【会员卡类型设置】中配置对应的卡片类型，完成积分会员基础设置。</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="step">
+                            <div class="flex items-start">
+                                <div class="step-number">2</div>
+                                <div>
+                                    <h4 class="text-lg font-semibold mb-2">积分规则设定</h4>
+                                    <p class="text-neutral-600">进入【系统参数设置】配置积分规则，通常书城设置为消费0.1元积1分。接着在【会员管理】模块中，找到按类设定销售积分选项，将参数修改为1，即实现一元积一分的标准积分规则。</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="step">
+                            <div class="flex items-start">
+                                <div class="step-number">3</div>
+                                <div>
+                                    <h4 class="text-lg font-semibold mb-2">会员卡批量发卡</h4>
+                                    <p class="text-neutral-600">进入【会员卡发卡】功能模块，选择批量发卡选项，在弹出的界面中正确选择领取门店、填写领取人信息，设置发卡数量后，点击确认完成批量发卡操作。</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="step">
+                            <div class="flex items-start">
+                                <div class="step-number">4</div>
+                                <div>
+                                    <h4 class="text-lg font-semibold mb-2">会员档案管理</h4>
+                                    <p class="text-neutral-600">在【会员档案管理】中，必须完整录入会员的基本信息，包括姓名、身份证号、手机号等关键信息，确保会员档案的完整性和准确性，便于后续服务和管理。</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="step">
+                            <div class="flex items-start">
+                                <div class="step-number">5</div>
+                                <div>
+                                    <h4 class="text-lg font-semibold mb-2">会员积分兑换</h4>
+                                    <p class="text-neutral-600">在年度积分兑换活动前，通过【会员档案管理】筛选上一年度所有会员的积分数据，导出并整理成清单。根据积分兑换标准，在【会员积分兑换】模块为会员办理兑换手续，从财务部门领取相应书券后发放给会员，并要求会员在兑换记录上签字确认。</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-10 flex justify-end">
+                        <button class="btn btn-primary print-guide group" data-type="积分会员">
+                            <i class="fa fa-print mr-2 group-hover:rotate-12 transition-transform duration-300"></i>打印指南
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 打折会员 -->
+            <div id="打折会员" class="tab-pane hidden">
+                <div class="card mb-8">
+                    <h3 class="text-3xl font-bold mb-8 text-gradient flex items-center" style="background: linear-gradient(to right, #ff6600, #ff9900); -webkit-background-clip: text; background-clip: text;">
+                        <i class="fa fa-tag mr-4 text-2xl animate-pulse-slow"></i>打折会员操作指南
+                    </h3>
+                    <div class="space-y-8">
+                        <div class="step">
+                            <div class="flex items-start">
+                                <div class="step-number bg-secondary">1</div>
+                                <div>
+                                    <h4 class="text-lg font-semibold mb-2">会员类别与卡类型设置</h4>
+                                    <p class="text-neutral-600">登录系统后，在【会员类别设置】中创建打折会员专属类别，然后在【会员卡类型设置】中配置对应的折扣卡类型，设置好折扣比例和适用范围。</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="step">
+                            <div class="flex items-start">
+                                <div class="step-number bg-secondary">2</div>
+                                <div>
+                                    <h4 class="text-lg font-semibold mb-2">会员卡批量发卡</h4>
+                                    <p class="text-neutral-600">进入【会员卡发卡】功能，选择批量发卡选项，指定领取门店、填写负责人信息，并设定本次发卡数量，确认无误后完成批量制卡操作。</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="step">
+                            <div class="flex items-start">
+                                <div class="step-number bg-secondary">3</div>
+                                <div>
+                                    <h4 class="text-lg font-semibold mb-2">会员档案管理</h4>
+                                    <p class="text-neutral-600">在【会员档案管理】中，详细录入打折会员的个人信息，包括姓名、身份证号、手机号、职业、年龄等，建立完整的会员画像，便于精准营销和服务。</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="step">
+                            <div class="flex items-start">
+                                <div class="step-number bg-secondary">4</div>
+                                <div>
+                                    <h4 class="text-lg font-semibold mb-2">会员类型说明</h4>
+                                    <p class="text-neutral-600">系统设计原则上，打折会员与积分会员不重复设置，以避免优惠叠加导致的经营风险。如有特殊需求，需通过管理层审批后单独配置。</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-10 flex justify-end">
+                        <button class="btn btn-secondary print-guide group" data-type="打折会员">
+                            <i class="fa fa-print mr-2 group-hover:rotate-12 transition-transform duration-300"></i>打印指南
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 借阅会员 -->
+            <div id="借阅会员" class="tab-pane hidden">
+                <div class="card mb-8">
+                    <h3 class="text-3xl font-bold mb-8 text-gradient flex items-center" style="background: linear-gradient(to right, #00cc99, #0099cc); -webkit-background-clip: text; background-clip: text;">
+                        <i class="fa fa-book mr-4 text-2xl animate-pulse-slow"></i>借阅会员操作指南
+                    </h3>
+                    <div class="space-y-8">
+                        <div class="step">
+                            <div class="flex items-start">
+                                <div class="step-number bg-neutral-700">1</div>
+                                <div>
+                                    <h4 class="text-lg font-semibold mb-2">借阅网点设置</h4>
+                                    <p class="text-neutral-600">进入【系统设置】模块，选择【借阅网点设置】功能，为各借阅网点新增专职操作员账号。请注意，操作员必须是该网点的正式工作人员，并具备相应的系统操作权限。</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="step">
+                            <div class="flex items-start">
+                                <div class="step-number bg-neutral-700">2</div>
+                                <div>
+                                    <h4 class="text-lg font-semibold mb-2">借阅参数设置</h4>
+                                    <p class="text-neutral-600">在【系统设置】的【系统参数设置】中，必须配置以下借阅相关参数：</p>
+                                    <ul class="list-disc pl-5 mt-2 space-y-1 text-neutral-600">
+                                        <li>借阅是否收取临时押金（参数为1）</li>
+                                        <li>单品借阅最大数量为10</li>
+                                        <li>单品借阅占库存比例100%</li>
+                                        <li>超期收费延期天数为10天</li>
+                                        <li>读者俱乐部设置为全场借阅(参数为1)</li>
+                                        <li>首次到货不允许借阅时间(参数为10天修改为0天)</li>
+                                        <li>污损图书收取费用比例(参数为10%)</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="step">
+                            <div class="flex items-start">
+                                <div class="step-number bg-neutral-700">3</div>
+                                <div>
+                                    <h4 class="text-lg font-semibold mb-2">会员类别与卡类型设置</h4>
+                                    <p class="text-neutral-600">新增【会员类别设置】时需注意：积分会员起始积分默认为1，而借阅会员起始积分可设为0。在【会员卡类型设置】中，必须勾选"允许借阅"选项，并完整填写卡成本、押金金额及会费标准等关键信息。</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="step">
+                            <div class="flex items-start">
+                                <div class="step-number bg-neutral-700">4</div>
+                                <div>
+                                    <h4 class="text-lg font-semibold mb-2">会员卡批量发卡</h4>
+                                    <p class="text-neutral-600">进入【会员卡发卡】功能，选择批量发卡选项，指定领取门店、填写负责人信息，并设定本次发卡数量，确认无误后完成批量制卡操作。</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="step">
+                            <div class="flex items-start">
+                                <div class="step-number bg-neutral-700">5</div>
+                                <div>
+                                    <h4 class="text-lg font-semibold mb-2">会员档案管理</h4>
+                                    <p class="text-neutral-600">在【会员档案管理】中，详细录入借阅会员的个人信息，包括姓名、身份证号(或其他有效证件)、手机号、职业等关键信息。确保卡类型及会员类别正确选择为"借阅会员"，并仔细核对系统显示的会费、押金、卡费等金额是否准确无误。</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="step">
+                            <div class="flex items-start">
+                                <div class="step-number bg-neutral-700">6</div>
+                                <div>
+                                    <h4 class="text-lg font-semibold mb-2">日常借阅操作</h4>
+                                    <p class="text-neutral-600">借阅流程：具备借阅权限的操作员登录系统后，进入【日常借阅】模块，输入会员卡号并点击查询，确认会员借阅资格后，扫描所需借阅图书的条码完成借阅操作。系统会自动校验：借阅图书总金额不得超过会员已缴纳的押金，超出部分需会员缴纳临时押金后方可继续借阅。</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="step">
+                            <div class="flex items-start">
+                                <div class="step-number bg-neutral-700">7</div>
+                                <div>
+                                    <h4 class="text-lg font-semibold mb-2">借阅归还操作</h4>
+                                    <p class="text-neutral-600">归还流程：会员归还图书时，操作员登录系统后进入【借阅归还】模块，输入会员卡号，系统会显示该会员所有待归还图书列表。选择需要归还的图书，输入书号后按回车键确认归还。若图书有污损情况，系统将按图书定价的10%自动计算并收取污损费用。如需续借，可在对应图书的续借选项框中打勾，系统将自动延长借阅期限。</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="step">
+                            <div class="flex items-start">
+                                <div class="step-number bg-neutral-700">8</div>
+                                <div>
+                                    <h4 class="text-lg font-semibold mb-2">丢失购买操作</h4>
+                                    <p class="text-neutral-600">图书丢失处理：若会员不慎丢失借阅图书，操作员可在【丢失购买】模块中输入会员编号，系统会显示该会员的借阅记录。选择已丢失的图书信息，确认后系统将自动将该图书转为销售状态，并生成相应的销售订单。相关记录可在【会员管理】的【转销售查询】功能中查看详情。</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="step">
+                            <div class="flex items-start">
+                                <div class="step-number bg-neutral-700">9</div>
+                                <div>
+                                    <h4 class="text-lg font-semibold mb-2">借阅库房说明</h4>
+                                    <p class="text-neutral-600">图书库存流转说明：系统设计为借阅图书自动从原库房转移至专属的"借阅库房"进行管理。会员归还图书并确认无误后，系统会自动将图书状态更新并转回其原始库房，确保库存数据的准确性和一致性。</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-10 flex justify-end">
+                        <button class="btn btn-accent print-guide group" data-type="借阅会员">
+                            <i class="fa fa-print mr-2 group-hover:rotate-12 transition-transform duration-300"></i>打印指南
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="bg-gradient-to-r from-dark to-blue-900 text-white py-10 mt-16">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="mb-4 md:mb-0">
+                    <h3 class="text-lg font-semibold flex items-center">
+                        <i class="fa fa-users mr-2"></i>新华会员管理系统
+                    </h3>
+                    <p class="text-neutral-400 mt-1">操作指南 © 2025</p>
+                </div>
+                <div class="flex space-x-4">
+                    <a href="#" class="text-neutral-400 hover:text-white transition-all-300">
+                        <i class="fa fa-question-circle"></i> 帮助中心---综合办公室
+                    </a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 选项卡切换功能
+            const tabButtons = document.querySelectorAll('.tab-button');
+            const tabPanes = document.querySelectorAll('.tab-pane');
+            const navLinks = document.querySelectorAll('.nav-link');
+            const mobileNavLinks = document.querySelectorAll('.mobile-nav-link');
+            
+            function setActiveTab(tabId) {
+                // 隐藏所有选项卡内容
+                tabPanes.forEach(pane => {
+                    pane.classList.add('hidden');
+                    pane.classList.remove('active');
+                });
+                
+                // 显示选中的选项卡内容
+                const activePane = document.getElementById(tabId);
+                if (activePane) {
+                    activePane.classList.remove('hidden');
+                    activePane.classList.add('active');
+                }
+                
+                // 更新选项卡按钮样式
+                tabButtons.forEach(button => {
+                    if (button.getAttribute('data-tab') === tabId) {
+                        button.classList.add('tab-active');
+                        button.classList.remove('text-neutral-600');
+                    } else {
+                        button.classList.remove('tab-active');
+                        button.classList.add('text-neutral-600');
+                    }
+                });
+                
+                // 更新导航链接样式
+                navLinks.forEach(link => {
+                    if (link.getAttribute('href') === '#' + tabId) {
+                        link.classList.add('tab-active');
+                        link.classList.remove('text-neutral-600');
+                    } else {
+                        link.classList.remove('tab-active');
+                        link.classList.add('text-neutral-600');
+                    }
+                });
+                
+                // 更新移动端导航链接样式
+                mobileNavLinks.forEach(link => {
+                    if (link.getAttribute('href') === '#' + tabId) {
+                        link.classList.add('tab-active');
+                        link.classList.remove('text-neutral-600');
+                    } else {
+                        link.classList.remove('tab-active');
+                        link.classList.add('text-neutral-600');
+                    }
+                });
+            }
+            
+            // 选项卡按钮点击事件
+            tabButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const tabId = this.getAttribute('data-tab');
+                    setActiveTab(tabId);
+                });
+            });
+            
+            // 导航链接点击事件
+            navLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const tabId = this.getAttribute('href').substring(1);
+                    setActiveTab(tabId);
+                });
+            });
+            
+            // 移动端导航链接点击事件
+            mobileNavLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const tabId = this.getAttribute('href').substring(1);
+                    setActiveTab(tabId);
+                    // 点击后关闭移动端菜单
+                    document.getElementById('mobile-menu').classList.add('hidden');
+                });
+            });
+            
+            // 移动端菜单切换
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+            
+            mobileMenuButton.addEventListener('click', function() {
+                mobileMenu.classList.toggle('hidden');
+            });
+            
+            // 打印指南功能
+            const printButtons = document.querySelectorAll('.print-guide');
+            
+            printButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const type = this.getAttribute('data-type');
+                    const printContent = document.getElementById(type).innerHTML;
+                    const printWindow = window.open('', '_blank');
+                    
+                    printWindow.document.write(`
+                        <html>
+                        <head>
+                            <title>${type}操作指南</title>
+                            <style>
+                                body { font-family: Arial, sans-serif; line-height: 1.6; padding: 20px; }
+                                h3 { color: #3b82f6; margin-bottom: 20px; }
+                                .step { margin-bottom: 20px; }
+                                .step-number { display: inline-flex; align-items: center; justify-content: center; width: 30px; height: 30px; border-radius: 50%; background-color: #3b82f6; color: white; font-weight: bold; margin-right: 10px; }
+                                h4 { margin-bottom: 10px; }
+                                ul { margin-top: 10px; margin-left: 20px; }
+                            </style>
+                        </head>
+                        <body>
+                            <h2>${type}操作指南</h2>
+                            ${printContent}
+                        </body>
+                        </html>
+                    `);
+                    
+                    printWindow.document.close();
+                    printWindow.print();
+                });
+            });
+            
+            // 平滑滚动
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const targetId = this.getAttribute('href');
+                    const targetElement = document.querySelector(targetId);
+                    
+                    if (targetElement) {
+                        window.scrollTo({
+                            top: targetElement.offsetTop - 80,
+                            behavior: 'smooth'
+                        });
+                    }
+                });
+            });
+            
+            // 初始化显示第一个选项卡
+            setActiveTab('积分会员');
+        });
+    </script>
+</body>
+</html>
