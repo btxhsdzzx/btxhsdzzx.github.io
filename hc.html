@@ -464,10 +464,10 @@
 
         // 合成两张图片（使用预加载的图片）
         function combineTwoImagesWithPreloaded(image1, image2, preloadedImg1, preloadedImg2) {
-            // 创建Canvas元素
+            // 创建Canvas元素，固定为3840*2160
             const canvas = document.createElement('canvas');
-            canvas.width = 3840; // 目标宽度
-            canvas.height = 2160; // 目标高度
+            canvas.width = 3840;
+            canvas.height = 2160;
             
             const ctx = canvas.getContext('2d');
             
@@ -475,17 +475,15 @@
             ctx.fillStyle = '#000000';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
             
-            // 计算每张图片的尺寸和位置
+            // 计算每张图片的尺寸和位置（保持原始比例）
             const halfWidth = 1920; // 每张图片占一半宽度
             const fullHeight = 2160;
             
-            // 绘制第一张图片（左侧）
-            // 稍微扩大一点绘制范围，确保没有间隙
-            ctx.drawImage(preloadedImg1, 0, 0, image1.width, image1.height, 0, 0, halfWidth + 1, fullHeight);
+            // 绘制左侧图片（保持原始比例）
+            drawImageWithAspectRatio(ctx, preloadedImg1, 0, 0, halfWidth, fullHeight);
             
-            // 绘制第二张图片（右侧）
-            // 从halfWidth-1开始绘制，与左侧图片重叠1px，确保没有间隙
-            ctx.drawImage(preloadedImg2, 0, 0, image2.width, image2.height, halfWidth - 1, 0, halfWidth + 1, fullHeight);
+            // 绘制右侧图片（保持原始比例）
+            drawImageWithAspectRatio(ctx, preloadedImg2, halfWidth, 0, halfWidth, fullHeight);
             
             // 使用toBlob代替toDataURL，性能更好
             canvas.toBlob(function(blob) {
@@ -503,6 +501,31 @@
                 // 显示合成结果
                 displayCombinedImage(combinedImage);
             }, 'image/jpeg', 0.9);
+        }
+        
+        // 辅助函数：保持原始比例绘制图片（裁剪以填满目标区域）
+        function drawImageWithAspectRatio(ctx, img, x, y, targetWidth, targetHeight) {
+            const imgRatio = img.width / img.height;
+            const targetRatio = targetWidth / targetHeight;
+            
+            let sourceX = 0, sourceY = 0, sourceWidth = img.width, sourceHeight = img.height;
+            
+            if (imgRatio > targetRatio) {
+                // 图片更宽，以高度为基准，裁剪宽度
+                sourceWidth = img.height * targetRatio;
+                sourceX = (img.width - sourceWidth) / 2;
+            } else {
+                // 图片更高，以宽度为基准，裁剪高度
+                sourceHeight = img.width / targetRatio;
+                sourceY = (img.height - sourceHeight) / 2;
+            }
+            
+            // 绘制图片（裁剪以保持原始比例并填满目标区域）
+            ctx.drawImage(
+                img,
+                sourceX, sourceY, sourceWidth, sourceHeight, // 源图片裁剪区域
+                x, y, targetWidth, targetHeight // 目标区域
+            );
         }
 
         // 从源创建图像对象（保留函数以保持兼容性，但实际不再使用）
