@@ -416,33 +416,19 @@
         
         // 处理单张图片的Canvas操作
         function processSingleImageCanvas(img, imageObj) {
-            // 创建Canvas元素
+            // 创建Canvas元素，固定为3840*2160
             const canvas = document.createElement('canvas');
-            canvas.width = 1920;
-            canvas.height = 1080;
+            canvas.width = 3840;
+            canvas.height = 2160;
             
             const ctx = canvas.getContext('2d');
             
-            // 计算图片在画布上的位置和尺寸（保持纵横比）
-            let drawWidth, drawHeight, offsetX = 0, offsetY = 0;
+            // 设置Canvas背景色为黑色（如果图片有透明部分，会显示黑色背景）
+            ctx.fillStyle = '#000000';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
             
-            const imgRatio = img.width / img.height;
-            const canvasRatio = 1920 / 1080;
-            
-            if (imgRatio > canvasRatio) {
-                // 图片更宽，以宽度为基准
-                drawWidth = 1920;
-                drawHeight = 1920 / imgRatio;
-                offsetY = (2160 - drawHeight) / 2;
-            } else {
-                // 图片更高，以高度为基准
-                drawHeight = 1080;
-                drawWidth = 1080 * imgRatio;
-                offsetX = (3840 - drawWidth) / 2;
-            }
-            
-            // 绘制图片（居中显示，保持纵横比）
-            ctx.drawImage(img, offsetX, offsetY, drawWidth, drawHeight);
+            // 绘制图片（保持原始比例，不裁剪不拉伸）
+            drawImageWithoutCropOrStretch(ctx, img, 0, 0, canvas.width, canvas.height);
             
             // 使用toBlob代替toDataURL，性能更好
             canvas.toBlob(function(blob) {
@@ -475,15 +461,14 @@
             ctx.fillStyle = '#000000';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
             
-            // 计算每张图片的尺寸和位置（保持原始比例）
+            // 计算每张图片的尺寸和位置（保持原始比例，不裁剪不拉伸）
             const halfWidth = 1920; // 每张图片占一半宽度
-            const fullHeight = 2160;
             
-            // 绘制左侧图片（保持原始比例）
-            drawImageWithAspectRatio(ctx, preloadedImg1, 0, 0, halfWidth, fullHeight);
+            // 绘制左侧图片（保持原始比例，不裁剪不拉伸）
+            drawImageWithoutCropOrStretch(ctx, preloadedImg1, 0, 0, halfWidth, canvas.height);
             
-            // 绘制右侧图片（保持原始比例）
-            drawImageWithAspectRatio(ctx, preloadedImg2, halfWidth, 0, halfWidth, fullHeight);
+            // 绘制右侧图片（保持原始比例，不裁剪不拉伸）
+            drawImageWithoutCropOrStretch(ctx, preloadedImg2, halfWidth, 0, halfWidth, canvas.height);
             
             // 使用toBlob代替toDataURL，性能更好
             canvas.toBlob(function(blob) {
@@ -525,6 +510,35 @@
                 img,
                 sourceX, sourceY, sourceWidth, sourceHeight, // 源图片裁剪区域
                 x, y, targetWidth, targetHeight // 目标区域
+            );
+        }
+        
+        // 辅助函数：保持原始比例绘制图片（不裁剪不拉伸）
+        function drawImageWithoutCropOrStretch(ctx, img, x, y, targetWidth, targetHeight) {
+            const imgRatio = img.width / img.height;
+            const targetRatio = targetWidth / targetHeight;
+            
+            let drawWidth, drawHeight, drawX = x, drawY = y;
+            
+            if (imgRatio > targetRatio) {
+                // 图片更宽，以宽度为基准，高度按比例缩放
+                drawWidth = targetWidth;
+                drawHeight = targetWidth / imgRatio;
+                // 垂直居中
+                drawY = y + (targetHeight - drawHeight) / 2;
+            } else {
+                // 图片更高，以高度为基准，宽度按比例缩放
+                drawHeight = targetHeight;
+                drawWidth = targetHeight * imgRatio;
+                // 水平居中
+                drawX = x + (targetWidth - drawWidth) / 2;
+            }
+            
+            // 绘制图片（保持原始比例，不裁剪不拉伸）
+            ctx.drawImage(
+                img,
+                0, 0, img.width, img.height, // 源图片完整区域
+                drawX, drawY, drawWidth, drawHeight // 目标区域（缩放后的尺寸）
             );
         }
 
