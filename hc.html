@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>图片合成工具</title>
+    <!-- Tailwind CSS v3 -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome -->
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#3B82F6',
+                        secondary: '#1E40AF',
+                        neutral: '#1F2937',
+                        'neutral-light': '#F3F4F6',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                    boxShadow: {
+                        'custom': '0 4px 20px 0 rgba(0, 0, 0, 0.1)',
+                    }
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .transition-all-300 {
+                transition: all 0.3s ease;
+            }
+            .dropzone-active {
+                @apply border-primary bg-blue-50;
+            }
+            .progress-bar {
+                @apply h-2 bg-blue-200 rounded-full overflow-hidden;
+            }
+            .progress-value {
+                @apply h-full bg-primary transition-all duration-300;
+            }
+            .image-preview {
+                @apply relative rounded-lg overflow-hidden shadow-custom cursor-pointer transition-all-300 hover:shadow-lg;
+            }
+            .image-preview:hover .remove-btn {
+                @apply opacity-100;
+            }
+            .remove-btn {
+                @apply absolute top-2 right-2 bg-red-500 text-white rounded-full w-8 h-8 flex items-center justify-center opacity-0 transition-all-300 hover:bg-red-600;
+            }
+            .combined-image-container {
+                @apply relative rounded-lg overflow-hidden shadow-custom transition-all-300 hover:shadow-lg;
+            }
+            .download-btn {
+                @apply absolute bottom-2 right-2 bg-primary text-white rounded-full w-8 h-8 flex items-center justify-center transition-all-300 hover:bg-secondary;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen font-sans text-neutral">
+    <div class="container mx-auto px-4 py-8 max-w-6xl">
+        <!-- 头部 -->
+        <header class="text-center mb-8">
+            <h1 class="text-4xl font-bold mb-2 text-neutral">图片合成工具</h1>
+            <p class="text-gray-600">将图片调整为3840×2160比例，单张直接调整，多张两两合成</p>
+        </header>
+
+        <!-- 主要内容 -->
+        <main>
+            <!-- 上传区域 -->
+            <section class="mb-12">
+                <div id="dropzone" class="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center transition-all-300 hover:border-primary">
+                    <div class="flex flex-col items-center justify-center">
+                        <i class="fa fa-cloud-upload text-5xl text-gray-400 mb-4"></i>
+                        <p class="text-lg text-gray-600 mb-2">拖放图片到这里，或</p>
+                        <label class="relative">
+                            <input type="file" id="file-input" multiple accept="image/*" class="hidden">
+                            <span class="bg-primary text-white px-6 py-2 rounded-lg cursor-pointer hover:bg-secondary transition-all-300">
+                                选择图片
+                            </span>
+                        </label>
+                        <p class="text-sm text-gray-500 mt-4">支持JPG、PNG等常见图片格式</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 上传的图片预览 -->
+            <section id="uploaded-images-section" class="mb-12 hidden">
+                <h2 class="text-2xl font-bold mb-4">已上传的图片</h2>
+                <div id="uploaded-images" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                    <!-- 上传的图片将在这里显示 -->
+                </div>
+                <div class="mt-6 text-center">
+                    <button id="combine-btn" class="bg-primary text-white px-8 py-3 rounded-lg font-medium hover:bg-secondary transition-all-300 disabled:bg-gray-300 disabled:cursor-not-allowed">
+                        <i class="fa fa-magic mr-2"></i>开始合成
+                    </button>
+                    <button id="clear-btn" class="ml-4 bg-gray-200 text-gray-700 px-8 py-3 rounded-lg font-medium hover:bg-gray-300 transition-all-300">
+                        <i class="fa fa-trash mr-2"></i>清空
+                    </button>
+                </div>
+            </section>
+
+            <!-- 处理进度 -->
+            <section id="progress-section" class="mb-12 hidden">
+                <h2 class="text-2xl font-bold mb-4">处理进度</h2>
+                <div class="progress-bar">
+                    <div id="progress-value" class="progress-value" style="width: 0%"></div>
+                </div>
+                <p id="progress-text" class="text-gray-600 mt-2">准备中...</p>
+            </section>
+
+            <!-- 合成结果 -->
+            <section id="results-section" class="mb-12 hidden">
+                <h2 class="text-2xl font-bold mb-4">合成结果</h2>
+                <div id="combined-images" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- 合成后的图片将在这里显示 -->
+                </div>
+                <div class="mt-8 text-center">
+                    <button id="download-all-btn" class="bg-primary text-white px-8 py-3 rounded-lg font-medium hover:bg-secondary transition-all-300">
+                        <i class="fa fa-download mr-2"></i>下载所有图片
+                    </button>
+                    <button id="new-combination-btn" class="ml-4 bg-gray-200 text-gray-700 px-8 py-3 rounded-lg font-medium hover:bg-gray-300 transition-all-300">
+                        <i class="fa fa-refresh mr-2"></i>新的合成
+                    </button>
+                </div>
+            </section>
+        </main>
+
+        <!-- 底部 -->
+        <footer class="text-center text-gray-500 text-sm mt-12">
+            <p>© 2025 图片合成工具 | 简单高效的图片处理解决方案</p>
+        </footer>
+    </div>
+
+    <script>
+        // 全局变量
+        const uploadedImages = [];
+        const combinedImages = [];
+        let isProcessing = false;
+
+        // DOM 元素
+        const dropzone = document.getElementById('dropzone');
+        const fileInput = document.getElementById('file-input');
+        const uploadedImagesSection = document.getElementById('uploaded-images-section');
+        const uploadedImagesContainer = document.getElementById('uploaded-images');
+        const combineBtn = document.getElementById('combine-btn');
+        const clearBtn = document.getElementById('clear-btn');
+        const progressSection = document.getElementById('progress-section');
+        const progressValue = document.getElementById('progress-value');
+        const progressText = document.getElementById('progress-text');
+        const resultsSection = document.getElementById('results-section');
+        const combinedImagesContainer = document.getElementById('combined-images');
+        const downloadAllBtn = document.getElementById('download-all-btn');
+        const newCombinationBtn = document.getElementById('new-combination-btn');
+
+        // 初始化事件监听
+        function initEventListeners() {
+            // 拖放事件
+            dropzone.addEventListener('dragover', handleDragOver);
+            dropzone.addEventListener('dragleave', handleDragLeave);
+            dropzone.addEventListener('drop', handleDrop);
+            
+            // 文件输入事件
+            fileInput.addEventListener('change', handleFileSelect);
+            
+            // 按钮事件
+            combineBtn.addEventListener('click', startCombination);
+            clearBtn.addEventListener('click', clearAll);
+            downloadAllBtn.addEventListener('click', downloadAllImages);
+            newCombinationBtn.addEventListener('click', startNewCombination);
+        }
+
+        // 处理拖放事件
+        function handleDragOver(e) {
+            e.preventDefault();
+            dropzone.classList.add('dropzone-active');
+        }
+
+        function handleDragLeave(e) {
+            e.preventDefault();
+            dropzone.classList.remove('dropzone-active');
+        }
+
+        function handleDrop(e) {
+            e.preventDefault();
+            dropzone.classList.remove('dropzone-active');
+            
+            if (e.dataTransfer.files.length > 0) {
+                processFiles(e.dataTransfer.files);
+            }
+        }
+
+        // 处理文件选择
+        function handleFileSelect(e) {
+            if (e.target.files.length > 0) {
+                processFiles(e.target.files);
+            }
+        }
+
+        // 处理上传的文件
+        function processFiles(files) {
+            if (isProcessing) return;
+            
+            const validFiles = Array.from(files).filter(file => file.type.startsWith('image/'));
+            
+            if (validFiles.length === 0) {
+                alert('请上传有效的图片文件！');
+                return;
+            }
+            
+            // 重置文件输入，以便可以再次选择相同的文件
+            fileInput.value = '';
+            
+            // 处理每个有效的图片文件
+            validFiles.forEach(file => {
+                const reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    const img = new Image();
+                    img.onload = function() {
+                        // 创建图片对象并存储
+                        const imageObj = {
+                            id: Date.now() + Math.random(),
+                            file: file,
+                            src: e.target.result,
+                            width: img.width,
+                            height: img.height
+                        };
+                        
+                        uploadedImages.push(imageObj);
+                        displayUploadedImage(imageObj);
+                        
+                        // 显示上传的图片部分
+                        if (uploadedImages.length > 0) {
+                            uploadedImagesSection.classList.remove('hidden');
+                        }
+                        
+                        // 更新合成按钮状态
+                        updateCombineButtonState();
+                    };
+                    
+                    img.src = e.target.result;
+                };
+                
+                reader.readAsDataURL(file);
+            });
+        }
+
+        // 显示上传的图片
+        function displayUploadedImage(imageObj) {
+            const imageContainer = document.createElement('div');
+            imageContainer.className = 'image-preview';
+            imageContainer.dataset.id = imageObj.id;
+            
+            imageContainer.innerHTML = `
+                <img src="${imageObj.src}" alt="上传的图片" class="w-full h-40 object-cover">
+                <div class="remove-btn" onclick="removeImage(${imageObj.id})">
+                    <i class="fa fa-times"></i>
+                </div>
+                <div class="p-2 bg-white">
+                    <p class="text-sm truncate">${imageObj.file.name}</p>
+                    <p class="text-xs text-gray-500">${imageObj.width} × ${imageObj.height}</p>
+                </div>
+            `;
+            
+            uploadedImagesContainer.appendChild(imageContainer);
+        }
+
+        // 移除图片
+        function removeImage(id) {
+            const index = uploadedImages.findIndex(img => img.id === id);
+            if (index !== -1) {
+                uploadedImages.splice(index, 1);
+                
+                // 移除DOM元素
+                const element = document.querySelector(`.image-preview[data-id="${id}"]`);
+                if (element) {
+                    element.remove();
+                }
+                
+                // 如果没有图片了，隐藏上传部分
+                if (uploadedImages.length === 0) {
+                    uploadedImagesSection.classList.add('hidden');
+                }
+                
+                // 更新合成按钮状态
+                updateCombineButtonState();
+            }
+        }
+
+        // 更新合成按钮状态
+        function updateCombineButtonState() {
+            combineBtn.disabled = uploadedImages.length < 1; // 允许单张图片处理
+        }
+
+        // 开始合成过程
+        function startCombination() {
+            if (uploadedImages.length < 1 || isProcessing) return;
+            
+            isProcessing = true;
+            combineBtn.disabled = true;
+            
+            // 显示进度部分
+            progressSection.classList.remove('hidden');
+            progressValue.style.width = '0%';
+            progressText.textContent = '准备中...';
+            
+            // 清空之前的结果
+            combinedImages.length = 0;
+            combinedImagesContainer.innerHTML = '';
+            
+            // 立即开始处理，不延迟
+            processCombination();
+        }
+
+        // 处理图片合成
+        function processCombination() {
+            // 如果只有一张图片，直接调整尺寸
+            if (uploadedImages.length === 1) {
+                processSingleImage();
+                return;
+            }
+            
+            const totalSteps = Math.ceil(uploadedImages.length / 2);
+            let completedTasks = 0;
+            const hasSingleRemaining = uploadedImages.length % 2 === 1;
+            const actualSteps = hasSingleRemaining ? totalSteps : totalSteps;
+            
+            // 预先加载所有图片
+            const preloadedImages = [];
+            let loadedCount = 0;
+            
+            // 预加载所有图片
+            uploadedImages.forEach((imageObj, index) => {
+                const img = new Image();
+                img.onload = function() {
+                    preloadedImages[index] = img;
+                    loadedCount++;
+                    
+                    // 更新预加载进度
+                    const loadPercentage = Math.round((loadedCount / uploadedImages.length) * 30); // 预加载占30%进度
+                    progressValue.style.width = `${loadPercentage}%`;
+                    progressText.textContent = `加载图片: ${loadedCount}/${uploadedImages.length} (${loadPercentage}%)`;
+                    
+                    // 当所有图片加载完成后，开始并行处理
+                    if (loadedCount === uploadedImages.length) {
+                        startParallelProcessing();
+                    }
+                };
+                img.src = imageObj.src;
+            });
+            
+            // 并行处理所有图片
+            function startParallelProcessing() {
+                // 两两合成图片
+                for (let i = 0; i < uploadedImages.length; i += 2) {
+                    // 确保有两张图片可合成
+                    if (i + 1 < uploadedImages.length) {
+                        // 使用requestAnimationFrame优化渲染性能
+                        requestAnimationFrame(() => {
+                            combineTwoImagesWithPreloaded(uploadedImages[i], uploadedImages[i + 1], preloadedImages[i], preloadedImages[i + 1]);
+                            
+                            completedTasks++;
+                            updateProcessingProgress();
+                        });
+                    }
+                }
+                
+                // 处理剩余的单张图片（如果有）
+                if (hasSingleRemaining) {
+                    requestAnimationFrame(() => {
+                        processSingleImageWithPreloaded(uploadedImages[uploadedImages.length - 1], preloadedImages[preloadedImages.length - 1]);
+                        completedTasks++;
+                        updateProcessingProgress();
+                    });
+                }
+            }
+            
+            // 更新处理进度
+            function updateProcessingProgress() {
+                const processPercentage = 30 + Math.round((completedTasks / actualSteps) * 70);
+                progressValue.style.width = `${processPercentage}%`;
+                progressText.textContent = `处理中: ${completedTasks}/${actualSteps} (${processPercentage}%)`;
+                
+                // 如果所有任务都已完成
+                if (completedTasks >= actualSteps) {
+                    finishProcessing();
+                }
+            }
+        }
+        
+        // 处理单张图片（调整为1920*1080）
+        function processSingleImage() {
+            const imageObj = uploadedImages[0];
+            const img = new Image();
+            
+            img.onload = function() {
+                // 更新进度
+                progressValue.style.width = '50%';
+                progressText.textContent = '处理图片中...';
+                
+                processSingleImageCanvas(img, imageObj);
+            };
+            
+            img.src = imageObj.src;
+        }
+        
+        // 使用预加载的图片处理单张图片
+        function processSingleImageWithPreloaded(imageObj, preloadedImg) {
+            // 处理单张图片，使用预加载的图片对象
+            processSingleImageCanvas(preloadedImg, imageObj);
+        }
+        
+        // 处理单张图片的Canvas操作
+        function processSingleImageCanvas(img, imageObj) {
+            // 创建Canvas元素
+            const canvas = document.createElement('canvas');
+            canvas.width = 1920;
+            canvas.height = 1080;
+            
+            const ctx = canvas.getContext('2d');
+            
+            // 计算图片在画布上的位置和尺寸（保持纵横比）
+            let drawWidth, drawHeight, offsetX = 0, offsetY = 0;
+            
+            const imgRatio = img.width / img.height;
+            const canvasRatio = 1920 / 1080;
+            
+            if (imgRatio > canvasRatio) {
+                // 图片更宽，以宽度为基准
+                drawWidth = 1920;
+                drawHeight = 1920 / imgRatio;
+                offsetY = (2160 - drawHeight) / 2;
+            } else {
+                // 图片更高，以高度为基准
+                drawHeight = 1080;
+                drawWidth = 1080 * imgRatio;
+                offsetX = (3840 - drawWidth) / 2;
+            }
+            
+            // 绘制图片（居中显示，保持纵横比）
+            ctx.drawImage(img, offsetX, offsetY, drawWidth, drawHeight);
+            
+            // 使用toBlob代替toDataURL，性能更好
+            canvas.toBlob(function(blob) {
+                const dataURL = URL.createObjectURL(blob);
+                
+                // 将处理结果添加到数组
+                const processedImage = {
+                    id: Date.now() + Math.random(),
+                    canvas: canvas,
+                    dataURL: dataURL
+                };
+                
+                combinedImages.push(processedImage);
+                
+                // 显示处理结果
+                displayCombinedImage(processedImage);
+            }, 'image/jpeg', 0.9);
+        }
+
+        // 合成两张图片（使用预加载的图片）
+        function combineTwoImagesWithPreloaded(image1, image2, preloadedImg1, preloadedImg2) {
+            // 创建Canvas元素
+            const canvas = document.createElement('canvas');
+            canvas.width = 3840; // 目标宽度
+            canvas.height = 2160; // 目标高度
+            
+            const ctx = canvas.getContext('2d');
+            
+            // 设置Canvas背景色为黑色（如果图片有透明部分，会显示黑色背景）
+            ctx.fillStyle = '#000000';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // 计算每张图片的尺寸和位置
+            const halfWidth = 1920; // 每张图片占一半宽度
+            const fullHeight = 2160;
+            
+            // 绘制第一张图片（左侧）
+            // 稍微扩大一点绘制范围，确保没有间隙
+            ctx.drawImage(preloadedImg1, 0, 0, image1.width, image1.height, 0, 0, halfWidth + 1, fullHeight);
+            
+            // 绘制第二张图片（右侧）
+            // 从halfWidth-1开始绘制，与左侧图片重叠1px，确保没有间隙
+            ctx.drawImage(preloadedImg2, 0, 0, image2.width, image2.height, halfWidth - 1, 0, halfWidth + 1, fullHeight);
+            
+            // 使用toBlob代替toDataURL，性能更好
+            canvas.toBlob(function(blob) {
+                const dataURL = URL.createObjectURL(blob);
+                
+                // 将合成结果添加到数组
+                const combinedImage = {
+                    id: Date.now() + Math.random(),
+                    canvas: canvas,
+                    dataURL: dataURL
+                };
+                
+                combinedImages.push(combinedImage);
+                
+                // 显示合成结果
+                displayCombinedImage(combinedImage);
+            }, 'image/jpeg', 0.9);
+        }
+
+        // 从源创建图像对象（保留函数以保持兼容性，但实际不再使用）
+        function createImageFromSource(src) {
+            const img = new Image();
+            img.src = src;
+            return img;
+        }
+
+        // 显示合成后的图片
+        function displayCombinedImage(combinedImage) {
+            const container = document.createElement('div');
+            container.className = 'combined-image-container';
+            
+            container.innerHTML = `
+                <img src="${combinedImage.dataURL}" alt="合成图片" class="w-full h-auto">
+                <div class="download-btn" onclick="downloadImage('${combinedImage.dataURL}', 'combined-${combinedImage.id}.jpg')">
+                    <i class="fa fa-download"></i>
+                </div>
+                <div class="p-2 bg-white">
+                    <p class="text-sm">合成图片 ${combinedImages.length}</p>
+                    <p class="text-xs text-gray-500">3840 × 2160</p>
+                </div>
+            `;
+            
+            combinedImagesContainer.appendChild(container);
+        }
+
+        // 更新进度条
+        function updateProgress(current, total) {
+            const percentage = Math.round((current / total) * 100);
+            progressValue.style.width = `${percentage}%`;
+            progressText.textContent = `处理中: ${current}/${total} (${percentage}%)`;
+        }
+
+        // 完成处理
+        function finishProcessing() {
+            isProcessing = false;
+            
+            // 更新进度为100%
+            progressValue.style.width = '100%';
+            progressText.textContent = '处理完成!';
+            
+            // 显示结果部分
+            resultsSection.classList.remove('hidden');
+            
+            // 滚动到结果部分，使用更直接的滚动方式
+            resultsSection.scrollIntoView({ behavior: 'auto' });
+        }
+
+        // 下载单个图片
+        function downloadImage(dataURL, filename) {
+            const link = document.createElement('a');
+            link.href = dataURL;
+            link.download = filename;
+            link.click();
+        }
+
+        // 下载所有合成图片
+        function downloadAllImages() {
+            // 如果只有一张图片，直接下载
+            if (combinedImages.length === 1) {
+                downloadImage(combinedImages[0].dataURL, 'combined-1.jpg');
+                return;
+            }
+            
+            // 如果有多张图片，使用更高效的方式下载
+            if (combinedImages.length > 1) {
+                // 创建一个临时链接数组
+                const links = combinedImages.map((img, index) => {
+                    const link = document.createElement('a');
+                    link.href = img.dataURL;
+                    link.download = `combined-${index + 1}.jpg`;
+                    return link;
+                });
+                
+                // 使用requestAnimationFrame优化下载触发
+                let linkIndex = 0;
+                const downloadNext = () => {
+                    if (linkIndex < links.length) {
+                        links[linkIndex].click();
+                        linkIndex++;
+                        // 减少间隔时间，提高下载速度
+                        requestAnimationFrame(() => {
+                            setTimeout(downloadNext, 150); // 间隔减少到150ms
+                        });
+                    }
+                };
+                
+                // 开始下载第一张
+                downloadNext();
+            }
+        }
+
+        // 清空所有内容
+        function clearAll() {
+            if (isProcessing) return;
+            
+            // 清空数组
+            uploadedImages.length = 0;
+            combinedImages.length = 0;
+            
+            // 清空DOM
+            uploadedImagesContainer.innerHTML = '';
+            combinedImagesContainer.innerHTML = '';
+            
+            // 隐藏相关部分
+            uploadedImagesSection.classList.add('hidden');
+            progressSection.classList.add('hidden');
+            resultsSection.classList.add('hidden');
+            
+            // 重置按钮状态
+            combineBtn.disabled = false;
+        }
+
+        // 开始新的合成
+        function startNewCombination() {
+            if (isProcessing) return;
+            
+            // 保留上传的图片，只清空结果
+            combinedImages.length = 0;
+            combinedImagesContainer.innerHTML = '';
+            
+            // 隐藏结果部分
+            resultsSection.classList.add('hidden');
+            
+            // 滚动到上传区域
+            dropzone.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // 初始化应用
+        function init() {
+            initEventListeners();
+        }
+
+        // 页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
