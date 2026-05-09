@@ -1721,8 +1721,9 @@
                             <tbody>
                         `;
                         
-                        // 按学校生成数据行
-                        this.schoolHeaders.forEach(school => {
+                        // 按学校生成数据行（只打印筛选后的学校）
+                        const schoolsToPrint = this.currentSchoolFilter ? [this.currentSchoolFilter] : this.schoolHeaders;
+                        schoolsToPrint.forEach(school => {
                             printContent += `<tr>`;
                             
                             // 添加学校名称
@@ -1767,7 +1768,7 @@
                         subjects.forEach(subject => {
                             const total = this.filteredData.reduce((sum, item) => {
                                 if (item.subject === subject) {
-                                    this.schoolHeaders.forEach(school => {
+                                    schoolsToPrint.forEach(school => {
                                         const value = Utils.parseNumber(item[school]);
                                         sum += value;
                                     });
@@ -1806,7 +1807,7 @@
                             <tbody>
                         `;
                         
-                        // 添加所有数据行
+                        // 添加所有数据行（已筛选的数据）
                         this.filteredData.forEach((item, index) => {
                             printContent += `<tr>`;
                             
