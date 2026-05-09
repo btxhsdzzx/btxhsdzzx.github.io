@@ -1200,7 +1200,7 @@
                     headerRow.appendChild(xinhuaTh);
                     
                     // 获取所有唯一的教材科目
-                    const subjects = [...new Set(this.filteredData.map(item => item.subject).filter(subject => subject))];
+                    const subjects = [...new Set(this.bookData.map(item => item.subject).filter(subject => subject))];
                     subjects.forEach(subject => {
                         const th = document.createElement('th');
                         th.className = 'py-2 px-2 border border-blue-500 text-left font-semibold text-xs';
@@ -2270,7 +2270,7 @@
                     cell.className = 'py-1 px-2 border border-gray-300 text-xs font-medium text-right';
                     
                     let total = 0;
-                    this.schoolHeaders.forEach(school => {
+                    schoolsToProcess.forEach(school => {
                         const value = schoolData[school].subjects[subject];
                         if (value) {
                             total += Utils.parseNumber(value);
