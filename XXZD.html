@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>内蒙新华数据管理平台</title>
+    <title>包头新华数据管理平台</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Font Awesome -->
@@ -78,6 +78,65 @@
                 transform: translateY(4px) perspective(1000px);
                 box-shadow: 0 0 0 0 rgba(0,0,0,0.2);
             }
+            
+            /* 表格排版优化 */
+            .compact-row {
+                height: 28px;
+                line-height: 1.2;
+            }
+            
+            /* 自动调整字体大小 */
+            .auto-font-size {
+                font-size: inherit;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+                transition: font-size 0.2s ease;
+            }
+            
+            /* 根据内容长度自动调整字体大小 */
+            .auto-font-size.medium-content {
+                font-size: 0.7rem; /* 11px */
+            }
+            
+            .auto-font-size.large-content {
+                font-size: 0.65rem; /* 10px */
+            }
+            
+            .auto-font-size.xlarge-content {
+                font-size: 0.6rem; /* 9px */
+            }
+            
+            /* 允许长内容换行 */
+            .allow-wrap {
+                white-space: normal !important;
+                word-wrap: break-word;
+                word-break: break-all;
+                max-height: 60px;
+                overflow-y: auto;
+            }
+            
+            /* 悬停时显示完整内容的提示 */
+            .tooltip-cell {
+                position: relative;
+                cursor: help;
+            }
+            
+            .tooltip-cell:hover::after {
+                content: attr(data-tooltip);
+                position: absolute;
+                bottom: 100%;
+                left: 50%;
+                transform: translateX(-50%);
+                background: rgba(0, 0, 0, 0.9);
+                color: white;
+                padding: 4px 8px;
+                border-radius: 4px;
+                font-size: 0.7rem;
+                white-space: nowrap;
+                z-index: 1000;
+                margin-bottom: 4px;
+            }
             .btn-3d:active:before {
                 transform: translateZ(0);
             }
@@ -139,7 +198,7 @@
             /* 打印页脚样式 - 已修改为包含"共几页" */
             @page {
                 @bottom-left {
-                    content: "包头市新华书店 - 第 " counter(page) " 页，共 " counter(pages) " 页";
+                    content: "第 " counter(page) " 页，共 " counter(pages) " 页";
                     font-size: 10pt;
                     color: #666;
                 }
@@ -522,6 +581,7 @@
             background-color: #fee2e2;
             color: #dc2626;
             font-weight: 500;
+            text-align: center;
         }
     </style>
 </head>
@@ -530,7 +590,7 @@
     <nav class="bg-gradient-primary text-white p-4 shadow-lg no-print">
         <div class="container mx-auto flex flex-col md:flex-row justify-between items-center">
             <!-- 美化标题字体 -->
-            <h1 class="text-xl md:text-2xl font-bold text-shadow mb-2 md:mb-0 title-beautify">内蒙新华数据管理平台</h1>
+            <h1 class="text-xl md:text-2xl font-bold text-shadow mb-2 md:mb-0 title-beautify">包头新华数据管理平台</h1>
             <!-- 将时间放到最右侧 -->
             <div class="flex items-center justify-end w-full md:w-auto">
                 <span id="currentTime" class="text-sm md:text-base font-medium"></span>
@@ -599,7 +659,7 @@
                 <!-- 学校筛选按钮组 -->
                 <div class="space-y-2 mb-4 bg-white rounded-lg p-2 shadow-sm" id="schoolFilterContainer">
                     <button data-school="" class="sidebar-item w-full text-left px-3 py-2 rounded hover:bg-blue-50 transition-colors active flex items-center">
-                        <i class="fas fa-school mr-2 w-5 text-center text-blue-500"></i>全部学校
+                        <i class="fas fa-book mr-2 w-5 text-center text-blue-500"></i>全部科目
                     </button>
                     <!-- 学校筛选按钮将通过JavaScript动态生成 -->
                 </div>
@@ -619,7 +679,7 @@
                             <span id="totalCopies" class="font-medium text-blue-700">0</span>
                         </div>
                         <div class="flex justify-between items-center p-2 bg-blue-50 rounded">
-                            <span id="totalVarietyCopiesLabel" class="text-gray-600">品种总册数:</span>
+                            <span id="totalVarietyCopiesLabel" class="text-gray-600">单品总册数:</span>
                             <span id="totalVarietyCopies" class="font-medium text-blue-700">0</span>
                         </div>
                     </div>
@@ -681,7 +741,6 @@
                                 <!-- 表头 -->
                                 <thead id="tableHeader" class="bg-gradient-to-r from-blue-600 to-blue-700 text-white sticky top-0 z-10">
                                     <tr>
-                                        <th class="py-2 px-2 border border-blue-500 text-left font-semibold text-xs">新华书店</th>
                                         <th class="py-2 px-2 border border-blue-500 text-left font-semibold text-xs">教材科目</th>
                                         <!-- 学校列将通过JavaScript动态生成 -->
                                     </tr>
@@ -913,7 +972,6 @@
                 this.itemsPerPage = APP_CONSTANTS.DEFAULT_PAGE_SIZE;
                 this.currentSearchTerm = '';
                 this.currentSchoolFilter = ''; // 当前选中的学校筛选
-                this.currentXinhuaFilter = ''; // 当前选中的新华书店筛选
                 
                 // 导入状态
                 this.importAbortController = null;
@@ -939,9 +997,9 @@
                 // 统计元素
                 this.totalVarietyElement = document.getElementById('totalOrders'); // 总品种数
                 this.totalCopiesElement = document.getElementById('totalCopies'); // 学校总册数
-                this.totalVarietyCopiesElement = document.getElementById('totalVarietyCopies'); // 品种总册数
+                this.totalVarietyCopiesElement = document.getElementById('totalVarietyCopies'); // 单品总册数
                 this.totalCopiesLabel = document.getElementById('totalCopiesLabel'); // 学校总册数标签
-                this.totalVarietyCopiesLabel = document.getElementById('totalVarietyCopiesLabel'); // 品种总册数标签
+                this.totalVarietyCopiesLabel = document.getElementById('totalVarietyCopiesLabel'); // 单品总册数标签
                 
                 // 转置状态
                 this.isTransposed = false;
@@ -1001,7 +1059,7 @@
                 // 取消导入按钮
                 this.cancelImportBtn.addEventListener('click', () => this.cancelImport());
                 
-                // 全部学校筛选按钮
+                // 全部科目筛选按钮
                 document.querySelector('[data-school=""]').addEventListener('click', () => {
                     this.filterBySchool('');
                     
@@ -1070,18 +1128,16 @@
                     : 'compact-row fade-in hover:bg-blue-50 transition-colors bg-blue-50';
                 row.className = rowClass;
                 
-                // 添加新华书店和教材科目列
-                const xinhuaCell = document.createElement('td');
-                xinhuaCell.className = 'py-1 px-2 border border-gray-300 text-xs';
-                xinhuaCell.textContent = item.xinhua || '';
-                row.appendChild(xinhuaCell);
-                
+                // 添加教材科目列
                 const subjectCell = document.createElement('td');
-                subjectCell.className = 'py-1 px-2 border border-gray-300 text-xs';
-                subjectCell.textContent = item.subject || '';
+                subjectCell.className = 'py-1 px-2 border border-gray-300 text-xs auto-font-size tooltip-cell';
+                const subjectText = item.subject || '';
+                subjectCell.textContent = subjectText;
+                subjectCell.setAttribute('data-tooltip', subjectText);
+                this.adjustFontSize(subjectCell, subjectText);
                 row.appendChild(subjectCell);
                 
-                // 计算品种总册数（该行所有学校的合计）
+                // 计算单品总册数（该行所有学校的合计）
                 let varietyTotal = 0;
                 
                 // 添加学校列
@@ -1095,25 +1151,33 @@
                     // 如果值为空，添加红色背景样式
                     if (value === '' || value === null || value === undefined) {
                         cell.classList.add('empty-value-cell');
-                        cell.textContent = '无数据';
+                        cell.textContent = '空';
                     } else {
                         // 尝试将值转换为数字并格式化
                         const numValue = Utils.parseNumber(value);
                         if (!isNaN(numValue)) {
-                            cell.textContent = Utils.formatNumber(numValue);
-                            varietyTotal += numValue; // 累加品种总册数
+                            const formattedValue = Utils.formatNumber(numValue);
+                            cell.textContent = formattedValue;
+                            cell.setAttribute('data-tooltip', formattedValue);
+                            this.adjustFontSize(cell, formattedValue);
+                            varietyTotal += numValue; // 累加单品总册数
                         } else {
                             cell.textContent = value;
+                            cell.setAttribute('data-tooltip', value);
+                            this.adjustFontSize(cell, value);
                         }
                     }
                     
                     row.appendChild(cell);
                 });
                 
-                // 添加品种总册数列
+                // 添加单品总册数列
                 const varietyTotalCell = document.createElement('td');
-                varietyTotalCell.className = 'py-1 px-2 border border-gray-300 text-xs text-right font-medium bg-blue-50';
-                varietyTotalCell.textContent = Utils.formatNumber(varietyTotal);
+                varietyTotalCell.className = 'py-1 px-2 border border-gray-300 text-xs text-right font-medium bg-blue-50 auto-font-size tooltip-cell';
+                const varietyTotalText = Utils.formatNumber(varietyTotal);
+                varietyTotalCell.textContent = varietyTotalText;
+                varietyTotalCell.setAttribute('data-tooltip', varietyTotalText);
+                this.adjustFontSize(varietyTotalCell, varietyTotalText);
                 row.appendChild(varietyTotalCell);
                 
                 return row;
@@ -1124,12 +1188,12 @@
                 const totalRow = document.createElement('tr');
                 totalRow.className = 'page-total-row fade-in bg-blue-100';
                 
-                // 新华书店和教材科目列显示"本页合计"
-                const xinhuaCell = document.createElement('td');
-                xinhuaCell.className = 'py-1 px-2 border border-gray-300 text-xs font-medium';
-                xinhuaCell.textContent = '本页合计';
-                xinhuaCell.colSpan = 2; // 合并前两列
-                totalRow.appendChild(xinhuaCell);
+                // 教材科目列显示"本页合计"
+                const subjectCell = document.createElement('td');
+                subjectCell.className = 'py-1 px-2 border border-gray-300 text-xs font-medium';
+                subjectCell.textContent = '本页合计';
+                subjectCell.colSpan = 1; // 只合并一列
+                totalRow.appendChild(subjectCell);
                 
                 let pageGrandTotal = 0;
                 
@@ -1149,7 +1213,7 @@
                     totalRow.appendChild(cell);
                 });
                 
-                // 添加品种总册数合计
+                // 添加单品总册数合计
                 const varietyTotalCell = document.createElement('td');
                 varietyTotalCell.className = 'py-1 px-2 border border-gray-300 text-xs font-medium text-right bg-blue-100';
                 varietyTotalCell.textContent = Utils.formatNumber(pageGrandTotal);
@@ -1162,8 +1226,8 @@
             renderEmptyState() {
                 const emptyRow = document.createElement('tr');
                 
-                // 计算列数（前两列 + 学校列数）
-                const colSpan = 2 + this.schoolHeaders.length;
+                // 计算列数（教材科目列 + 学校列数）
+                const colSpan = 1 + this.schoolHeaders.length;
                 
                 if (this.bookData.length === 0) {
                     emptyRow.innerHTML = `
@@ -1188,16 +1252,11 @@
                 headerRow.innerHTML = '';
                 
                 if (this.isTransposed) {
-                    // 转置模式表头：学校 | 新华书店 | 教材科目1 | 教材科目2 | ... | 品种总册数
+                    // 转置模式表头：学校 | 教材科目1 | 教材科目2 | ... | 单品总册数
                     const schoolTh = document.createElement('th');
                     schoolTh.className = 'py-2 px-2 border border-blue-500 text-left font-semibold text-xs';
                     schoolTh.textContent = '学校';
                     headerRow.appendChild(schoolTh);
-                    
-                    const xinhuaTh = document.createElement('th');
-                    xinhuaTh.className = 'py-2 px-2 border border-blue-500 text-left font-semibold text-xs';
-                    xinhuaTh.textContent = '新华书店';
-                    headerRow.appendChild(xinhuaTh);
                     
                     // 获取所有唯一的教材科目
                     const subjects = [...new Set(this.bookData.map(item => item.subject).filter(subject => subject))];
@@ -1214,11 +1273,7 @@
                     varietyTotalTh.textContent = '学校总册数';
                     headerRow.appendChild(varietyTotalTh);
                 } else {
-                    // 正常模式表头：新华书店 | 教材科目 | 学校1 | 学校2 | ... | 品种总册数
-                    const xinhuaTh = document.createElement('th');
-                    xinhuaTh.className = 'py-2 px-2 border border-blue-500 text-left font-semibold text-xs';
-                    xinhuaTh.textContent = '新华书店';
-                    headerRow.appendChild(xinhuaTh);
+                    // 正常模式表头：教材科目 | 学校1 | 学校2 | ... | 单品总册数
                     
                     const subjectTh = document.createElement('th');
                     subjectTh.className = 'py-2 px-2 border border-blue-500 text-left font-semibold text-xs';
@@ -1233,10 +1288,10 @@
                         headerRow.appendChild(th);
                     });
                     
-                    // 添加品种总册数列（正常模式下）
+                    // 添加单品总册数列（正常模式下）
                     const varietyTotalTh = document.createElement('th');
                     varietyTotalTh.className = 'py-2 px-2 border border-blue-500 text-left font-semibold text-xs bg-blue-700';
-                    varietyTotalTh.textContent = '品种总册数';
+                    varietyTotalTh.textContent = '单品总册数';
                     headerRow.appendChild(varietyTotalTh);
                 }
             }
@@ -1289,7 +1344,7 @@
                     totalCopies += schoolTotal;
                 });
                 
-                // 计算品种总册数（每行的合计之和）
+                // 计算单品总册数（每行的合计之和）
                 let totalVarietyCopies = 0;
                 this.filteredData.forEach(item => {
                     let rowTotal = 0;
@@ -1303,17 +1358,17 @@
                 // 总品种数显示为条目合计数（过滤后的记录总数）
                 this.totalVarietyElement.textContent = this.filteredData.length;
                 
-                // 在转置模式下，学校总册数和品种总册数的含义互换
+                // 在转置模式下，学校总册数和单品总册数的含义互换
                 if (this.isTransposed) {
-                    // 转置模式：学校总册数显示品种总册数，品种总册数显示学校总册数
-                    this.totalCopiesLabel.textContent = '品种总册数:';
+                    // 转置模式：学校总册数显示单品总册数，单品总册数显示学校总册数
+                    this.totalCopiesLabel.textContent = '单品总册数:';
                     this.totalVarietyCopiesLabel.textContent = '学校总册数:';
                     this.totalCopiesElement.textContent = Utils.formatNumber(totalVarietyCopies);
                     this.totalVarietyCopiesElement.textContent = Utils.formatNumber(totalCopies);
                 } else {
                     // 正常模式：保持原有显示
                     this.totalCopiesLabel.textContent = '学校总册数:';
-                    this.totalVarietyCopiesLabel.textContent = '品种总册数:';
+                    this.totalVarietyCopiesLabel.textContent = '单品总册数:';
                     this.totalCopiesElement.textContent = Utils.formatNumber(totalCopies);
                     this.totalVarietyCopiesElement.textContent = Utils.formatNumber(totalVarietyCopies);
                 }
@@ -1322,14 +1377,13 @@
             // 按学校筛选
             filterBySchool(school) {
                 this.currentSchoolFilter = school;
-                this.currentXinhuaFilter = ''; // 清除新华书店筛选
+
                 this.applyFilters();
             }
             
-            // 按新华书店筛选
-            filterByXinhua(xinhua) {
-                this.currentXinhuaFilter = xinhua;
-                this.currentSchoolFilter = ''; // 清除学校筛选
+            // 按教材科目筛选
+            filterBySubject(subject) {
+                this.currentSchoolFilter = subject;
                 this.applyFilters();
             }
             
@@ -1342,7 +1396,7 @@
             // 应用所有筛选
             applyFilters() {
                 // 优化：使用缓存减少重复计算
-                const filterKey = `${this.currentSchoolFilter}_${this.currentXinhuaFilter}_${this.currentSearchTerm}_${this.isTransposed}`;
+                const filterKey = `${this.currentSchoolFilter}_${this.currentSearchTerm}_${this.isTransposed}`;
                 
                 // 如果筛选条件没有变化，直接返回
                 if (this.lastFilterKey === filterKey) {
@@ -1359,9 +1413,9 @@
                     // 转置模式：不筛选原始数据，只在渲染时控制显示的学校行
                     // 保持所有数据，让renderTransposedTable方法根据currentSchoolFilter控制显示
                 } else {
-                    // 正常模式：应用新华书店筛选
-                    if (this.currentXinhuaFilter) {
-                        filtered = filtered.filter(item => item.xinhua === this.currentXinhuaFilter);
+                    // 正常模式：根据选择的教材科目筛选数据
+                    if (this.currentSchoolFilter) {
+                        filtered = filtered.filter(item => item.subject === this.currentSchoolFilter);
                     }
                 }
                 
@@ -1379,11 +1433,35 @@
             // 按搜索词筛选数据
             filterBySearchTerm(data, searchTerm) {
                 const lowerSearchTerm = searchTerm.toLowerCase();
-                return data.filter(item => {
-                    // 搜索新华书店和教材科目列
-                    if (item.xinhua && item.xinhua.toLowerCase().includes(lowerSearchTerm)) {
-                        return true;
+                
+                // 转置模式下搜索学校名称
+                if (this.isTransposed) {
+                    // 查找匹配的学校名称（模糊搜索）
+                    const matchingSchools = this.schoolHeaders.filter(school => 
+                        school.toLowerCase().includes(lowerSearchTerm)
+                    );
+                    
+                    // 如果没有匹配的学校，返回空数组
+                    if (matchingSchools.length === 0) {
+                        return [];
                     }
+                    
+                    // 存储匹配的学校列表，供后续使用
+                    this._matchingSchools = matchingSchools;
+                    
+                    // 清除学校筛选条件，以便显示所有匹配的学校
+                    this.currentSchoolFilter = '';
+                    
+                    // 更新筛选按钮状态
+                    this.updateSchoolFilters();
+                    
+                    // 在转置模式下，我们需要返回所有数据
+                    // 因为renderTransposedTable方法会根据this._matchingSchools来控制显示哪些学校行
+                    return data;
+                }
+                
+                // 正常模式下搜索教材科目（模糊搜索）
+                return data.filter(item => {
                     if (item.subject && item.subject.toLowerCase().includes(lowerSearchTerm)) {
                         return true;
                     }
@@ -1395,6 +1473,8 @@
             clearSearch() {
                 this.searchInput.value = '';
                 this.currentSearchTerm = '';
+                // 清除匹配的学校列表
+                this._matchingSchools = null;
                 this.applyFilters();
             }
             
@@ -1436,8 +1516,8 @@
                         const exportData = this.filteredData.map(item => {
                             const exportItem = {};
                             
-                            // 添加新华书店和教材科目
-                            exportItem['新华书店'] = item.xinhua || '';
+                            // 添加教材科目
+
                             exportItem['教材科目'] = item.subject || '';
                             
                             // 添加学校列
@@ -1541,7 +1621,7 @@
                                 /* 打印页脚样式 - 已修改为包含"共几页" */
                                 @page {
                                     @bottom-left {
-                                        content: "包头市新华书店 - 第 " counter(page) " 页，共 " counter(pages) " 页";
+                                        content: "第 " counter(page) " 页，共 " counter(pages) " 页";
                                         font-size: 10pt;
                                         color: #666;
                                     }
@@ -1654,6 +1734,7 @@
                                     background-color: #fee2e2;
                                     color: #dc2626;
                                     font-weight: 500;
+                                    text-align: center;
                                 }
                             </style>
                         </head>
@@ -1676,7 +1757,7 @@
                                     <i class="fas fa-filter"></i>
                                     <span>${this.isTransposed ? 
                                         (this.currentSchoolFilter ? '筛选条件: ' + this.currentSchoolFilter : '全部') : 
-                                        (this.currentXinhuaFilter ? '筛选条件: ' + this.currentXinhuaFilter : '全部')
+                                        (this.currentSchoolFilter ? '筛选条件: ' + this.currentSchoolFilter : '全部')
                                     }</span>
                                 </div>
                             </div>
@@ -1704,7 +1785,7 @@
                             <thead>
                                 <tr class="sticky-header">
                                     <th>学校</th>
-                                    <th>新华书店</th>
+
                         `;
                         
                         // 添加教材科目表头
@@ -1729,9 +1810,7 @@
                             // 添加学校名称
                             printContent += `<td>${school}</td>`;
                             
-                            // 获取第一个包含该学校数据的记录的新华书店信息
-                            const firstItem = this.filteredData.find(item => item[school]);
-                            printContent += `<td>${firstItem ? firstItem.xinhua || '' : ''}</td>`;
+
                             
                             let schoolTotal = 0;
                             
@@ -1741,7 +1820,7 @@
                                 const value = item ? item[school] || '' : '';
                                 
                                 if (value === '' || value === null || value === undefined) {
-                                    printContent += `<td class="empty-value-cell">无数据</td>`;
+                                    printContent += `<td class="empty-value-cell">空</td>`;
                                 } else {
                                     const numValue = Utils.parseNumber(value);
                                     if (!isNaN(numValue)) {
@@ -1760,7 +1839,7 @@
                         
                         // 添加页合计行
                         printContent += `<tr class="page-total-row">`;
-                        printContent += `<td colspan="2" style="text-align: center;">总计</td>`;
+                        printContent += `<td colspan="1" style="text-align: center;">总计</td>`;
                         
                         let grandTotal = 0;
                         
@@ -1780,7 +1859,7 @@
                             printContent += `<td style="text-align: right;">${Utils.formatNumber(total)}</td>`;
                         });
                         
-                        // 添加品种总册数合计
+                        // 添加单品总册数合计
                         printContent += `<td style="text-align: right; font-weight: 600; background-color: #e0f2fe;">${Utils.formatNumber(grandTotal)}</td>`;
                         printContent += `</tr>`;
                         
@@ -1789,7 +1868,7 @@
                         printContent += `
                             <thead>
                                 <tr class="sticky-header">
-                                    <th>新华书店</th>
+
                                     <th>教材科目</th>
                         `;
                         
@@ -1798,8 +1877,8 @@
                             printContent += `<th>${school}</th>`;
                         });
                         
-                        // 添加品种总册数列头
-                        printContent += `<th style="background-color: #1e40af;">品种总册数</th>`;
+                        // 添加单品总册数列头
+                        printContent += `<th style="background-color: #1e40af;">单品总册数</th>`;
                         
                         printContent += `
                                 </tr>
@@ -1811,9 +1890,9 @@
                         this.filteredData.forEach((item, index) => {
                             printContent += `<tr>`;
                             
-                            // 添加新华书店和教材科目
+                            // 添加教材科目
                             printContent += `
-                                <td>${item.xinhua || ''}</td>
+
                                 <td>${item.subject || ''}</td>
                             `;
                             
@@ -1823,7 +1902,7 @@
                                 
                                 // 如果值为空，添加红色背景样式
                                 if (value === '' || value === null || value === undefined) {
-                                    printContent += `<td class="empty-value-cell">无数据</td>`;
+                                    printContent += `<td class="empty-value-cell">空</td>`;
                                 } else {
                                     // 尝试将值转换为数字并格式化
                                     const numValue = Utils.parseNumber(value);
@@ -1835,7 +1914,7 @@
                                 }
                             });
                             
-                            // 计算品种总册数（该行所有学校的合计）
+                            // 计算单品总册数（该行所有学校的合计）
                             let varietyTotal = 0;
                             this.schoolHeaders.forEach(school => {
                                 const value = item[school] || '';
@@ -1845,14 +1924,14 @@
                                 }
                             });
                             
-                            // 添加品种总册数列
+                            // 添加单品总册数列
                             printContent += `<td style="text-align: right; font-weight: 500; background-color: #f0f9ff;">${Utils.formatNumber(varietyTotal)}</td>`;
                             printContent += `</tr>`;
                         });
                         
                         // 添加页合计行
                         printContent += `<tr class="page-total-row">`;
-                        printContent += `<td colspan="2" style="text-align: center;">总计</td>`;
+                        printContent += `<td colspan="1" style="text-align: center;">总计</td>`;
                         
                         let grandTotal = 0;
                         
@@ -1867,7 +1946,7 @@
                             printContent += `<td style="text-align: right;">${Utils.formatNumber(total)}</td>`;
                         });
                         
-                        // 添加品种总册数合计
+                        // 添加单品总册数合计
                         printContent += `<td style="text-align: right; font-weight: 600; background-color: #e0f2fe;">${Utils.formatNumber(grandTotal)}</td>`;
                         printContent += `</tr>`;
                     }
@@ -1877,7 +1956,7 @@
                         </table>
                         
                         <div style="margin-top: 30px; font-size: 10px; text-align: center; color: #666;">
-                            <p>内蒙新华数据管理平台</p>
+                            <p>包头新华数据管理平台</p>
                         </div>
                     `;
                     
@@ -1907,6 +1986,23 @@
                 } catch (error) {
                     this.hideLoading();
                     this.showNotification('打印准备失败: ' + error.message, 'error');
+                }
+            }
+            
+            // 自动调整字体大小
+            adjustFontSize(element, text) {
+                if (!text || typeof text !== 'string') return;
+                
+                // 移除之前的字体大小类
+                element.classList.remove('medium-content', 'large-content', 'xlarge-content');
+                
+                // 根据文本长度调整字体大小
+                if (text.length > 20) {
+                    element.classList.add('xlarge-content');
+                } else if (text.length > 15) {
+                    element.classList.add('large-content');
+                } else if (text.length > 10) {
+                    element.classList.add('medium-content');
                 }
             }
             
@@ -1988,10 +2084,20 @@
                 this.importSuccessModal.classList.remove('hidden');
             }
             
-            // 动态更新筛选列表（根据转置状态切换显示新华书店或学校）
+            // 动态更新筛选列表（根据转置状态切换显示内容）
             updateSchoolFilters() {
-                // 清空学校筛选容器，但保留"全部"选项
+                // 清空筛选容器，但保留"全部"选项
                 this.clearSchoolFilters();
+                
+                // 更新全部按钮文本
+                const allButton = document.querySelector('[data-school=""]');
+                if (allButton) {
+                    if (this.isTransposed) {
+                        allButton.innerHTML = '<i class="fas fa-school mr-2 w-5 text-center text-blue-500"></i>全部学校';
+                    } else {
+                        allButton.innerHTML = '<i class="fas fa-book mr-2 w-5 text-center text-blue-500"></i>全部科目';
+                    }
+                }
                 
                 if (this.isTransposed) {
                     // 转置模式：显示学校筛选
@@ -2000,16 +2106,16 @@
                         this.schoolFilterContainer.appendChild(button);
                     });
                 } else {
-                    // 正常模式：显示新华书店筛选
-                    const xinhuaStores = [...new Set(this.filteredData.map(item => item.xinhua).filter(xinhua => xinhua))];
-                    xinhuaStores.forEach(store => {
-                        const button = this.createFilterButton(store, 'xinhua');
+                    // 正常模式：显示教材科目筛选
+                    const subjects = [...new Set(this.bookData.map(item => item.subject).filter(subject => subject))];
+                    subjects.forEach(subject => {
+                        const button = this.createFilterButton(subject, 'subject');
                         this.schoolFilterContainer.appendChild(button);
                     });
                 }
             }
             
-            // 清空学校筛选容器，但保留"全部学校"选项
+            // 清空筛选容器，但保留"全部"选项
             clearSchoolFilters() {
                 while (this.schoolFilterContainer.children.length > 1) {
                     this.schoolFilterContainer.removeChild(this.schoolFilterContainer.lastChild);
@@ -2021,7 +2127,7 @@
                 return this.createFilterButton(school, 'school');
             }
             
-            // 创建筛选按钮（支持学校和新华书店）
+            // 创建筛选按钮（支持学校和教材科目）
             createFilterButton(value, type) {
                 const button = document.createElement('button');
                 button.className = 'sidebar-item w-full text-left px-3 py-2 rounded hover:bg-blue-50 transition-colors flex items-center';
@@ -2043,23 +2149,21 @@
                         this.filterBySchool(value);
                         this.updateActiveSchoolFilter(button);
                     });
-                } else if (type === 'xinhua') {
-                    button.setAttribute('data-xinhua', value);
+                } else if (type === 'subject') {
+                    button.setAttribute('data-school', value);
                     
-                    // 检查是否为当前选中的新华书店筛选条件
-                    if (this.currentXinhuaFilter === value && !this.isTransposed) {
+                    // 检查是否为当前选中的科目筛选条件
+                    if (this.currentSchoolFilter === value && !this.isTransposed) {
                         button.classList.add('bg-blue-100', 'text-blue-700');
                     }
                     
-                    button.innerHTML = `
-                        <i class="fas fa-store mr-2 text-blue-500"></i>
-                        <span>${value}</span>
-                    `;
+                    button.innerHTML = `<i class="fas fa-book mr-2 w-5 text-center text-blue-500"></i>${value}`;
                     
                     button.addEventListener('click', () => {
-                        this.filterByXinhua(value);
+                        this.filterBySubject(value);
                         this.updateActiveSchoolFilter(button);
                     });
+
                 }
                 
                 return button;
@@ -2167,12 +2271,12 @@
                 // 按学校分组数据
                 const schoolData = {};
                 
-                // 只处理筛选后的学校（如果有筛选）
-                const schoolsToProcess = this.currentSchoolFilter ? [this.currentSchoolFilter] : this.schoolHeaders;
+                // 只处理匹配的学校（如果正在搜索）或筛选后的学校
+                const schoolsToProcess = this._matchingSchools ? this._matchingSchools : 
+                                       (this.currentSchoolFilter ? [this.currentSchoolFilter] : this.schoolHeaders);
                 
                 schoolsToProcess.forEach(school => {
                     schoolData[school] = {
-                        xinhua: currentData[0]?.xinhua || '', // 假设所有行的新华书店相同
                         subjects: {},
                         total: 0 // 学校总册数
                     };
@@ -2196,7 +2300,9 @@
                 
                 // 渲染每行（按学校）
                 let index = 0;
-                const schoolsToRender = this.currentSchoolFilter ? [this.currentSchoolFilter] : this.schoolHeaders;
+                // 只渲染匹配的学校（如果正在搜索）或筛选后的学校
+                const schoolsToRender = this._matchingSchools ? this._matchingSchools : 
+                                       (this.currentSchoolFilter ? [this.currentSchoolFilter] : this.schoolHeaders);
                 schoolsToRender.forEach(school => {
                     const row = document.createElement('tr');
                     const rowClass = index % 2 === 0 
@@ -2206,15 +2312,11 @@
                     
                     // 学校名称列
                     const schoolCell = document.createElement('td');
-                    schoolCell.className = 'py-1 px-2 border border-gray-300 text-xs font-medium';
+                    schoolCell.className = 'py-1 px-2 border border-gray-300 text-xs font-medium auto-font-size tooltip-cell';
                     schoolCell.textContent = school;
+                    schoolCell.setAttribute('data-tooltip', school);
+                    this.adjustFontSize(schoolCell, school);
                     row.appendChild(schoolCell);
-                    
-                    // 新华书店列
-                    const xinhuaCell = document.createElement('td');
-                    xinhuaCell.className = 'py-1 px-2 border border-gray-300 text-xs';
-                    xinhuaCell.textContent = schoolData[school].xinhua;
-                    row.appendChild(xinhuaCell);
                     
                     // 各教材科目列
                     subjects.forEach(subject => {
@@ -2226,7 +2328,7 @@
                         // 如果值为空，添加红色背景样式
                         if (value === '' || value === null || value === undefined) {
                             cell.classList.add('empty-value-cell');
-                            cell.textContent = '无数据';
+                            cell.textContent = '空';
                         } else {
                             // 尝试将值转换为数字并格式化
                             const numValue = Utils.parseNumber(value);
@@ -2240,7 +2342,7 @@
                         row.appendChild(cell);
                     });
                     
-                    // 添加品种总册数列（这里显示学校总册数）
+                    // 添加单品总册数列（这里显示学校总册数）
                     const varietyTotalCell = document.createElement('td');
                     varietyTotalCell.className = 'py-1 px-2 border border-gray-300 text-xs text-right font-medium bg-blue-50';
                     varietyTotalCell.textContent = Utils.formatNumber(schoolData[school].total);
@@ -2258,10 +2360,6 @@
                 totalLabelCell.className = 'py-1 px-2 border border-gray-300 text-xs font-medium';
                 totalLabelCell.textContent = '合计';
                 totalRow.appendChild(totalLabelCell);
-                
-                const emptyCell = document.createElement('td');
-                emptyCell.className = 'py-1 px-2 border border-gray-300 text-xs';
-                totalRow.appendChild(emptyCell);
                 
                 let grandTotal = 0;
                 
@@ -2283,7 +2381,7 @@
                     totalRow.appendChild(cell);
                 });
                 
-                // 添加品种总册数合计
+                // 添加单品总册数合计
                 const totalVarietyCell = document.createElement('td');
                 totalVarietyCell.className = 'py-1 px-2 border border-gray-300 text-xs text-right font-medium bg-blue-100';
                 totalVarietyCell.textContent = Utils.formatNumber(grandTotal);
@@ -2515,17 +2613,16 @@
                         // 提取表头和数据
                         const headers = jsonData[0];
                         
-                        // 检查是否至少有3列（新华书店、教材科目、至少一个学校）
-                        if (headers.length < 3) {
-                            throw new Error('Excel文件格式不正确，至少需要包含新华书店、教材科目和一个学校列');
+                        // 检查是否至少有2列（教材科目、至少一个学校）
+                        if (headers.length < 2) {
+                            throw new Error('Excel文件格式不正确，至少需要包含教材科目和一个学校列');
                         }
                         
-                        // 固定前两列为新华书店和教材科目
-                        const xinhuaHeader = headers[0];
-                        const subjectHeader = headers[1];
+                        // 固定第一列为教材科目
+                        const subjectHeader = headers[0];
                         
                         // 后面的列全部为学校名称
-                        const schoolHeaders = headers.slice(2);
+                        const schoolHeaders = headers.slice(1);
                         
                         // 检查是否有学校列
                         if (schoolHeaders.length === 0) {
@@ -2551,12 +2648,11 @@
                             }
                             
                             const obj = {
-                                xinhua: row[0] || '',
-                                subject: row[1] || ''
+                                subject: row[0] || ''
                             };
                             
                             // 添加学校数据
-                            for (let j = 2; j < headers.length; j++) {
+                            for (let j = 1; j < headers.length; j++) {
                                 const school = headers[j];
                                 obj[school] = row[j];
                             }
