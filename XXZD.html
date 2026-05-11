@@ -675,11 +675,11 @@
                             <span id="totalOrders" class="font-medium text-blue-700">0</span>
                         </div>
                         <div class="flex justify-between items-center p-2 bg-blue-50 rounded">
-                            <span id="totalCopiesLabel" class="text-gray-600">学校总册数:</span>
+                            <span id="totalCopiesLabel" class="text-gray-600">总册数:</span>
                             <span id="totalCopies" class="font-medium text-blue-700">0</span>
                         </div>
                         <div class="flex justify-between items-center p-2 bg-blue-50 rounded">
-                            <span id="totalVarietyCopiesLabel" class="text-gray-600">单品总册数:</span>
+                            <span id="totalVarietyCopiesLabel" class="text-gray-600">学校总数:</span>
                             <span id="totalVarietyCopies" class="font-medium text-blue-700">0</span>
                         </div>
                     </div>
@@ -690,9 +690,9 @@
             <div class="flex-1 main-content">
                 <!-- 搜索和操作栏 - 优化布局和美观度 -->
                 <div class="bg-white rounded-lg shadow-md p-4 mb-4 no-print transition-all duration-300 hover:shadow-lg">
-                    <div class="flex flex-col lg:flex-row items-center justify-between gap-3">
-                        <!-- 搜索框和操作按钮 -->
-                        <div class="flex flex-col sm:flex-row items-center gap-2 w-full lg:w-auto">
+                    <div class="flex flex-col sm:flex-row items-center justify-between gap-3">
+                        <!-- 左侧：搜索框和操作按钮 -->
+                        <div class="flex flex-col sm:flex-row items-center gap-2 w-full lg:w-auto flex-wrap justify-start">
                             <!-- 搜索框 - 缩短宽度 -->
                             <div class="relative w-full sm:w-48 md:w-56 flex-grow sm:flex-grow-0">
                                 <input type="text" id="searchInput" placeholder="搜索书名、订单号、书号..." 
@@ -701,32 +701,32 @@
                             </div>
                             
                             <!-- 导入、导出和打印按钮 - 固定宽度确保在一行显示 -->
-                            <div class="flex flex-wrap gap-2 w-full sm:w-auto justify-center sm:justify-start min-w-[180px] sm:min-w-[220px]">
+                            <div class="flex flex-wrap gap-1 w-full sm:w-auto justify-center sm:justify-start">
                                 <!-- 文件上传按钮 -->
                                 <div class="file-upload-btn">
-                                    <button class="bg-purple-500 hover:bg-purple-600 px-3 py-1.5 rounded-lg transition-all duration-300 flex items-center justify-center text-xs text-white shadow-sm hover:shadow">
-                                        <i class="fas fa-upload mr-1.5"></i>导入
+                                    <button class="bg-purple-500 hover:bg-purple-600 px-2 py-1 rounded-lg transition-all duration-300 flex items-center justify-center text-xs text-white shadow-sm hover:shadow">
+                                        <i class="fas fa-upload mr-1"></i>导入
                                     </button>
                                     <input type="file" id="excelFileInput" accept=".xls,.xlsx" onchange="handleFileUpload(event)">
                                 </div>
-                                <button id="exportExcelBtn" class="bg-green-500 hover:bg-green-600 px-3 py-1.5 rounded-lg transition-all duration-300 flex items-center justify-center text-xs text-white shadow-sm hover:shadow">
-                                    <i class="fas fa-file-excel mr-1.5"></i>导出
+                                <button id="exportExcelBtn" class="bg-green-500 hover:bg-green-600 px-2 py-1 rounded-lg transition-all duration-300 flex items-center justify-center text-xs text-white shadow-sm hover:shadow">
+                                    <i class="fas fa-file-excel mr-1"></i>导出
                                 </button>
-                                <button id="printBtn" class="bg-blue-500 hover:bg-blue-600 px-3 py-1.5 rounded-lg transition-all duration-300 flex items-center justify-center text-xs text-white shadow-sm hover:shadow">
-                                    <i class="fas fa-print mr-1.5"></i>打印
+                                <button id="printBtn" class="bg-blue-500 hover:bg-blue-600 px-2 py-1 rounded-lg transition-all duration-300 flex items-center justify-center text-xs text-white shadow-sm hover:shadow">
+                                    <i class="fas fa-print mr-1"></i>打印
                                 </button>
-                                <button id="transposeBtn" class="bg-indigo-500 hover:bg-indigo-600 px-3 py-1.5 rounded-lg transition-all duration-300 flex items-center justify-center text-xs text-white shadow-sm hover:shadow">
-                                    <i class="fas fa-exchange-alt mr-1.5"></i>转置
+                                <button id="transposeBtn" class="bg-indigo-500 hover:bg-indigo-600 px-2 py-1 rounded-lg transition-all duration-300 flex items-center justify-center text-xs text-white shadow-sm hover:shadow">
+                                    <i class="fas fa-exchange-alt mr-1"></i>转置
                                 </button>
                             </div>
                         </div>
                         
-                        <!-- 记录信息 - 优化显示 -->
-                        <div class="text-xs text-gray-500 w-full lg:w-auto text-right flex items-center justify-center lg:justify-end flex-wrap gap-2">
-                            <span class="bg-blue-50 text-blue-600 px-2 py-0.5 rounded">
+                        <!-- 右侧：记录信息 - 移到右侧并美化 -->
+                        <div class="text-xs text-gray-500 w-full lg:w-auto text-right flex items-center justify-center lg:justify-end flex-wrap gap-1 mt-2 sm:mt-0">
+                            <span class="bg-blue-50 text-blue-600 px-2 py-0.5 rounded shadow-sm transition-all duration-300 hover:shadow">
                                 <i class="fas fa-list-ul mr-1"></i>显示 <span id="currentRange">0-0</span> 条
                             </span>
-                            <span class="bg-gray-50 text-gray-600 px-2 py-0.5 rounded">
+                            <span class="bg-gray-50 text-gray-600 px-2 py-0.5 rounded shadow-sm transition-all duration-300 hover:shadow">
                                 <i class="fas fa-database mr-1"></i>共 <span id="totalRecords">0</span> 条记录
                             </span>
                         </div>
@@ -996,10 +996,10 @@
                 
                 // 统计元素
                 this.totalVarietyElement = document.getElementById('totalOrders'); // 总品种数
-                this.totalCopiesElement = document.getElementById('totalCopies'); // 学校总册数
-                this.totalVarietyCopiesElement = document.getElementById('totalVarietyCopies'); // 单品总册数
-                this.totalCopiesLabel = document.getElementById('totalCopiesLabel'); // 学校总册数标签
-                this.totalVarietyCopiesLabel = document.getElementById('totalVarietyCopiesLabel'); // 单品总册数标签
+                this.totalCopiesElement = document.getElementById('totalCopies'); // 总册数
+                this.totalVarietyCopiesElement = document.getElementById('totalVarietyCopies'); // 学校总数
+                this.totalCopiesLabel = document.getElementById('totalCopiesLabel'); // 总册数标签
+                this.totalVarietyCopiesLabel = document.getElementById('totalVarietyCopiesLabel'); // 学校总数标签
                 
                 // 转置状态
                 this.isTransposed = false;
@@ -1334,9 +1334,22 @@
                     return;
                 }
                 
-                // 计算学校总册数（所有学校的合计）
+                // 确定当前需要统计的学校列表
+                let schoolsToCount = [...this.schoolHeaders];
+                
+                // 如果在转置模式下有搜索结果，只统计匹配的学校
+                if (this.isTransposed && this._matchingSchools) {
+                    schoolsToCount = [...this._matchingSchools];
+                }
+                
+                // 如果在转置模式下选择了特定学校，只统计该学校
+                if (this.isTransposed && this.currentSchoolFilter && this.schoolHeaders.includes(this.currentSchoolFilter)) {
+                    schoolsToCount = [this.currentSchoolFilter];
+                }
+                
+                // 计算总册数（所有学校的合计）
                 let totalCopies = 0;
-                this.schoolHeaders.forEach(school => {
+                schoolsToCount.forEach(school => {
                     const schoolTotal = this.filteredData.reduce((sum, item) => {
                         const value = Utils.parseNumber(item[school]);
                         return sum + value;
@@ -1348,29 +1361,89 @@
                 let totalVarietyCopies = 0;
                 this.filteredData.forEach(item => {
                     let rowTotal = 0;
-                    this.schoolHeaders.forEach(school => {
+                    schoolsToCount.forEach(school => {
                         const value = Utils.parseNumber(item[school]);
                         rowTotal += value;
                     });
                     totalVarietyCopies += rowTotal;
                 });
                 
-                // 总品种数显示为条目合计数（过滤后的记录总数）
-                this.totalVarietyElement.textContent = this.filteredData.length;
+                // 计算不为空的学校数量（有数据的学校数量）
+                let nonEmptySchoolCount = 0;
+                schoolsToCount.forEach(school => {
+                    const hasData = this.filteredData.some(item => {
+                        const value = Utils.parseNumber(item[school]);
+                        return !isNaN(value) && value > 0;
+                    });
+                    if (hasData) {
+                        nonEmptySchoolCount++;
+                    }
+                });
                 
-                // 在转置模式下，学校总册数和单品总册数的含义互换
+                // 计算不为空的品种数量（有数据的品种数量）
+                let nonEmptyVarietyCount = 0;
+                this.filteredData.forEach(item => {
+                    let hasData = false;
+                    schoolsToCount.forEach(school => {
+                        const value = Utils.parseNumber(item[school]);
+                        if (!isNaN(value) && value > 0) {
+                            hasData = true;
+                        }
+                    });
+                    if (hasData) {
+                        nonEmptyVarietyCount++;
+                    }
+                });
+                
+                // 在转置模式下，总册数和学校总数的含义互换
                 if (this.isTransposed) {
-                    // 转置模式：学校总册数显示单品总册数，单品总册数显示学校总册数
-                    this.totalCopiesLabel.textContent = '单品总册数:';
-                    this.totalVarietyCopiesLabel.textContent = '学校总册数:';
-                    this.totalCopiesElement.textContent = Utils.formatNumber(totalVarietyCopies);
-                    this.totalVarietyCopiesElement.textContent = Utils.formatNumber(totalCopies);
+                    // 转置模式：总册数显示单品总册数，学校总数显示学校的合计数
+                    this.totalCopiesLabel.textContent = '总册数:';
+                    this.totalVarietyCopiesLabel.textContent = '学校总数:';
+                    
+                    // 如果在转置模式下选择了特定学校，只计算该学校的统计数据
+                    if (this.currentSchoolFilter && this.schoolHeaders.includes(this.currentSchoolFilter)) {
+                        // 计算选中学校的总册数
+                        const selectedSchoolTotal = this.filteredData.reduce((sum, item) => {
+                            const value = Utils.parseNumber(item[this.currentSchoolFilter]);
+                            return sum + value;
+                        }, 0);
+                        
+                        // 计算选中学校中有数据的品种数量
+                        const selectedSchoolNonEmptyVarieties = this.filteredData.filter(item => {
+                            const value = Utils.parseNumber(item[this.currentSchoolFilter]);
+                            return !isNaN(value) && value > 0;
+                        }).length;
+                        
+                        // 总册数显示选中学校的总册数，学校总数显示为1（表示选中了1个学校）
+                        this.totalCopiesElement.textContent = Utils.formatNumber(selectedSchoolTotal);
+                        this.totalVarietyCopiesElement.textContent = '1';
+                        
+                        // 总品种数显示选中学校中有数据的品种数量
+                        this.totalVarietyElement.textContent = selectedSchoolNonEmptyVarieties;
+                    } else {
+                        // 没有选择特定学校时，显示所有匹配学校的统计数据
+                        this.totalCopiesElement.textContent = Utils.formatNumber(totalVarietyCopies);
+                        
+                        // 如果有搜索结果，显示匹配的学校数量，否则显示所有不为空的学校数量
+                        if (this._matchingSchools) {
+                            this.totalVarietyCopiesElement.textContent = Utils.formatNumber(this._matchingSchools.length);
+                        } else {
+                            this.totalVarietyCopiesElement.textContent = Utils.formatNumber(nonEmptySchoolCount);
+                        }
+                        
+                        // 总品种数显示不为空的品种数量
+                        this.totalVarietyElement.textContent = nonEmptyVarietyCount;
+                    }
                 } else {
-                    // 正常模式：保持原有显示
-                    this.totalCopiesLabel.textContent = '学校总册数:';
-                    this.totalVarietyCopiesLabel.textContent = '单品总册数:';
+                    // 正常模式：保持原有显示，但学校总数显示不为空的学校数量
+                    this.totalCopiesLabel.textContent = '总册数:';
+                    this.totalVarietyCopiesLabel.textContent = '学校总数:';
                     this.totalCopiesElement.textContent = Utils.formatNumber(totalCopies);
-                    this.totalVarietyCopiesElement.textContent = Utils.formatNumber(totalVarietyCopies);
+                    this.totalVarietyCopiesElement.textContent = Utils.formatNumber(nonEmptySchoolCount);
+                    
+                    // 总品种数显示不为空的品种数量
+                    this.totalVarietyElement.textContent = nonEmptyVarietyCount;
                 }
             }
             
@@ -1410,8 +1483,17 @@
                 let filtered = [...this.bookData];
                 
                 if (this.isTransposed) {
-                    // 转置模式：不筛选原始数据，只在渲染时控制显示的学校行
-                    // 保持所有数据，让renderTransposedTable方法根据currentSchoolFilter控制显示
+                    // 转置模式：根据选择的学校筛选数据
+                    if (this.currentSchoolFilter) {
+                        // 转置模式下，我们需要检查是否有匹配的学校
+                        if (this.schoolHeaders.includes(this.currentSchoolFilter)) {
+                            // 如果有匹配的学校，保持所有数据，但在renderTransposedTable中只显示该学校
+                            // 这样可以确保统计信息正确计算
+                        } else {
+                            // 如果没有匹配的学校，返回空数组
+                            filtered = [];
+                        }
+                    }
                 } else {
                     // 正常模式：根据选择的教材科目筛选数据
                     if (this.currentSchoolFilter) {
@@ -2402,11 +2484,11 @@
                 // 更新转置按钮文本
                 const transposeBtn = document.getElementById('transposeBtn');
                 if (this.isTransposed) {
-                    transposeBtn.innerHTML = '<i class="fas fa-sync-alt mr-1.5"></i>恢复';
+                    transposeBtn.innerHTML = '<i class="fas fa-sync-alt mr-1"></i>恢复';
                     transposeBtn.classList.remove('bg-indigo-500', 'hover:bg-indigo-600');
                     transposeBtn.classList.add('bg-purple-500', 'hover:bg-purple-600');
                 } else {
-                    transposeBtn.innerHTML = '<i class="fas fa-exchange-alt mr-1.5"></i>转置';
+                    transposeBtn.innerHTML = '<i class="fas fa-exchange-alt mr-1"></i>转置';
                     transposeBtn.classList.remove('bg-purple-500', 'hover:bg-purple-600');
                     transposeBtn.classList.add('bg-indigo-500', 'hover:bg-indigo-600');
                 }
