@@ -1450,14 +1450,41 @@
             // 按学校筛选
             filterBySchool(school) {
                 this.currentSchoolFilter = school;
-
+                
+                // 清除搜索匹配的学校列表
+                this._matchingSchools = null;
+                
+                // 应用筛选
                 this.applyFilters();
+                
+                // 更新侧边栏激活状态
+                document.querySelectorAll('.sidebar-item').forEach(item => {
+                    item.classList.remove('active');
+                });
+                const activeButton = document.querySelector(`[data-school="${school}"]`);
+                if (activeButton) {
+                    activeButton.classList.add('active');
+                }
             }
             
             // 按教材科目筛选
             filterBySubject(subject) {
                 this.currentSchoolFilter = subject;
+                
+                // 清除搜索匹配的学校列表
+                this._matchingSchools = null;
+                
+                // 应用筛选
                 this.applyFilters();
+                
+                // 更新侧边栏激活状态
+                document.querySelectorAll('.sidebar-item').forEach(item => {
+                    item.classList.remove('active');
+                });
+                const activeButton = document.querySelector(`[data-school="${subject}"]`);
+                if (activeButton) {
+                    activeButton.classList.add('active');
+                }
             }
             
             // 搜索功能
@@ -1508,8 +1535,13 @@
                 
                 this.filteredData = filtered;
                 this.currentPage = 1;
+                
+                // 强制重新渲染表格和更新统计信息
                 this.renderTable();
                 this.updateStatistics();
+                
+                // 确保筛选按钮状态正确更新
+                this.updateSchoolFilters();
             }
             
             // 按搜索词筛选数据
@@ -1595,20 +1627,44 @@
                     // 使用setTimeout模拟异步操作
                     setTimeout(() => {
                         // 准备导出数据
-                        const exportData = this.filteredData.map(item => {
-                            const exportItem = {};
+                        let exportData = [];
+                        
+                        if (this.isTransposed) {
+                            // 转置模式下的导出逻辑
+                            const subjects = [...new Set(this.filteredData.map(item => item.subject).filter(subject => subject))];
                             
-                            // 添加教材科目
-
-                            exportItem['教材科目'] = item.subject || '';
+                            // 确定要导出的学校列表（考虑搜索结果）
+                            const schoolsToExport = this._matchingSchools ? this._matchingSchools : 
+                                                   (this.currentSchoolFilter ? [this.currentSchoolFilter] : this.schoolHeaders);
                             
-                            // 添加学校列
-                            this.schoolHeaders.forEach(school => {
-                                exportItem[school] = item[school] || '';
+                            // 按学校创建导出数据
+                            schoolsToExport.forEach(school => {
+                                const schoolRow = {'学校': school};
+                                
+                                // 添加每个教材科目的数据
+                                subjects.forEach(subject => {
+                                    const item = this.filteredData.find(i => i.subject === subject);
+                                    schoolRow[subject] = item ? item[school] || '' : '';
+                                });
+                                
+                                exportData.push(schoolRow);
                             });
-                            
-                            return exportItem;
-                        });
+                        } else {
+                            // 正常模式下的导出逻辑
+                            exportData = this.filteredData.map(item => {
+                                const exportItem = {};
+                                
+                                // 添加教材科目
+                                exportItem['教材科目'] = item.subject || '';
+                                
+                                // 添加学校列
+                                this.schoolHeaders.forEach(school => {
+                                    exportItem[school] = item[school] || '';
+                                });
+                                
+                                return exportItem;
+                            });
+                        }
                         
                         // 添加总计行
                         const totalRow = {'新华书店': '总计', '教材科目': ''};
@@ -1884,8 +1940,9 @@
                             <tbody>
                         `;
                         
-                        // 按学校生成数据行（只打印筛选后的学校）
-                        const schoolsToPrint = this.currentSchoolFilter ? [this.currentSchoolFilter] : this.schoolHeaders;
+                        // 确定要打印的学校列表（考虑搜索结果）
+                        const schoolsToPrint = this._matchingSchools ? this._matchingSchools : 
+                                             (this.currentSchoolFilter ? [this.currentSchoolFilter] : this.schoolHeaders);
                         schoolsToPrint.forEach(school => {
                             printContent += `<tr>`;
                             
