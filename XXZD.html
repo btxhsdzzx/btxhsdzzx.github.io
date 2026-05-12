@@ -1506,6 +1506,9 @@
                 // 保存当前筛选条件
                 this.lastFilterKey = filterKey;
                 
+                // 重置匹配的学校列表
+                this._matchingSchools = null;
+                
                 // 先应用学校筛选
                 let filtered = [...this.bookData];
                 
@@ -1516,9 +1519,11 @@
                         if (this.schoolHeaders.includes(this.currentSchoolFilter)) {
                             // 如果有匹配的学校，保持所有数据，但在renderTransposedTable中只显示该学校
                             // 这样可以确保统计信息正确计算
+                            this._matchingSchools = [this.currentSchoolFilter];
                         } else {
                             // 如果没有匹配的学校，返回空数组
                             filtered = [];
+                            this._matchingSchools = [];
                         }
                     }
                 } else {
@@ -1557,6 +1562,7 @@
                     
                     // 如果没有匹配的学校，返回空数组
                     if (matchingSchools.length === 0) {
+                        this._matchingSchools = [];
                         return [];
                     }
                     
@@ -1564,10 +1570,11 @@
                     this._matchingSchools = matchingSchools;
                     
                     // 清除学校筛选条件，以便显示所有匹配的学校
-                    this.currentSchoolFilter = '';
-                    
-                    // 更新筛选按钮状态
-                    this.updateSchoolFilters();
+                    if (this.currentSchoolFilter) {
+                        this.currentSchoolFilter = '';
+                        // 更新筛选按钮状态
+                        this.updateSchoolFilters();
+                    }
                     
                     // 在转置模式下，我们需要返回所有数据
                     // 因为renderTransposedTable方法会根据this._matchingSchools来控制显示哪些学校行
@@ -1647,6 +1654,19 @@
                                     schoolRow[subject] = item ? item[school] || '' : '';
                                 });
                                 
+                                // 计算学校总册数
+                                let schoolTotal = 0;
+                                subjects.forEach(subject => {
+                                    const item = this.filteredData.find(i => i.subject === subject);
+                                    if (item) {
+                                        const value = Utils.parseNumber(item[school]);
+                                        if (!isNaN(value)) {
+                                            schoolTotal += value;
+                                        }
+                                    }
+                                });
+                                schoolRow['学校总册数'] = schoolTotal;
+                                
                                 exportData.push(schoolRow);
                             });
                         } else {
@@ -1662,21 +1682,62 @@
                                     exportItem[school] = item[school] || '';
                                 });
                                 
+                                // 计算单品总册数
+                                let varietyTotal = 0;
+                                this.schoolHeaders.forEach(school => {
+                                    const value = Utils.parseNumber(item[school]);
+                                    if (!isNaN(value)) {
+                                        varietyTotal += value;
+                                    }
+                                });
+                                exportItem['单品总册数'] = varietyTotal;
+                                
                                 return exportItem;
                             });
                         }
                         
                         // 添加总计行
-                        const totalRow = {'新华书店': '总计', '教材科目': ''};
+                        let totalRow = {};
                         
-                        // 计算每个学校的合计
-                        this.schoolHeaders.forEach(school => {
-                            const total = this.filteredData.reduce((sum, item) => {
-                                const value = Utils.parseNumber(item[school]);
-                                return sum + value;
+                        if (this.isTransposed) {
+                            // 转置模式下的总计行
+                            totalRow = {'学校': '总计'};
+                            
+                            // 获取所有教材科目
+                            const subjects = [...new Set(this.filteredData.map(item => item.subject).filter(subject => subject))];
+                            
+                            // 计算每个教材科目的合计
+                            subjects.forEach(subject => {
+                                const total = exportData.reduce((sum, row) => {
+                                    return sum + (Utils.parseNumber(row[subject]) || 0);
+                                }, 0);
+                                totalRow[subject] = total;
+                            });
+                            
+                            // 计算学校总册数合计
+                            const schoolTotalTotal = exportData.reduce((sum, row) => {
+                                return sum + (Utils.parseNumber(row['学校总册数']) || 0);
                             }, 0);
-                            totalRow[school] = total;
-                        });
+                            totalRow['学校总册数'] = schoolTotalTotal;
+                        } else {
+                            // 正常模式下的总计行
+                            totalRow = {'教材科目': '总计'};
+                            
+                            // 计算每个学校的合计
+                            this.schoolHeaders.forEach(school => {
+                                const total = this.filteredData.reduce((sum, item) => {
+                                    const value = Utils.parseNumber(item[school]);
+                                    return sum + value;
+                                }, 0);
+                                totalRow[school] = total;
+                            });
+                            
+                            // 添加单品总册数合计
+                            const varietyTotal = exportData.reduce((sum, item) => {
+                                return sum + (item['单品总册数'] || 0);
+                            }, 0);
+                            totalRow['单品总册数'] = varietyTotal;
+                        }
                         
                         exportData.push(totalRow);
                         
@@ -1686,7 +1747,6 @@
                         
                         // 设置列宽
                         const wscols = [
-                            {wch: 15}, // 新华书店
                             {wch: 20}, // 教材科目
                         ];
                         
@@ -1857,6 +1917,19 @@
                                 .adaptive-table {
                                     table-layout: auto;
                                     width: 100%;
+                                    border-collapse: collapse;
+                                }
+                                
+                                /* 分页控制 */
+                                .page-content {
+                                    page-break-inside: avoid;
+                                    margin-bottom: 20px;
+                                }
+                                
+                                /* 表格容器，支持横向滚动 */
+                                .table-container {
+                                    overflow-x: auto;
+                                    margin-bottom: 20px;
                                 }
                                 
                                 /* 表头固定样式 */
@@ -1911,7 +1984,8 @@
                             </div>
                         </div>
                         
-                        <!-- 数据表格 -->
+                        <!-- 数据表格容器 -->
+                        <div class="table-container">
                         <table class="adaptive-table">
                     `;
                     
@@ -2093,6 +2167,7 @@
                     printContent += `
                             </tbody>
                         </table>
+                        </div>
                         
                         <div style="margin-top: 30px; font-size: 10px; text-align: center; color: #666;">
                             <p>包头新华数据管理平台</p>
@@ -2404,16 +2479,21 @@
             
             // 渲染转置表格
             renderTransposedTable(currentData, fragment) {
+                // 确保使用与导出功能相同的数据源
+                const dataToUse = this.filteredData.length > 0 ? this.filteredData : currentData;
+                
                 // 获取所有唯一的教材科目
-                const subjects = [...new Set(currentData.map(item => item.subject).filter(subject => subject))];
+                const subjects = [...new Set(dataToUse.map(item => item.subject).filter(subject => subject))];
                 
                 // 按学校分组数据
                 const schoolData = {};
                 
-                // 只处理匹配的学校（如果正在搜索）或筛选后的学校
-                const schoolsToProcess = this._matchingSchools ? this._matchingSchools : 
+                // 确定要处理的学校列表（考虑搜索结果和筛选条件）
+                // 与导出功能保持完全一致的逻辑
+                const schoolsToProcess = this._matchingSchools && this._matchingSchools.length > 0 ? this._matchingSchools : 
                                        (this.currentSchoolFilter ? [this.currentSchoolFilter] : this.schoolHeaders);
                 
+                // 初始化学校数据
                 schoolsToProcess.forEach(school => {
                     schoolData[school] = {
                         subjects: {},
@@ -2422,26 +2502,39 @@
                 });
                 
                 // 填充数据并计算学校总册数
-                currentData.forEach(item => {
-                    schoolsToProcess.forEach(school => {
-                        if (item.subject) {
-                            const value = item[school] || '';
-                            schoolData[school].subjects[item.subject] = value;
-                            
-                            // 累加学校总册数
-                            const numValue = Utils.parseNumber(value);
-                            if (!isNaN(numValue)) {
-                                schoolData[school].total += numValue;
-                            }
+                // 与导出功能保持完全一致的逻辑
+                schoolsToProcess.forEach(school => {
+                    subjects.forEach(subject => {
+                        const item = dataToUse.find(i => i.subject === subject);
+                        const value = item ? item[school] || '' : '';
+                        schoolData[school].subjects[subject] = value;
+                        
+                        // 累加学校总册数
+                        const numValue = Utils.parseNumber(value);
+                        if (!isNaN(numValue)) {
+                            schoolData[school].total += numValue;
                         }
                     });
                 });
                 
                 // 渲染每行（按学校）
                 let index = 0;
-                // 只渲染匹配的学校（如果正在搜索）或筛选后的学校
-                const schoolsToRender = this._matchingSchools ? this._matchingSchools : 
-                                       (this.currentSchoolFilter ? [this.currentSchoolFilter] : this.schoolHeaders);
+                const schoolsToRender = schoolsToProcess;
+                
+                // 检查是否有学校需要渲染
+                if (schoolsToRender.length === 0) {
+                    // 如果没有学校需要渲染，显示空状态
+                    const emptyRow = document.createElement('tr');
+                    const colSpan = 1 + subjects.length + 1; // 学校列 + 科目列 + 合计列
+                    emptyRow.innerHTML = `
+                        <td colspan="${colSpan}" class="py-4 px-3 text-center border border-gray-300 text-gray-500 text-sm bg-gray-50">
+                            暂无符合条件的数据
+                        </td>
+                    `;
+                    fragment.appendChild(emptyRow);
+                    return;
+                }
+                
                 schoolsToRender.forEach(school => {
                     const row = document.createElement('tr');
                     const rowClass = index % 2 === 0 
