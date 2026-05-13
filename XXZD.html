@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>包头新华数据管理平台</title>
+    <title>包头新华数据平台</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Font Awesome -->
@@ -590,7 +590,7 @@
     <nav class="bg-gradient-primary text-white p-4 shadow-lg no-print">
         <div class="container mx-auto flex flex-col md:flex-row justify-between items-center">
             <!-- 美化标题字体 -->
-            <h1 class="text-xl md:text-2xl font-bold text-shadow mb-2 md:mb-0 title-beautify">包头新华数据管理平台</h1>
+            <h1 class="text-xl md:text-2xl font-bold text-shadow mb-2 md:mb-0 title-beautify">包头新华数据平台</h1>
             <!-- 将时间放到最右侧 -->
             <div class="flex items-center justify-end w-full md:w-auto">
                 <span id="currentTime" class="text-sm md:text-base font-medium"></span>
@@ -1806,11 +1806,11 @@
                         <html>
                         <head>
                             <meta charset="UTF-8">
-                            <title>包头新华管理平台 - 单据明细</title>
+                            <title>包头新华数据平台 - 单据明细</title>
                             <style>
-                                body { font-family: Arial, sans-serif; margin: 0; padding: 20px; }
+                                body { font-family: Arial, sans-serif; margin: 0; padding: 0; }
                                 .print-header { text-align: center; margin-bottom: 10px; }
-                                table { width: 100%; border-collapse: collapse; font-size: 10px; page-break-inside: auto; }
+                                table { width: 100%; border-collapse: collapse; font-size: 10pt; page-break-inside: avoid; }
                                 th, td { border: 1px solid #d1d5db; padding: 2px 4px; }
                                 th { background-color: #f3f4f6; font-weight: bold; }
                                 .page-total-row { background-color: #e5e7eb; font-weight: 600; }
@@ -1824,17 +1824,17 @@
                                         color: #666;
                                     }
                                     @bottom-right {
-                                        content: ""; /* 清空右下角内容 */
+                                        content: "打印时间: " strftime("%Y-%m-%d %H:%M:%S", now());
+                                        font-size: 10pt;
+                                        color: #666;
                                     }
-                                    margin: 1.5cm; /* 调整页边距 */
                                 }
                                 
-                                /* 确保表格在每一页都显示表头 */
+                                /* 修复表格分页问题 */
+                                table { page-break-inside: avoid; }
+                                tr { page-break-inside: avoid; page-break-after: auto; }
                                 thead { display: table-header-group; }
                                 tfoot { display: table-footer-group; }
-                                
-                                /* 避免表格行跨页 */
-                                tr { page-break-inside: avoid; page-break-after: auto; }
                                 
                                 /* 分页符样式 */
                                 .page-break-after {
@@ -1928,8 +1928,9 @@
                                 
                                 /* 表格容器，支持横向滚动 */
                                 .table-container {
-                                    overflow-x: auto;
+                                    overflow-x: visible;
                                     margin-bottom: 20px;
+                                    width: 100%;
                                 }
                                 
                                 /* 表头固定样式 */
@@ -1947,6 +1948,107 @@
                                     font-weight: 500;
                                     text-align: center;
                                 }
+                                
+                                /* 优化表格列宽 */
+                                .column-width-fixed {
+                                    width: 120px;
+                                    min-width: 120px;
+                                    max-width: 120px;
+                                    word-break: break-all;
+                                }
+                                
+                                /* 优化表格字体大小 */
+                                .table-content {
+                                    font-size: 9pt;
+                                }
+                                
+                                /* 确保表头在每一页都显示 */
+                                thead {
+                                    display: table-header-group;
+                                }
+                                
+                                /* 强制表格宽度为页面宽度 */
+                                .full-width-table {
+                                    width: 100%;
+                                    table-layout: fixed;
+                                }
+                                
+                                /* 确保表格列可以根据内容自动调整宽度 */
+                                .auto-width-columns th,
+                                .auto-width-columns td {
+                                    width: auto;
+                                    white-space: normal;
+                                    word-wrap: break-word;
+                                }
+                                
+                                /* 确保表格在页面宽度内显示 */
+                                .fit-to-page {
+                                    width: 100%;
+                                    overflow: visible;
+                                }
+                                
+                                /* 确保表格可以跨页显示 */
+                                .multi-page-table {
+                                    page-break-inside: auto;
+                                }
+                                
+                                /* 确保表格行不会被分割到不同页面 */
+                                .multi-page-table tr {
+                                    page-break-inside: avoid;
+                                    page-break-after: auto;
+                                }
+                                
+                                /* 优化打印时的表格显示 */
+                                @media print {
+                                    /* 移除表格容器的滚动条 */
+                                    .table-container {
+                                        overflow: visible !important;
+                                        display: block;
+                                    }
+                                    
+                                    /* 确保表格宽度适应页面 */
+                                    .adaptive-table {
+                                        width: 100%;
+                                        table-layout: fixed;
+                                    }
+                                    
+                                    /* 确保表格可以横向扩展到多页 */
+                                    .adaptive-table {
+                                        overflow: visible !important;
+                                        width: 100%;
+                                        display: table;
+                                    }
+                                    
+                                    /* 确保表格内容不会被截断 */
+                                    .adaptive-table tr,
+                                    .adaptive-table td,
+                                    .adaptive-table th {
+                                        page-break-inside: avoid;
+                                    }
+                                    
+                                    /* 确保表格可以跨页显示 */
+                                    .adaptive-table {
+                                        page-break-inside: auto;
+                                    }
+                                    
+                                    /* 确保表格列宽适当 */
+                                    .adaptive-table th,
+                                    .adaptive-table td {
+                                        width: auto;
+                                        white-space: normal;
+                                        word-wrap: break-word;
+                                    }
+                                    
+                                    /* 确保表头在每一页都显示 */
+                                    .adaptive-table thead {
+                                        display: table-header-group;
+                                    }
+                                    
+                                    /* 确保表尾在每一页都显示 */
+                                    .adaptive-table tfoot {
+                                        display: table-footer-group;
+                                    }
+                                }
                             </style>
                         </head>
                         <body>
@@ -1958,7 +2060,7 @@
                     // 添加主抬头
                     printContent += `
                         <div class="page-header">
-                            <div class="page-title">包头新华管理平台 - 单据明细</div>
+                            <div class="page-title">包头新华数据中心 - 单据明细</div>
                             <div class="page-info">
                                 <div class="page-info-item">
                                     <i class="fas fa-clock"></i>
@@ -1983,194 +2085,259 @@
                                 </div>
                             </div>
                         </div>
-                        
-                        <!-- 数据表格容器 -->
-                        <div class="table-container">
-                        <table class="adaptive-table">
                     `;
                     
                     if (this.isTransposed) {
                         // 转置模式打印：按学校显示
                         const subjects = [...new Set(this.filteredData.map(item => item.subject).filter(subject => subject))];
                         
-                        printContent += `
-                            <thead>
-                                <tr class="sticky-header">
-                                    <th>学校</th>
-
-                        `;
-                        
-                        // 添加教材科目表头
-                        subjects.forEach(subject => {
-                            printContent += `<th>${subject}</th>`;
-                        });
-                        
-                        // 添加学校总册数列头
-                        printContent += `<th style="background-color: #1e40af;">学校总册数</th>`;
-                        
-                        printContent += `
-                                </tr>
-                            </thead>
-                            <tbody>
-                        `;
-                        
                         // 确定要打印的学校列表（考虑搜索结果）
                         const schoolsToPrint = this._matchingSchools ? this._matchingSchools : 
                                              (this.currentSchoolFilter ? [this.currentSchoolFilter] : this.schoolHeaders);
-                        schoolsToPrint.forEach(school => {
-                            printContent += `<tr>`;
+                        
+                        // 计算每页可以显示的科目数量
+                        const subjectsPerPage = 10; // 每页显示10个科目
+                        const totalPages = Math.ceil(subjects.length / subjectsPerPage);
+                        
+                        // 分多页打印
+                        for (let pageIndex = 0; pageIndex < totalPages; pageIndex++) {
+                            // 计算当前页的科目范围
+                            const startIndex = pageIndex * subjectsPerPage;
+                            const endIndex = Math.min(startIndex + subjectsPerPage, subjects.length);
+                            const currentPageSubjects = subjects.slice(startIndex, endIndex);
                             
-                            // 添加学校名称
-                            printContent += `<td>${school}</td>`;
-                            
-
-                            
-                            let schoolTotal = 0;
-                            
-                            // 添加每个教材科目的数据
-                            subjects.forEach(subject => {
-                                const item = this.filteredData.find(i => i.subject === subject);
-                                const value = item ? item[school] || '' : '';
+                            // 如果不是第一页，添加分页符
+                            if (pageIndex > 0) {
+                                printContent += '<div class="page-break-after"></div>';
                                 
-                                if (value === '' || value === null || value === undefined) {
-                                    printContent += `<td class="empty-value-cell">空</td>`;
-                                } else {
-                                    const numValue = Utils.parseNumber(value);
-                                    if (!isNaN(numValue)) {
-                                        schoolTotal += numValue;
-                                        printContent += `<td style="text-align: right;">${Utils.formatNumber(numValue)}</td>`;
-                                    } else {
-                                        printContent += `<td>${value}</td>`;
-                                    }
-                                }
-                            });
+                                // 添加页头
+                                printContent += `
+                                    <div class="page-header">
+                                        <div class="page-title">包头新华数据中心 - 单据明细 (续页 ${pageIndex + 1})</div>
+                                        <div class="page-info">
+                                            <div class="page-info-item">
+                                                <i class="fas fa-clock"></i>
+                                                <span>打印时间: ${Utils.getCurrentTimeString()}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                `;
+                            }
                             
-                            // 添加学校总册数
-                            printContent += `<td style="text-align: right; font-weight: 500; background-color: #f0f9ff;">${Utils.formatNumber(schoolTotal)}</td>`;
-                            printContent += `</tr>`;
-                        });
-                        
-                        // 添加页合计行
-                        printContent += `<tr class="page-total-row">`;
-                        printContent += `<td colspan="1" style="text-align: center;">总计</td>`;
-                        
-                        let grandTotal = 0;
-                        
-                        // 计算每个教材科目的合计
-                        subjects.forEach(subject => {
-                            const total = this.filteredData.reduce((sum, item) => {
-                                if (item.subject === subject) {
-                                    schoolsToPrint.forEach(school => {
-                                        const value = Utils.parseNumber(item[school]);
-                                        sum += value;
-                                    });
-                                }
-                                return sum;
-                            }, 0);
-                            
-                            grandTotal += total;
-                            printContent += `<td style="text-align: right;">${Utils.formatNumber(total)}</td>`;
-                        });
-                        
-                        // 添加单品总册数合计
-                        printContent += `<td style="text-align: right; font-weight: 600; background-color: #e0f2fe;">${Utils.formatNumber(grandTotal)}</td>`;
-                        printContent += `</tr>`;
-                        
-                    } else {
-                        // 正常模式打印：按教材科目显示
-                        printContent += `
-                            <thead>
-                                <tr class="sticky-header">
-
-                                    <th>教材科目</th>
-                        `;
-                        
-                        // 添加学校列表头
-                        this.schoolHeaders.forEach(school => {
-                            printContent += `<th>${school}</th>`;
-                        });
-                        
-                        // 添加单品总册数列头
-                        printContent += `<th style="background-color: #1e40af;">单品总册数</th>`;
-                        
-                        printContent += `
-                                </tr>
-                            </thead>
-                            <tbody>
-                        `;
-                        
-                        // 添加所有数据行（已筛选的数据）
-                        this.filteredData.forEach((item, index) => {
-                            printContent += `<tr>`;
-                            
-                            // 添加教材科目
+                            // 添加表格
                             printContent += `
-
-                                <td>${item.subject || ''}</td>
+                                <div class="table-container">
+                                    <table class="adaptive-table full-width-table multi-page-table auto-width-columns">
+                                        <thead>
+                                            <tr class="sticky-header">
+                                                <th class="column-width-fixed">学校</th>
                             `;
                             
-                            // 添加学校列数据
-                            this.schoolHeaders.forEach(school => {
-                                const value = item[school] || '';
+                            // 添加当前页的教材科目表头
+                            currentPageSubjects.forEach(subject => {
+                                printContent += `<th class="column-width-fixed">${subject}</th>`;
+                            });
+                            
+                            // 添加学校总册数列头
+                            printContent += `<th class="column-width-fixed" style="background-color: #1e40af;">学校总册数</th>`;
+                            
+                            printContent += `
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                            `;
+                            
+                            // 添加学校数据行
+                            schoolsToPrint.forEach(school => {
+                                printContent += `<tr class="table-content">`;
                                 
-                                // 如果值为空，添加红色背景样式
-                                if (value === '' || value === null || value === undefined) {
-                                    printContent += `<td class="empty-value-cell">空</td>`;
-                                } else {
-                                    // 尝试将值转换为数字并格式化
+                                // 添加学校名称
+                                printContent += `<td class="column-width-fixed">${school}</td>`;
+                                
+                                let schoolTotal = 0;
+                                
+                                // 添加当前页每个教材科目的数据
+                                currentPageSubjects.forEach(subject => {
+                                    const item = this.filteredData.find(i => i.subject === subject);
+                                    const value = item ? item[school] || '' : '';
+                                    
+                                    if (value === '' || value === null || value === undefined) {
+                                        printContent += `<td class="empty-value-cell column-width-fixed">空</td>`;
+                                    } else {
+                                        const numValue = Utils.parseNumber(value);
+                                        if (!isNaN(numValue)) {
+                                            schoolTotal += numValue;
+                                            printContent += `<td style="text-align: right;" class="column-width-fixed">${Utils.formatNumber(numValue)}</td>`;
+                                        } else {
+                                            printContent += `<td class="column-width-fixed">${value}</td>`;
+                                        }
+                                    }
+                                });
+                                
+                                // 添加学校总册数
+                                printContent += `<td style="text-align: right; font-weight: 500; background-color: #f0f9ff;" class="column-width-fixed">${Utils.formatNumber(schoolTotal)}</td>`;
+                                printContent += `</tr>`;
+                            });
+                            
+                            // 添加页合计行
+                            printContent += `<tr class="page-total-row table-content">`;
+                            printContent += `<td colspan="1" style="text-align: center;" class="column-width-fixed">合计</td>`;
+                            
+                            let grandTotal = 0;
+                            
+                            // 计算当前页每个教材科目的合计
+                            currentPageSubjects.forEach(subject => {
+                                const total = this.filteredData.reduce((sum, item) => {
+                                    if (item.subject === subject) {
+                                        schoolsToPrint.forEach(school => {
+                                            const value = Utils.parseNumber(item[school]);
+                                            sum += value;
+                                        });
+                                    }
+                                    return sum;
+                                }, 0);
+                                
+                                grandTotal += total;
+                                printContent += `<td style="text-align: right;" class="column-width-fixed">${Utils.formatNumber(total)}</td>`;
+                            });
+                            
+                            // 添加单品总册数合计
+                            printContent += `<td style="text-align: right; font-weight: 600; background-color: #e0f2fe;" class="column-width-fixed">${Utils.formatNumber(grandTotal)}</td>`;
+                            printContent += `</tr>`;
+                            
+                            printContent += `
+                                        </tbody>
+                                    </table>
+                                </div>
+                            `;
+                        }
+                    } else {
+                        // 正常模式打印：按教材科目显示
+                        
+                        // 计算每页可以显示的学校数量
+                        const schoolsPerPage = 10; // 每页显示10个学校
+                        const totalPages = Math.ceil(this.schoolHeaders.length / schoolsPerPage);
+                        
+                        // 分多页打印
+                        for (let pageIndex = 0; pageIndex < totalPages; pageIndex++) {
+                            // 计算当前页的学校范围
+                            const startIndex = pageIndex * schoolsPerPage;
+                            const endIndex = Math.min(startIndex + schoolsPerPage, this.schoolHeaders.length);
+                            const currentPageSchools = this.schoolHeaders.slice(startIndex, endIndex);
+                            
+                            // 如果不是第一页，添加分页符
+                            if (pageIndex > 0) {
+                                printContent += '<div class="page-break-after"></div>';
+                                
+                                // 添加页头
+                                printContent += `
+                                    <div class="page-header">
+                                        <div class="page-title">包头新华数据中心- 单据明细 (续页 ${pageIndex + 1})</div>
+                                        <div class="page-info">
+                                            <div class="page-info-item">
+                                                <i class="fas fa-clock"></i>
+                                                <span>打印时间: ${Utils.getCurrentTimeString()}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                `;
+                            }
+                            
+                            // 添加表格
+                            printContent += `
+                                <div class="table-container">
+                                    <table class="adaptive-table full-width-table multi-page-table auto-width-columns">
+                                        <thead>
+                                            <tr class="sticky-header">
+                                                <th class="column-width-fixed">教材科目</th>
+                            `;
+                            
+                            // 添加当前页的学校列表头
+                            currentPageSchools.forEach(school => {
+                                printContent += `<th class="column-width-fixed">${school}</th>`;
+                            });
+                            
+                            // 添加单品总册数列头
+                            printContent += `<th class="column-width-fixed" style="background-color: #1e40af;">单品总册数</th>`;
+                            
+                            printContent += `
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                            `;
+                            
+                            // 添加所有数据行（已筛选的数据）
+                            this.filteredData.forEach((item, index) => {
+                                printContent += `<tr class="table-content">`;
+                                
+                                // 添加教材科目
+                                printContent += `<td class="column-width-fixed">${item.subject || ''}</td>`;
+                                
+                                // 添加当前页学校列数据
+                                currentPageSchools.forEach(school => {
+                                    const value = item[school] || '';
+                                    
+                                    // 如果值为空，添加红色背景样式
+                                    if (value === '' || value === null || value === undefined) {
+                                        printContent += `<td class="empty-value-cell column-width-fixed">空</td>`;
+                                    } else {
+                                        // 尝试将值转换为数字并格式化
+                                        const numValue = Utils.parseNumber(value);
+                                        if (!isNaN(numValue)) {
+                                            printContent += `<td style="text-align: right;" class="column-width-fixed">${Utils.formatNumber(numValue)}</td>`;
+                                        } else {
+                                            printContent += `<td class="column-width-fixed">${value}</td>`;
+                                        }
+                                    }
+                                });
+                                
+                                // 计算单品总册数（当前页所有学校的合计）
+                                let varietyTotal = 0;
+                                currentPageSchools.forEach(school => {
+                                    const value = item[school] || '';
                                     const numValue = Utils.parseNumber(value);
                                     if (!isNaN(numValue)) {
-                                        printContent += `<td style="text-align: right;">${Utils.formatNumber(numValue)}</td>`;
-                                    } else {
-                                        printContent += `<td>${value}</td>`;
+                                        varietyTotal += numValue;
                                     }
-                                }
+                                });
+                                
+                                // 添加单品总册数列
+                                printContent += `<td style="text-align: right; font-weight: 500; background-color: #f0f9ff;" class="column-width-fixed">${Utils.formatNumber(varietyTotal)}</td>`;
+                                printContent += `</tr>`;
                             });
                             
-                            // 计算单品总册数（该行所有学校的合计）
-                            let varietyTotal = 0;
-                            this.schoolHeaders.forEach(school => {
-                                const value = item[school] || '';
-                                const numValue = Utils.parseNumber(value);
-                                if (!isNaN(numValue)) {
-                                    varietyTotal += numValue;
-                                }
+                            // 添加页合计行
+                            printContent += `<tr class="page-total-row table-content">`;
+                            printContent += `<td colspan="1" style="text-align: center;" class="column-width-fixed">合计</td>`;
+                            
+                            let grandTotal = 0;
+                            
+                            // 计算当前页每个学校的合计
+                            currentPageSchools.forEach(school => {
+                                const total = this.filteredData.reduce((sum, item) => {
+                                    const value = Utils.parseNumber(item[school]);
+                                    return sum + value;
+                                }, 0);
+                                
+                                grandTotal += total;
+                                printContent += `<td style="text-align: right;" class="column-width-fixed">${Utils.formatNumber(total)}</td>`;
                             });
                             
-                            // 添加单品总册数列
-                            printContent += `<td style="text-align: right; font-weight: 500; background-color: #f0f9ff;">${Utils.formatNumber(varietyTotal)}</td>`;
+                            // 添加单品总册数合计
+                            printContent += `<td style="text-align: right; font-weight: 600; background-color: #e0f2fe;" class="column-width-fixed">${Utils.formatNumber(grandTotal)}</td>`;
                             printContent += `</tr>`;
-                        });
-                        
-                        // 添加页合计行
-                        printContent += `<tr class="page-total-row">`;
-                        printContent += `<td colspan="1" style="text-align: center;">总计</td>`;
-                        
-                        let grandTotal = 0;
-                        
-                        // 计算每个学校的合计
-                        this.schoolHeaders.forEach(school => {
-                            const total = this.filteredData.reduce((sum, item) => {
-                                const value = Utils.parseNumber(item[school]);
-                                return sum + value;
-                            }, 0);
                             
-                            grandTotal += total;
-                            printContent += `<td style="text-align: right;">${Utils.formatNumber(total)}</td>`;
-                        });
-                        
-                        // 添加单品总册数合计
-                        printContent += `<td style="text-align: right; font-weight: 600; background-color: #e0f2fe;">${Utils.formatNumber(grandTotal)}</td>`;
-                        printContent += `</tr>`;
+                            printContent += `
+                                        </tbody>
+                                    </table>
+                                </div>
+                            `;
+                        }
                     }
                     
                     printContent += `
-                            </tbody>
-                        </table>
-                        </div>
-                        
                         <div style="margin-top: 30px; font-size: 10px; text-align: center; color: #666;">
-                            <p>包头新华数据管理平台</p>
+                            <p>包头新华数据中心</p>
                         </div>
                     `;
                     
