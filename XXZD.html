@@ -195,7 +195,7 @@
             thead { display: table-header-group; }
             tfoot { display: table-footer-group; }
             
-            /* 打印页脚样式 - 已修改为包含"共几页" */
+            /* 打印页脚样式 - 已修改为包含"共几页"和数据中心信息 */
             @page {
                 @bottom-left {
                     content: "第 " counter(page) " 页，共 " counter(pages) " 页";
@@ -203,7 +203,7 @@
                     color: #666;
                 }
                 @bottom-right {
-                    content: "打印时间: " strftime("%Y-%m-%d %H:%M:%S", now());
+                    content: "包头新华数据中心";
                     font-size: 10pt;
                     color: #666;
                 }
@@ -1816,7 +1816,7 @@
                                 .page-total-row { background-color: #e5e7eb; font-weight: 600; }
                                 .grand-total-row { background-color: #dbeafe; font-weight: 700; }
                                 
-                                /* 打印页脚样式 - 已修改为包含"共几页" */
+                                /* 打印页脚样式 - 已修改为包含"共几页"和数据中心信息 */
                                 @page {
                                     @bottom-left {
                                         content: "第 " counter(page) " 页，共 " counter(pages) " 页";
@@ -1824,7 +1824,7 @@
                                         color: #666;
                                     }
                                     @bottom-right {
-                                        content: "打印时间: " strftime("%Y-%m-%d %H:%M:%S", now());
+                                        content: "包头新华数据中心";
                                         font-size: 10pt;
                                         color: #666;
                                     }
@@ -2060,7 +2060,7 @@
                     // 添加主抬头
                     printContent += `
                         <div class="page-header">
-                            <div class="page-title">包头新华数据中心 - 单据明细</div>
+                            <div class="page-title">包头新华 - 单据明细</div>
                             <div class="page-info">
                                 <div class="page-info-item">
                                     <i class="fas fa-clock"></i>
@@ -2113,7 +2113,7 @@
                                 // 添加页头
                                 printContent += `
                                     <div class="page-header">
-                                        <div class="page-title">包头新华数据中心 - 单据明细 (续页 ${pageIndex + 1})</div>
+                                        <div class="page-title">包头新华 - 单据明细 (续页 ${pageIndex + 1})</div>
                                         <div class="page-info">
                                             <div class="page-info-item">
                                                 <i class="fas fa-clock"></i>
@@ -2232,7 +2232,7 @@
                                 // 添加页头
                                 printContent += `
                                     <div class="page-header">
-                                        <div class="page-title">包头新华数据中心- 单据明细 (续页 ${pageIndex + 1})</div>
+                                        <div class="page-title">包头新华- 单据明细 (续页 ${pageIndex + 1})</div>
                                         <div class="page-info">
                                             <div class="page-info-item">
                                                 <i class="fas fa-clock"></i>
@@ -2335,9 +2335,66 @@
                         }
                     }
                     
+                    // 添加统计概览页面
                     printContent += `
-                        <div style="margin-top: 30px; font-size: 10px; text-align: center; color: #666;">
-                            <p>包头新华数据中心</p>
+                        <div class="page-break-after"></div>
+                        <div class="summary-page">
+                            <div class="page-header">
+                                <div class="page-title">统计概览</div>
+                                <div class="page-info">
+                                    <div class="page-info-item">
+                                        <i class="fas fa-clock"></i>
+                                        <span>打印时间: ${Utils.getCurrentTimeString()}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <table class="stats-table summary-table">
+                                <thead>
+                                    <tr>
+                                        <th style="text-align: left; background-color: #1e40af; color: white;">统计项目</th>
+                                        <th style="text-align: right; background-color: #1e40af; color: white;">数值</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td style="text-align: left; font-weight: 500;">总品种数</td>
+                                        <td style="text-align: right; font-weight: 600; color: #1e40af;">${this.totalVarietyElement.textContent}</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="text-align: left; font-weight: 500;">总册数</td>
+                                        <td style="text-align: right; font-weight: 600; color: #1e40af;">${this.totalCopiesElement.textContent}</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="text-align: left; font-weight: 500;">学校总数</td>
+                                        <td style="text-align: right; font-weight: 600; color: #1e40af;">${this.totalVarietyCopiesElement.textContent}</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="text-align: left; font-weight: 500;">总记录数</td>
+                                        <td style="text-align: right; font-weight: 600; color: #1e40af;">${Utils.formatNumber(totalItems)}</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="text-align: left; font-weight: 500;">筛选条件</td>
+                                        <td style="text-align: right; font-weight: 500; color: #475569;">${this.isTransposed ? 
+                                            (this.currentSchoolFilter ? this.currentSchoolFilter : '全部') : 
+                                            (this.currentSchoolFilter ? this.currentSchoolFilter : '全部')
+                                        }</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="text-align: left; font-weight: 500;">搜索关键词</td>
+                                        <td style="text-align: right; font-weight: 500; color: #475569;">${this.currentSearchTerm ? this.currentSearchTerm : '无'}</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="text-align: left; font-weight: 500;">显示模式</td>
+                                        <td style="text-align: right; font-weight: 500; color: #475569;">${this.isTransposed ? '学校模式' : '科目模式'}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            
+                            <div style="text-align: center; margin-top: 40px; font-size: 12px; color: #666;">
+                                <p>数据来源：包头新华数据平台</p>
+                                <p>生成时间：${Utils.getCurrentTimeString()}</p>
+                            </div>
                         </div>
                     `;
                     
