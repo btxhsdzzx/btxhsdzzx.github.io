@@ -41,7 +41,7 @@
                 content-visibility: auto;
             }
             .fade-in {
-                animation: fadeIn 0.5s ease-in;
+                animation: fadeIn 0.3s ease-in;
             }
             .scrollbar-thin {
                 scrollbar-width: thin;
@@ -78,11 +78,30 @@
                 transform: translateY(4px) perspective(1000px);
                 box-shadow: 0 0 0 0 rgba(0,0,0,0.2);
             }
+            .btn-3d:active:before {
+                transform: translateZ(0);
+            }
             
             /* 表格排版优化 */
             .compact-row {
-                height: 28px;
+                height: 26px;
                 line-height: 1.2;
+            }
+            
+            /* 固定六个汉字宽度 */
+            .column-width-fixed {
+                width: 96px; /* 约六个汉字宽度 */
+                min-width: 96px;
+                max-width: 96px;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+            }
+            
+            /* 固定六个汉字高度 */
+            .row-height-fixed {
+                height: 30px; /* 减小行高 */
+                line-height: 30px;
             }
             
             /* 自动调整字体大小 */
@@ -137,9 +156,7 @@
                 z-index: 1000;
                 margin-bottom: 4px;
             }
-            .btn-3d:active:before {
-                transform: translateZ(0);
-            }
+            
             /* 美化标题字体 */
             .title-beautify {
                 font-family: 'Microsoft YaHei', '微软雅黑', 'SimHei', '黑体', sans-serif;
@@ -177,13 +194,13 @@
         @media print {
             .no-print { display: none !important; }
             .print-only { display: block !important; }
-            body { background: white; margin: 0; padding: 0; }
+            body { background: white; margin: 0; padding: 0; overflow-x: hidden; }
             .compact-table { font-size: 10pt; }
             .bordered-table th, .bordered-table td { border: 1px solid #000; }
             thead { display: table-header-group; }
             tfoot { display: table-footer-group; }
             
-            /* 打印页脚样式 - 已修改为包含"共几页"和数据中心信息 */
+            /* 打印页脚样式 - 包含"共几页"和数据中心信息 */
             @page {
                 @bottom-left {
                     content: "第 " counter(page) " 页，共 " counter(pages) " 页";
@@ -219,7 +236,7 @@
         
         .compact-table th,
         .compact-table td {
-            padding: 0.25rem 0.5rem; /* 减小内边距 */
+            padding: 0.15rem 0.35rem; /* 进一步减小内边距 */
         }
         
         /* 高亮搜索结果 */
@@ -345,6 +362,7 @@
             flex-direction: column;
             flex: 1;
             min-height: 0; /* 允许内容溢出时收缩 */
+            overflow-x: hidden; /* 防止整个页面出现水平滚动条 */
         }
         
         /* 优化学校筛选区域高度 */
@@ -355,10 +373,51 @@
             flex: 1; /* 允许占满可用空间 */
         }
         
-        /* 优化表格容器高度，使其与左侧学校筛选区域一致 */
-        .scroll-container {
-            max-height: calc(100vh - 320px); /* 调整减去的高度以匹配左侧 */
-            overflow-y: auto;
+        /* 表格头部容器 - 严格禁止滚动 */
+        .table-header-container {
+            overflow: hidden !important;
+            border-bottom: 1px solid #e5e7eb;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            background-color: #3b82f6;
+            color: white;
+        }
+        
+        /* 表格内容容器 - 允许垂直和水平滚动 */
+        .table-body-container {
+            flex: 1;
+            overflow: auto;
+            overflow-x: auto;
+            min-height: 200px;
+            height: 600px;
+        }
+        
+        /* 确保表格占满容器 */
+        .sticky-table {
+            width: 100%;
+            min-width: max-content;
+            table-layout: auto; /* 自动表格布局，根据内容调整列宽 */
+        }
+        
+        /* 优化滚动条样式 */
+        .table-body-container::-webkit-scrollbar {
+            height: 8px;
+            width: 8px;
+        }
+        
+        .table-body-container::-webkit-scrollbar-track {
+            background: #f1f5f9;
+            border-radius: 4px;
+        }
+        
+        .table-body-container::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        
+        .table-body-container::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
         }
         
         /* 确保表格占满可用空间 */
@@ -557,16 +616,232 @@
             margin-left: 0.25rem;
         }
         
-        /* 新增：空值单元格红色背景样式 */
+        /* 空值单元格红色背景样式 */
         .empty-value-cell {
             background-color: #fee2e2;
             color: #dc2626;
             font-weight: 500;
             text-align: center;
         }
+        
+        /* 虚拟滚动相关样式 */
+        .virtual-scroll-container {
+            position: relative;
+            overflow: auto;
+            height: 100%;
+            width: 100%;
+        }
+        
+        .virtual-scroll-content {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+        }
+        
+        .virtual-scroll-spacer {
+            width: 100%;
+        }
+        
+        .virtual-scroll-rows {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+        }
+        
+        /* 优化滚动性能 */
+        .optimized-scrollbar {
+            scrollbar-width: thin;
+            scrollbar-color: #cbd5e1 transparent;
+        }
+        
+        .optimized-scrollbar::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        
+        .optimized-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        
+        .optimized-scrollbar::-webkit-scrollbar-thumb {
+            background-color: #cbd5e1;
+            border-radius: 3px;
+        }
+        
+        .optimized-scrollbar::-webkit-scrollbar-thumb:hover {
+            background-color: #94a3b8;
+        }
+        
+        /* 减少重排重绘的优化 */
+        .will-change-transform {
+            will-change: transform;
+        }
+        
+        .will-change-opacity {
+            will-change: opacity;
+        }
+        
+        /* 优化表格渲染性能 */
+        .optimized-table {
+            table-layout: fixed;
+            border-collapse: collapse;
+            width: 100%;
+        }
+        
+        /* 优化文本渲染 */
+        .optimized-text-rendering {
+            text-rendering: optimizeLegibility;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        
+        /* 固定表头和首列样式 */
+        .sticky-table-container {
+            position: relative;
+            height: 100%;
+            width: 100%;
+            overflow: visible;
+        }
+        
+        .sticky-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+        }
+        
+        .sticky-table thead th {
+            position: sticky;
+            top: 0;
+            z-index: 2;
+            background: linear-gradient(to right, #3b82f6, #1e40af);
+            color: white;
+            border: 1px solid #1e40af;
+        }
+        
+        .sticky-table tbody th,
+        .sticky-table tbody td:first-child {
+            position: sticky;
+            left: 0;
+            z-index: 1;
+            background-color: #f8fafc;
+            border-right: 2px solid #cbd5e1;
+        }
+        
+        .sticky-table thead th:first-child {
+            position: sticky;
+            top: 0;
+            left: 0;
+            z-index: 3;
+            background: linear-gradient(to right, #1e40af, #1e3a8a);
+            border-right: 2px solid #1e40af;
+        }
+        
+        /* 确保表格行和单元格的边框正确显示 */
+        .sticky-table th,
+        .sticky-table td {
+            padding: 0.25rem 0.5rem;
+            border: 1px solid #e2e8f0;
+        }
+        
+        /* 优化表格行的背景色 */
+        .sticky-table tbody tr:nth-child(even) td:first-child,
+        .sticky-table tbody tr:nth-child(even) th {
+            background-color: #f1f5f9;
+        }
+        
+        .sticky-table tbody tr:nth-child(odd) td:first-child,
+        .sticky-table tbody tr:nth-child(odd) th {
+            background-color: #f8fafc;
+        }
+        
+        /* 确保合计行的样式 */
+        .sticky-table .page-total-row td:first-child {
+            background-color: #e2e8f0;
+            font-weight: 600;
+        }
+        
+        .sticky-table .grand-total-row td:first-child {
+            background-color: #bfdbfe;
+            font-weight: 700;
+        }
+        
+        /* 确保所有第一列单元格都固定 */
+        .sticky-first-column {
+            position: sticky !important;
+            left: 0 !important;
+            z-index: 1 !important;
+            transform: translateX(0) !important;
+            background-color: #f8fafc !important;
+            border-right: 2px solid #cbd5e1 !important;
+            transition: none !important;
+        }
+        
+        /* 表头的第一列单元格特殊处理 */
+        .sticky-table thead th.sticky-first-column {
+            z-index: 3 !important;
+            background: linear-gradient(to right, #1e40af, #1e3a8a) !important;
+            color: white !important;
+        }
+        
+        /* 小计行和合计行的第一列单元格 */
+        .page-subtotal-row td.sticky-first-column,
+        .grand-total-row td.sticky-first-column {
+            background-color: #e2e8f0 !important;
+            font-weight: 600 !important;
+        }
+        
+        .grand-total-row td.sticky-first-column {
+            background-color: #bfdbfe !important;
+            font-weight: 700 !important;
+        }
+        
+        /* 重要：修改表格容器样式，添加固定高度和滚动条 */
+        .table-container {
+            height: 480px; /* 设置固定高度 */
+            overflow: auto; /* 启用滚动 */
+            border: 1px solid #e2e8f0; /* 添加边框 */
+            border-radius: 0.375rem; /* 添加圆角 */
+        }
+        
+        /* 确保表格在容器内正确显示 */
+        .table-container table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        /* 固定第一列的样式 */
+        .sticky-first-column {
+            position: sticky;
+            left: 0;
+            z-index: 1;
+            background-color: #f8fafc;
+            border-right: 2px solid #cbd5e1;
+        }
+        
+        /* 优化表格行的背景色 */
+        tbody tr:nth-child(even) .sticky-first-column {
+            background-color: #f1f5f9;
+        }
+        
+        tbody tr:nth-child(odd) .sticky-first-column {
+            background-color: #f8fafc;
+        }
+        
+        /* 确保合计行的第一列样式 */
+        .page-total-row .sticky-first-column {
+            background-color: #e2e8f0;
+            font-weight: 600;
+        }
+        
+        .grand-total-row .sticky-first-column {
+            background-color: #bfdbfe;
+            font-weight: 700;
+        }
     </style>
 </head>
-<body class="bg-gray-50 font-sans">
+<body class="bg-gray-50 font-sans optimized-text-rendering">
     <!-- 导航栏 -->
     <nav class="bg-gradient-primary text-white p-4 shadow-lg no-print fixed top-0 left-0 right-0 z-50">
         <div class="container mx-auto flex flex-col md:flex-row justify-between items-center">
@@ -622,12 +897,10 @@
         </div>
     </div>
 
-    
-
     <div class="container mx-auto p-4 content-container">
-        <div class="flex-container">
+        <div class="flex-container" style="display: flex; height: 600px;">
             <!-- 侧边栏 -->
-            <div class="w-full lg:w-64 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg shadow-card p-4 no-print transition-all duration-300 hover:shadow-card-hover sidebar-container border border-blue-100 flex-shrink-0">
+            <div class="w-full lg:w-64 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg shadow-card p-4 no-print transition-all duration-300 hover:shadow-card-hover sidebar-container border border-blue-100 flex-shrink-0" id="sidebarContainer">
                 <!-- 筛选标题 -->
                 <h2 class="text-lg font-semibold mb-4 text-blue-800 flex items-center">
                     <i class="fas fa-filter mr-2 text-blue-500"></i>筛选
@@ -635,7 +908,7 @@
                 
                 <!-- 学校筛选按钮组 -->
                 <div class="space-y-2 mb-4 bg-white rounded-lg p-2 shadow-sm" id="schoolFilterContainer">
-                    <button data-school="" class="sidebar-item w-full text-left px-3 py-2 rounded hover:bg-blue-50 transition-colors active flex items-center">
+                    <button data-subject="" class="sidebar-item w-full text-left px-3 py-2 rounded hover:bg-blue-50 transition-colors active flex items-center">
                         <i class="fas fa-book mr-2 w-5 text-center text-blue-500"></i>全部科目
                     </button>
                     <!-- 学校筛选按钮将通过JavaScript动态生成 -->
@@ -664,7 +937,7 @@
             </div>
 
             <!-- 主内容区 -->
-            <div class="flex-1 main-content">
+            <div class="flex-1 main-content" id="mainContent">
                 <!-- 搜索和操作栏 - 优化布局和美观度 -->
                 <div class="bg-white rounded-lg shadow-md p-4 mb-4 no-print transition-all duration-300 hover:shadow-lg">
                     <div class="flex flex-col sm:flex-row items-center justify-between gap-3">
@@ -710,52 +983,55 @@
                     </div>
                 </div>
 
-                <!-- 数据表格 -->
-                <div class="bg-white rounded-lg shadow-card overflow-hidden transition-all duration-300 hover:shadow-card-hover flex-grow flex flex-col border border-gray-100">
-                    <div class="overflow-x-auto flex-grow">
-                        <div class="scroll-container overflow-y-auto scrollbar-thin">
-                            <table class="w-full compact-table bordered-table">
-                                <!-- 表头 -->
-                                <thead id="tableHeader" class="bg-gradient-to-r from-blue-600 to-blue-700 text-white sticky top-0 z-10">
-                                    <tr>
-                                        <th class="py-2 px-2 border border-blue-500 text-left font-semibold text-xs">教材科目</th>
-                                        <!-- 学校列将通过JavaScript动态生成 -->
-                                    </tr>
-                                </thead>
-                                <!-- 表体 -->
-                                <tbody id="tableBody" class="divide-y divide-gray-200">
-                                    <!-- 数据将通过JavaScript动态加载 -->
-                                    <tr>
-                                        <td colspan="10" class="py-4 px-3 text-center border border-gray-300 text-gray-500 text-sm bg-gray-50">
-                                            暂无数据，请导入Excel文件
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
+                <!-- 数据表格 - 优化的表格容器结构 -->
+                <div class="bg-white rounded-lg shadow-card transition-all duration-300 hover:shadow-card-hover flex-grow flex flex-col border border-gray-100" style="overflow: hidden;">
+                    <!-- 表头容器 - 只水平滚动 -->
+                    <div class="table-header-container" id="tableHeaderContainer" style="overflow: hidden; border-bottom: 1px solid #e5e7eb; flex-shrink: 0; position: relative;">
+                        <table class="sticky-table compact-table bordered-table" id="headerTable">
+                            <thead id="tableHeader" class="bg-gradient-to-r from-blue-600 to-blue-700 text-white">
+                                <tr class="row-height-fixed">
+                                    <th class="py-2 px-2 border border-blue-500 text-left font-semibold text-xs column-width-fixed row-height-fixed sticky-first-column" style="position: sticky !important; left: 0 !important; z-index: 3 !important; background: linear-gradient(to right, #1e40af, #1e3a8a) !important; color: white !important;">教材科目</th>
+                                    <!-- 学校列将通过JavaScript动态生成 -->
+                                </tr>
+                            </thead>
+                        </table>
+                    </div>
+                    
+                    <!-- 表体容器 - 垂直和水平滚动 -->
+                    <div class="table-body-container" id="tableBodyContainer" style="flex: 1; overflow: auto; height: 480px;">
+                        <table class="sticky-table compact-table bordered-table" id="dataTable">
+                            <tbody id="tableBody" class="divide-y divide-gray-200">
+                                <!-- 数据将通过JavaScript动态加载 -->
+                                <tr>
+                                    <td colspan="10" class="py-4 px-3 text-center border border-gray-300 text-gray-500 text-sm bg-gray-50">
+                                        暂无数据，请导入Excel文件
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
 
                 <!-- 分页控件 -->
-                <div class="flex flex-col sm:flex-row justify-between items-center mt-4 bg-white rounded-lg shadow-card p-4 no-print transition-all duration-300 hover:shadow-card-hover">
-                    <div class="text-sm text-gray-600 mb-2 sm:mb-0">
+                <div class="flex flex-col sm:flex-row justify-between items-center mt-3 bg-white rounded-lg shadow-card p-2 no-print transition-all duration-300 hover:shadow-card-hover">
+                    <div class="text-xs text-gray-600 mb-1 sm:mb-0">
                         每页显示 
-                        <select id="pageSize" class="border border-gray-300 rounded px-2 py-1 focus:ring-1 focus:ring-primary focus:border-primary transition-all">
+                        <select id="pageSize" class="border border-gray-300 rounded px-1.5 py-0.5 focus:ring-1 focus:ring-primary focus:border-primary transition-all text-xs">
                             <option value="10">10</option>
                             <option value="20" selected>20</option>
                             <option value="50">50</option>
                             <option value="100">100</option>
                         </select> 条
                     </div>
-                    <div class="flex items-center space-x-2">
-                        <button id="prevPageBtn" class="bg-gray-200 hover:bg-gray-300 px-3 py-1 rounded transition-colors flex items-center justify-center w-8 h-8 opacity-50 cursor-not-allowed" disabled>
-                            <i class="fas fa-chevron-left"></i>
+                    <div class="flex items-center space-x-1">
+                        <button id="prevPageBtn" class="bg-gray-200 hover:bg-gray-300 px-2 py-0.5 rounded transition-colors flex items-center justify-center w-6 h-6 opacity-50 cursor-not-allowed text-xs" disabled>
+                            <i class="fas fa-chevron-left text-xs"></i>
                         </button>
-                        <span class="text-sm text-gray-700">
+                        <span class="text-xs text-gray-700">
                             第 <span id="currentPage">0</span> 页，共 <span id="totalPages">0</span> 页
                         </span>
-                        <button id="nextPageBtn" class="bg-gray-200 hover:bg-gray-300 px-3 py-1 rounded transition-colors flex items-center justify-center w-8 h-8 opacity-50 cursor-not-allowed" disabled>
-                            <i class="fas fa-chevron-right"></i>
+                        <button id="nextPageBtn" class="bg-gray-200 hover:bg-gray-300 px-2 py-0.5 rounded transition-colors flex items-center justify-center w-6 h-6 opacity-50 cursor-not-allowed text-xs" disabled>
+                            <i class="fas fa-chevron-right text-xs"></i>
                         </button>
                     </div>
                 </div>
@@ -791,7 +1067,7 @@
                 <button id="cancelPasswordBtn" class="flex-1 bg-gray-200 hover:bg-gray-300 px-4 py-2 rounded transition-colors">
                     取消
                 </button>
-                <button id="confirmPasswordBtn" class="flex-1 bg-primary hover:bg-blue-600 text-white px-4 py-2 rounded transition-colors">
+                <button id="confirmPasswordBtn" class="flex-1 bg-blue-600 text-white px-4 py-2 rounded btn-3d">
                     确认
                 </button>
             </div>
@@ -806,22 +1082,129 @@
             </div>
             <h3 class="text-lg font-semibold mb-2">导入成功</h3>
             <p id="importSuccessMessage" class="text-gray-600 text-center mb-4">数据已成功导入系统</p>
-            <button id="closeSuccessModalBtn" class="bg-primary hover:bg-blue-600 text-white px-4 py-2 rounded transition-colors">
+            <button id="closeSuccessModalBtn" class="bg-blue-600 text-white px-4 py-2 rounded btn-3d">
                 确定
             </button>
         </div>
     </div>
+    
+    <!-- 密码输入模态框 -->
+    <div id="passwordModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white p-6 rounded-lg shadow-lg flex flex-col items-center max-w-md w-full">
+            <div class="text-blue-500 text-4xl mb-4">
+                <i class="fas fa-lock"></i>
+            </div>
+            <h3 class="text-lg font-semibold mb-2">请输入导入密码</h3>
+            <p class="text-gray-600 text-center mb-4">为了数据安全，请输入管理员密码</p>
+            <div class="w-full mb-4">
+                <input type="password" id="passwordInput" placeholder="请输入密码" 
+                       class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+            </div>
+            <div id="passwordError" class="text-red-500 text-sm mb-4 hidden">
+                密码错误，请重新输入
+            </div>
+            <div class="flex gap-2 w-full">
+                <button id="confirmPasswordBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded btn-3d flex-1">
+                    确认
+                </button>
+                <button id="cancelPasswordBtn" class="bg-gray-300 hover:bg-gray-400 text-gray-800 px-4 py-2 rounded btn-3d flex-1">
+                    取消
+                </button>
+            </div>
+        </div>
+    </div>
 
     <script>
-        // 常量定义
+        // 页面加载完成后初始化高度同步
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(() => {
+                if (window.app && window.app.syncModuleHeights) {
+                    window.app.syncModuleHeights();
+                }
+            }, 100);
+        });
+        
+        // 常量定义 - 合并所有必要的配置项
         const APP_CONSTANTS = {
             DEFAULT_PAGE_SIZE: 20,
-            BATCH_SIZE: 100,
+            DEFAULT_ITEMS_PER_PAGE: 50,
+            BATCH_SIZE: 5000, // 增加批处理大小以提高性能
             MAX_FILE_SIZE: 50 * 1024 * 1024, // 50MB
             EXCEL_EXTENSIONS: ['.xls', '.xlsx'],
             NOTIFICATION_DURATION: 3000,
             DEBOUNCE_DELAY: 300,
+            SEARCH_DELAY: 300,
+            CAROUSEL_INTERVAL: 5000,
+            FULLSCREEN_ITEMS_PER_PAGE: 100, // 全屏模式下每页显示更多行
             IMPORT_PASSWORD: 'XH888', // 导入密码
+            VIRTUAL_SCROLL: {
+                ITEM_HEIGHT: 36, // 每行高度
+                BUFFER_SIZE: 5, // 缓冲区大小
+                UPDATE_THROTTLE: 16 // 更新节流时间(ms)
+            }
+        };
+
+        // 性能监控工具
+        const PerformanceMonitor = {
+            timers: {},
+            
+            start(name) {
+                this.timers[name] = performance.now();
+            },
+            
+            end(name) {
+                if (this.timers[name]) {
+                    const duration = performance.now() - this.timers[name];
+                    console.log(`[Performance] ${name}: ${duration.toFixed(2)}ms`);
+                    return duration;
+                }
+                return 0;
+            },
+            
+            measure(name, fn) {
+                this.start(name);
+                const result = fn();
+                this.end(name);
+                return result;
+            }
+        };
+
+        // 数据缓存系统
+        const DataCache = {
+            cache: new Map(),
+            
+            get(key) {
+                return this.cache.get(key);
+            },
+            
+            set(key, value, ttl = 30000) { // 默认30秒过期
+                this.cache.set(key, {
+                    value,
+                    timestamp: Date.now(),
+                    ttl
+                });
+            },
+            
+            has(key) {
+                const item = this.cache.get(key);
+                if (!item) return false;
+                
+                // 检查是否过期
+                if (Date.now() - item.timestamp > item.ttl) {
+                    this.cache.delete(key);
+                    return false;
+                }
+                
+                return true;
+            },
+            
+            clear() {
+                this.cache.clear();
+            },
+            
+            delete(key) {
+                this.cache.delete(key);
+            }
         };
 
         // 工具函数
@@ -836,6 +1219,20 @@
                     timeout = setTimeout(() => {
                         func.apply(context, args);
                     }, wait);
+                };
+            },
+            
+            // 节流函数
+            throttle(func, limit) {
+                let inThrottle;
+                return function() {
+                    const context = this;
+                    const args = arguments;
+                    if (!inThrottle) {
+                        func.apply(context, args);
+                        inThrottle = true;
+                        setTimeout(() => inThrottle = false, limit);
+                    }
                 };
             },
 
@@ -933,6 +1330,31 @@
                 
                 // 如果无法解析，返回原始值
                 return String(dateValue).split(' ')[0];
+            },
+            
+            // 生成唯一ID
+            generateId() {
+                return Date.now().toString(36) + Math.random().toString(36).substr(2, 5);
+            },
+            
+            // 批量处理数组
+            batchProcess(array, batchSize, processFn) {
+                const totalBatches = Math.ceil(array.length / batchSize);
+                const results = [];
+                
+                for (let i = 0; i < totalBatches; i++) {
+                    const start = i * batchSize;
+                    const end = Math.min(start + batchSize, array.length);
+                    const batch = array.slice(start, end);
+                    results.push(processFn(batch, i, totalBatches));
+                }
+                
+                return results;
+            },
+            
+            // 延迟执行
+            delay(ms) {
+                return new Promise(resolve => setTimeout(resolve, ms));
             }
         };
 
@@ -942,6 +1364,7 @@
                 // 数据存储 - 初始为空
                 this.bookData = [];
                 this.filteredData = [];
+                this.originalHeaders = []; // 存储完整的原始表头
                 this.schoolHeaders = []; // 存储学校列的表头
                 
                 // 分页状态
@@ -949,51 +1372,54 @@
                 this.itemsPerPage = APP_CONSTANTS.DEFAULT_PAGE_SIZE;
                 this.currentSearchTerm = '';
                 this.currentSchoolFilter = ''; // 当前选中的学校筛选
+                this.currentSubjectFilter = ''; // 当前选中的科目筛选
                 
                 // 导入状态
                 this.importAbortController = null;
                 this.isImporting = false;
                 
-                // DOM 元素
-                this.tableBody = document.getElementById('tableBody');
-                this.searchInput = document.getElementById('searchInput');
-                this.prevPageBtn = document.getElementById('prevPageBtn');
-                this.nextPageBtn = document.getElementById('nextPageBtn');
-                this.pageSizeSelect = document.getElementById('pageSize');
-                this.exportExcelBtn = document.getElementById('exportExcelBtn');
-                this.printBtn = document.getElementById('printBtn');
-                this.loadingOverlay = document.getElementById('loadingOverlay');
-                this.loadingText = document.getElementById('loadingText');
-                this.schoolFilterContainer = document.getElementById('schoolFilterContainer');
-                
-                // 进度条元素
-                this.progressBar = document.getElementById('progressBar');
-                this.progressText = document.getElementById('progressText');
-                this.cancelImportBtn = document.getElementById('cancelImportBtn');
-                
-                // 统计元素
-                this.totalVarietyElement = document.getElementById('totalOrders'); // 总品种数
-                this.totalCopiesElement = document.getElementById('totalCopies'); // 总册数
-                this.totalVarietyCopiesElement = document.getElementById('totalVarietyCopies'); // 学校总数
-                this.totalCopiesLabel = document.getElementById('totalCopiesLabel'); // 总册数标签
-                this.totalVarietyCopiesLabel = document.getElementById('totalVarietyCopiesLabel'); // 学校总数标签
+                // DOM 元素缓存
+                this.elements = {
+                    tableBody: document.getElementById('tableBody'),
+                    searchInput: document.getElementById('searchInput'),
+                    prevPageBtn: document.getElementById('prevPageBtn'),
+                    nextPageBtn: document.getElementById('nextPageBtn'),
+                    pageSizeSelect: document.getElementById('pageSize'),
+                    exportExcelBtn: document.getElementById('exportExcelBtn'),
+                    printBtn: document.getElementById('printBtn'),
+                    loadingOverlay: document.getElementById('loadingOverlay'),
+                    loadingText: document.getElementById('loadingText'),
+                    schoolFilterContainer: document.getElementById('schoolFilterContainer'),
+                    progressBar: document.getElementById('progressBar'),
+                    progressText: document.getElementById('progressText'),
+                    cancelImportBtn: document.getElementById('cancelImportBtn'),
+                    totalVarietyElement: document.getElementById('totalOrders'),
+                    totalCopiesElement: document.getElementById('totalCopies'),
+                    totalVarietyCopiesElement: document.getElementById('totalVarietyCopies'),
+                    totalCopiesLabel: document.getElementById('totalCopiesLabel'),
+                    totalVarietyCopiesLabel: document.getElementById('totalVarietyCopiesLabel'),
+                    currentRangeElement: document.getElementById('currentRange'),
+                    totalRecordsElement: document.getElementById('totalRecords'),
+                    currentPageElement: document.getElementById('currentPage'),
+                    totalPagesElement: document.getElementById('totalPages'),
+                    tableHeader: document.getElementById('tableHeader'),
+                    importSuccessModal: document.getElementById('importSuccessModal'),
+                    importSuccessMessage: document.getElementById('importSuccessMessage'),
+                    closeSuccessModalBtn: document.getElementById('closeSuccessModalBtn'),
+                    dataTable: document.getElementById('dataTable'),
+                    tableHeaderContainer: document.getElementById('tableHeaderContainer'),
+                    tableBodyContainer: document.getElementById('tableBodyContainer')
+                };
                 
                 // 转置状态
                 this.isTransposed = false;
                 
-                // 分页信息元素
-                this.currentRangeElement = document.getElementById('currentRange');
-                this.totalRecordsElement = document.getElementById('totalRecords');
-                this.currentPageElement = document.getElementById('currentPage');
-                this.totalPagesElement = document.getElementById('totalPages');
+                // 事件监听器存储，用于清理
+                this.eventListeners = new Map();
                 
-                // 表头元素
-                this.tableHeader = document.getElementById('tableHeader');
-                
-                // 导入成功模态框
-                this.importSuccessModal = document.getElementById('importSuccessModal');
-                this.importSuccessMessage = document.getElementById('importSuccessMessage');
-                this.closeSuccessModalBtn = document.getElementById('closeSuccessModalBtn');
+                // 表格渲染状态
+                this.isRendering = false;
+                this.lastRenderedData = null;
                 
                 // 初始化应用
                 this.initialize();
@@ -1003,6 +1429,9 @@
             initialize() {
                 this.updateTime();
                 this.setupEventListeners();
+                
+                // 设置同步滚动
+                this.setupSyncScroll();
                 
                 // 每秒更新一次时间
                 setInterval(() => this.updateTime(), 1000);
@@ -1019,84 +1448,307 @@
             // 设置事件监听器
             setupEventListeners() {
                 // 搜索功能
-                this.searchInput.addEventListener('input', Utils.debounce(() => this.performSearch(), APP_CONSTANTS.DEBOUNCE_DELAY));
+                this.addEventListener(this.elements.searchInput, 'input', 
+                    Utils.debounce(() => this.performSearch(), APP_CONSTANTS.DEBOUNCE_DELAY));
                 
                 // 分页功能
-                this.prevPageBtn.addEventListener('click', () => this.previousPage());
-                this.nextPageBtn.addEventListener('click', () => this.nextPage());
-                this.pageSizeSelect.addEventListener('change', () => this.changePageSize());
+                this.addEventListener(this.elements.prevPageBtn, 'click', () => this.previousPage());
+                this.addEventListener(this.elements.nextPageBtn, 'click', () => this.nextPage());
+                this.addEventListener(this.elements.pageSizeSelect, 'change', () => this.changePageSize());
                 
                 // 导出和打印
-                this.exportExcelBtn.addEventListener('click', () => this.exportToExcel());
-                this.printBtn.addEventListener('click', () => this.printOptimized());
+                this.addEventListener(this.elements.exportExcelBtn, 'click', () => this.exportToExcel());
+                this.addEventListener(this.elements.printBtn, 'click', () => this.printOptimized());
                 
                 // 转置功能
-                document.getElementById('transposeBtn').addEventListener('click', () => this.toggleTranspose());
+                this.addEventListener(document.getElementById('transposeBtn'), 'click', () => this.toggleTranspose());
                 
                 // 取消导入按钮
-                this.cancelImportBtn.addEventListener('click', () => this.cancelImport());
+                this.addEventListener(this.elements.cancelImportBtn, 'click', () => this.cancelImport());
                 
-                // 全部科目筛选按钮
-                document.querySelector('[data-school=""]').addEventListener('click', () => {
-                    this.filterBySchool('');
+                // 全部科目/学校筛选按钮
+                this.addEventListener(document.querySelector('[data-subject=""]'), 'click', () => {
+                    if (this.isTransposed) {
+                        // 转置模式下显示所有学校
+                        this.filterBySchool('');
+                    } else {
+                        // 正常模式下显示所有科目
+                        this.filterBySubject('');
+                    }
                     
                     // 更新侧边栏激活状态
                     document.querySelectorAll('.sidebar-item').forEach(item => {
                         item.classList.remove('active');
                     });
-                    document.querySelector('[data-school=""]').classList.add('active');
+                    document.querySelector('[data-subject=""]').classList.add('active');
                 });
                 
                 // 导入成功模态框
-                this.closeSuccessModalBtn.addEventListener('click', () => {
-                    this.importSuccessModal.classList.add('hidden');
+                this.addEventListener(this.elements.closeSuccessModalBtn, 'click', () => {
+                    this.elements.importSuccessModal.classList.add('hidden');
                 });
+                
+                // 表格容器大小变化监听
+                this.addEventListener(window, 'resize', 
+                    Utils.debounce(() => this.handleContainerResize(), 200));
+            }
+            
+            // 处理容器大小变化
+            handleContainerResize() {
+                // 如果有数据，重新渲染表格以适应新的容器大小
+                if (this.filteredData.length > 0) {
+                    this.renderTable();
+                }
+            }
+            
+            // 添加事件监听器并存储引用以便后续清理
+            addEventListener(element, event, handler) {
+                if (!element) return;
+                
+                const handlerId = Utils.generateId();
+                const wrappedHandler = (...args) => {
+                    try {
+                        handler.apply(this, args);
+                    } catch (error) {
+                        console.error(`Error in event handler for ${event}:`, error);
+                    }
+                };
+                
+                element.addEventListener(event, wrappedHandler);
+                
+                if (!this.eventListeners.has(element)) {
+                    this.eventListeners.set(element, []);
+                }
+                
+                this.eventListeners.get(element).push({
+                    id: handlerId,
+                    event,
+                    handler: wrappedHandler
+                });
+                
+                return handlerId;
+            }
+            
+            // 移除事件监听器
+            removeEventListener(element, event, handlerId) {
+                if (!element || !this.eventListeners.has(element)) return;
+                
+                const listeners = this.eventListeners.get(element);
+                const index = listeners.findIndex(l => l.id === handlerId && l.event === event);
+                
+                if (index !== -1) {
+                    const { handler } = listeners[index];
+                    element.removeEventListener(event, handler);
+                    listeners.splice(index, 1);
+                }
+            }
+            
+            // 清理所有事件监听器
+            cleanupEventListeners() {
+                for (const [element, listeners] of this.eventListeners) {
+                    for (const { event, handler } of listeners) {
+                        element.removeEventListener(event, handler);
+                    }
+                }
+                this.eventListeners.clear();
             }
             
             // 渲染表格
             renderTable() {
-                // 优化：使用requestAnimationFrame提高渲染性能
-                requestAnimationFrame(() => {
-                    const startIndex = (this.currentPage - 1) * this.itemsPerPage;
-                    const endIndex = startIndex + this.itemsPerPage;
-                    const currentData = this.filteredData.slice(startIndex, endIndex);
-                    
-                    this.tableBody.innerHTML = '';
-                    
-                    if (currentData.length === 0) {
+                PerformanceMonitor.start('renderTable');
+                
+                // 防止重复渲染
+                if (this.isRendering) {
+                    PerformanceMonitor.end('renderTable');
+                    return;
+                }
+                
+                this.isRendering = true;
+                
+                try {
+                    if (this.filteredData.length === 0) {
                         this.renderEmptyState();
                         this.updatePaginationInfo();
+                        this.isRendering = false;
+                        PerformanceMonitor.end('renderTable');
                         return;
                     }
                     
-                    // 使用DocumentFragment批量添加行，减少DOM操作
-                    const fragment = document.createDocumentFragment();
+                    // 强制更新表头，确保与数据严格对应
+                    this.updateTableHeaders();
                     
-                    if (this.isTransposed) {
-                        // 转置模式：按学校显示行
-                        this.renderTransposedTable(currentData, fragment);
-                    } else {
-                        // 正常模式：按教材科目显示行
-                        // 渲染数据行
-                        currentData.forEach((item, index) => {
-                            const row = this.createTableRow(item, index);
-                            fragment.appendChild(row);
-                        });
-                        
-                        // 添加页合计行
-                        const totalRow = this.createPageTotalRow(currentData);
-                        fragment.appendChild(totalRow);
-                    }
+                    // 等待表头更新完成后再渲染数据
+                    setTimeout(() => {
+                        try {
+                            // 渲染表格内容
+                            if (this.isTransposed) {
+                                // 转置模式：按学校显示行
+                                this.renderTransposedTable();
+                            } else {
+                                // 正常模式：按教材科目显示行
+                                this.renderNormalTable();
+                            }
+                            
+                            // 更新分页信息
+                            this.updatePaginationInfo();
+                            
+                            // 记录渲染的数据引用
+                            this.lastRenderedData = this.filteredData;
+                            
+                            // 同步左右模块高度
+                            this.syncModuleHeights();
+                            
+                        } catch (error) {
+                            console.error('Error in table rendering timeout:', error);
+                        } finally {
+                            this.isRendering = false;
+                            PerformanceMonitor.end('renderTable');
+                        }
+                    }, 100);
                     
-                    // 一次性添加所有行
-                    this.tableBody.appendChild(fragment);
-                    
-                    // 更新分页信息
-                    this.updatePaginationInfo();
-                });
+                } catch (error) {
+                    console.error('Error rendering table:', error);
+                    this.isRendering = false;
+                    PerformanceMonitor.end('renderTable');
+                }
             }
             
-            // 创建表格行
+            // 渲染正常模式表格
+            renderNormalTable() {
+                // 使用DocumentFragment批量添加行，减少DOM操作
+                const fragment = document.createDocumentFragment();
+                
+                // 计算当前页要显示的数据范围
+                const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+                const endIndex = Math.min(startIndex + this.itemsPerPage, this.filteredData.length);
+                const currentPageData = this.filteredData.slice(startIndex, endIndex);
+                
+                // 渲染当前页的数据行
+                currentPageData.forEach((item, index) => {
+                    const actualIndex = startIndex + index; // 实际数据索引
+                    const row = this.createTableRow(item, actualIndex);
+                    fragment.appendChild(row);
+                });
+                
+                // 添加小计行（每页都显示）
+                const subtotalRow = this.createSubtotalRow(currentPageData);
+                if (subtotalRow) {
+                    fragment.appendChild(subtotalRow);
+                }
+                
+                // 计算是否是最后一页
+                const totalPages = Math.ceil(this.filteredData.length / this.itemsPerPage);
+                const isLastPage = this.currentPage === totalPages;
+                
+                // 只在最后一页添加合计行
+                if (isLastPage) {
+                    const totalRow = this.createTotalRow();
+                    if (totalRow) {
+                        fragment.appendChild(totalRow);
+                    }
+                }
+                
+                // 一次性替换表格内容
+                this.elements.tableBody.innerHTML = '';
+                this.elements.tableBody.appendChild(fragment);
+            }
+            
+            // 渲染转置模式表格
+            renderTransposedTable() {
+                // 使用DocumentFragment批量添加行，减少DOM操作
+                const fragment = document.createDocumentFragment();
+                
+                // 确保使用与导出功能相同的数据源
+                const dataToUse = this.filteredData.length > 0 ? this.filteredData : this.bookData;
+                
+                // 获取所有唯一的教材科目
+                const subjects = [...new Set(dataToUse.map(item => item.subject).filter(subject => subject))];
+                
+                // 按学校分组数据
+                const schoolData = {};
+                
+                // 确定要处理的学校列表（考虑搜索结果和筛选条件）
+                // 与导出功能保持完全一致的逻辑
+                const schoolsToProcess = this._matchingSchools && this._matchingSchools.length > 0 ? this._matchingSchools : 
+                                       (this.currentSchoolFilter ? [this.currentSchoolFilter] : this.schoolHeaders);
+                
+                // 初始化学校数据
+                schoolsToProcess.forEach(school => {
+                    schoolData[school] = {
+                        subjects: {},
+                        total: 0 // 学校总册数
+                    };
+                });
+                
+                // 填充数据并计算学校总册数
+                // 与导出功能保持完全一致的逻辑
+                schoolsToProcess.forEach(school => {
+                    subjects.forEach(subject => {
+                        const item = dataToUse.find(i => i.subject === subject);
+                        const value = item ? item[school] || '' : '';
+                        schoolData[school].subjects[subject] = value;
+                        
+                        // 累加学校总册数
+                        const numValue = Utils.parseNumber(value);
+                        if (!isNaN(numValue)) {
+                            schoolData[school].total += numValue;
+                        }
+                    });
+                });
+                
+                // 计算当前页要显示的数据范围
+                const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+                const endIndex = Math.min(startIndex + this.itemsPerPage, schoolsToProcess.length);
+                const currentPageSchools = schoolsToProcess.slice(startIndex, endIndex);
+                
+                // 渲染每行（按学校）
+                let index = 0;
+                
+                // 检查是否有学校需要渲染
+                if (currentPageSchools.length === 0) {
+                    // 如果没有学校需要渲染，显示空状态
+                    const emptyRow = document.createElement('tr');
+                    const colSpan = 1 + subjects.length + 1; // 学校列 + 科目列 + 合计列
+                    emptyRow.innerHTML = `
+                        <td colspan="${colSpan}" class="py-4 px-3 text-center border border-gray-300 text-gray-500 text-sm bg-gray-50">
+                            暂无符合条件的数据
+                        </td>
+                    `;
+                    fragment.appendChild(emptyRow);
+                } else {
+                    // 渲染当前页的学校数据行
+                    currentPageSchools.forEach(school => {
+                        const actualIndex = startIndex + index; // 实际数据索引
+                        const row = this.createTransposedTableRow(school, schoolData[school], subjects, actualIndex);
+                        fragment.appendChild(row);
+                        index++;
+                    });
+                    
+                    // 添加小计行（每页都显示）
+                    const subtotalRow = this.createTransposedSubtotalRow(subjects, currentPageSchools, schoolData);
+                    if (subtotalRow) {
+                        fragment.appendChild(subtotalRow);
+                    }
+                    
+                    // 计算是否是最后一页
+                    const totalPages = Math.ceil(schoolsToProcess.length / this.itemsPerPage);
+                    const isLastPage = this.currentPage === totalPages;
+                    
+                    // 只在最后一页添加合计行
+                    if (isLastPage) {
+                        const totalRow = this.createTransposedTotalRow(subjects, schoolsToProcess, schoolData);
+                        if (totalRow) {
+                            fragment.appendChild(totalRow);
+                        }
+                    }
+                }
+                
+                // 一次性替换表格内容
+                this.elements.tableBody.innerHTML = '';
+                this.elements.tableBody.appendChild(fragment);
+            }
+            
+            // 创建表格行 - 最终优化版本，确保与表头完全对齐
             createTableRow(item, index) {
                 const row = document.createElement('tr');
                 // 根据索引设置交替背景色
@@ -1105,30 +1757,39 @@
                     : 'compact-row fade-in hover:bg-blue-50 transition-colors bg-blue-50';
                 row.className = rowClass;
                 
-                // 添加教材科目列
+                // 添加教材科目列 - 添加固定列样式
                 const subjectCell = document.createElement('td');
-                subjectCell.className = 'py-1 px-2 border border-gray-300 text-xs auto-font-size tooltip-cell';
+                subjectCell.className = 'py-1 px-2 border border-gray-300 text-xs auto-font-size tooltip-cell column-width-fixed sticky-first-column';
                 const subjectText = item.subject || '';
                 subjectCell.textContent = subjectText;
                 subjectCell.setAttribute('data-tooltip', subjectText);
+                subjectCell.setAttribute('data-header-type', 'subject'); // 添加数据属性标识
+                subjectCell.style.width = '96px'; // 固定宽度（六个汉字）
+                subjectCell.style.minWidth = '96px'; // 最小宽度（六个汉字）
+                subjectCell.style.maxWidth = '96px'; // 最大宽度（六个汉字）
                 this.adjustFontSize(subjectCell, subjectText);
                 row.appendChild(subjectCell);
                 
                 // 计算单品总册数（该行所有学校的合计）
                 let varietyTotal = 0;
                 
-                // 添加学校列
-                this.schoolHeaders.forEach(school => {
+                // 添加学校列 - 严格按照表头顺序和索引创建
+                this.schoolHeaders.forEach((school, columnIndex) => {
                     const cell = document.createElement('td');
                     cell.className = 'py-1 px-2 border border-gray-300 text-xs text-right';
+                    cell.setAttribute('data-school', school); // 添加数据属性用于匹配
+                    cell.setAttribute('data-index', columnIndex); // 添加索引用于严格对应
+                    cell.style.width = '96px'; // 固定宽度（六个汉字）
+                    cell.style.minWidth = '96px'; // 最小宽度（六个汉字）
+                    cell.style.maxWidth = '96px'; // 最大宽度（六个汉字）
                     
                     // 获取学校对应的值
-                    const value = item[school] || '';
+                    const value = item[school];
                     
-                    // 如果值为空，添加红色背景样式
-                    if (value === '' || value === null || value === undefined) {
+                    // 如果值为空、null、undefined或0，添加灰色背景样式
+                    if (value === '' || value === null || value === undefined || value === 0) {
                         cell.classList.add('empty-value-cell');
-                        cell.textContent = '空';
+                        cell.textContent = '';
                     } else {
                         // 尝试将值转换为数字并格式化
                         const numValue = Utils.parseNumber(value);
@@ -1139,9 +1800,9 @@
                             this.adjustFontSize(cell, formattedValue);
                             varietyTotal += numValue; // 累加单品总册数
                         } else {
-                            cell.textContent = value;
-                            cell.setAttribute('data-tooltip', value);
-                            this.adjustFontSize(cell, value);
+                            cell.textContent = String(value);
+                            cell.setAttribute('data-tooltip', String(value));
+                            this.adjustFontSize(cell, String(value));
                         }
                     }
                     
@@ -1151,6 +1812,10 @@
                 // 添加单品总册数列
                 const varietyTotalCell = document.createElement('td');
                 varietyTotalCell.className = 'py-1 px-2 border border-gray-300 text-xs text-right font-medium bg-blue-50 auto-font-size tooltip-cell';
+                varietyTotalCell.setAttribute('data-total', 'variety'); // 添加数据属性标识
+                varietyTotalCell.style.width = '96px'; // 固定宽度（六个汉字）
+                varietyTotalCell.style.minWidth = '96px'; // 最小宽度（六个汉字）
+                varietyTotalCell.style.maxWidth = '96px'; // 最大宽度（六个汉字）
                 const varietyTotalText = Utils.formatNumber(varietyTotal);
                 varietyTotalCell.textContent = varietyTotalText;
                 varietyTotalCell.setAttribute('data-tooltip', varietyTotalText);
@@ -1160,47 +1825,227 @@
                 return row;
             }
             
-            // 创建页合计行
-            createPageTotalRow(currentData) {
+            // 创建转置模式表格行
+            createTransposedTableRow(school, schoolData, subjects, index) {
+                const row = document.createElement('tr');
+                const rowClass = index % 2 === 0 
+                    ? 'compact-row fade-in hover:bg-blue-50 transition-colors' 
+                    : 'compact-row fade-in hover:bg-blue-50 transition-colors bg-blue-50';
+                row.className = rowClass;
+                
+                // 学校名称列 - 添加固定列样式
+                const schoolCell = document.createElement('td');
+                schoolCell.className = 'py-1 px-2 border border-gray-300 text-xs font-medium auto-font-size tooltip-cell column-width-fixed sticky-first-column';
+                schoolCell.textContent = school;
+                schoolCell.setAttribute('data-tooltip', school);
+                schoolCell.style.width = '96px'; // 固定宽度（六个汉字）
+                schoolCell.style.minWidth = '96px'; // 最小宽度（六个汉字）
+                schoolCell.style.maxWidth = '96px'; // 最大宽度（六个汉字）
+                this.adjustFontSize(schoolCell, school);
+                row.appendChild(schoolCell);
+                
+                // 各教材科目列
+                subjects.forEach(subject => {
+                    const cell = document.createElement('td');
+                    cell.className = 'py-1 px-2 border border-gray-300 text-xs text-right';
+                    cell.style.width = '96px'; // 固定宽度（六个汉字）
+                    cell.style.minWidth = '96px'; // 最小宽度（六个汉字）
+                    cell.style.maxWidth = '96px'; // 最大宽度（六个汉字）
+                    
+                    const value = schoolData.subjects[subject] || '';
+                    
+                    // 如果值为空或为0，添加灰色背景样式
+                    if (value === '' || value === null || value === undefined || value === 0) {
+                        cell.classList.add('empty-value-cell');
+                        cell.textContent = '';
+                    } else {
+                        // 尝试将值转换为数字并格式化
+                        const numValue = Utils.parseNumber(value);
+                        if (!isNaN(numValue)) {
+                            cell.textContent = Utils.formatNumber(numValue);
+                        } else {
+                            cell.textContent = value;
+                        }
+                    }
+                    
+                    row.appendChild(cell);
+                });
+                
+                // 添加单品总册数列（这里显示学校总册数）
+                const varietyTotalCell = document.createElement('td');
+                varietyTotalCell.className = 'py-1 px-2 border border-gray-300 text-xs text-right font-medium bg-blue-50';
+                varietyTotalCell.style.width = '96px'; // 固定宽度（六个汉字）
+                varietyTotalCell.style.minWidth = '96px'; // 最小宽度（六个汉字）
+                varietyTotalCell.style.maxWidth = '96px'; // 最大宽度（六个汉字）
+                varietyTotalCell.textContent = Utils.formatNumber(schoolData.total);
+                row.appendChild(varietyTotalCell);
+                
+                return row;
+            }
+            
+            // 创建合计行
+            createSubtotalRow(currentPageData) {
+                if (!currentPageData || currentPageData.length === 0) return null;
+                
+                const subtotalRow = document.createElement('tr');
+                subtotalRow.className = 'page-subtotal-row fade-in bg-blue-100';
+                
+                const subtotalLabelCell = document.createElement('td');
+                subtotalLabelCell.className = 'py-1 px-2 border border-gray-300 text-xs font-medium column-width-fixed sticky-first-column';
+                subtotalLabelCell.textContent = '小计';
+                subtotalRow.appendChild(subtotalLabelCell);
+                
+                let pageTotal = 0;
+                
+                // 计算当前页每个学校的小计 - 严格按照表头顺序
+                this.schoolHeaders.forEach(school => {
+                    const cell = document.createElement('td');
+                    cell.className = 'py-1 px-2 border border-gray-300 text-xs font-medium text-right';
+                    cell.setAttribute('data-school', school); // 添加数据属性用于匹配
+                    
+                    const subtotal = currentPageData.reduce((sum, item) => {
+                        const value = Utils.parseNumber(item[school]);
+                        return sum + value;
+                    }, 0);
+                    
+                    pageTotal += subtotal;
+                    cell.textContent = Utils.formatNumber(subtotal);
+                    subtotalRow.appendChild(cell);
+                });
+                
+                // 添加当前页单品总册数小计
+                const subtotalVarietyCell = document.createElement('td');
+                subtotalVarietyCell.className = 'py-1 px-2 border border-gray-300 text-xs text-right font-medium bg-blue-100';
+                subtotalVarietyCell.setAttribute('data-total', 'variety'); // 添加数据属性标识
+                subtotalVarietyCell.textContent = Utils.formatNumber(pageTotal);
+                subtotalRow.appendChild(subtotalVarietyCell);
+                
+                return subtotalRow;
+            }
+            
+            createTotalRow() {
+                if (this.filteredData.length === 0) return null;
+                
                 const totalRow = document.createElement('tr');
-                totalRow.className = 'page-total-row fade-in bg-blue-100';
+                totalRow.className = 'grand-total-row fade-in bg-blue-200';
                 
-                // 教材科目列显示"本页合计"
-                const subjectCell = document.createElement('td');
-                subjectCell.className = 'py-1 px-2 border border-gray-300 text-xs font-medium';
-                subjectCell.textContent = '本页合计';
-                subjectCell.colSpan = 1; // 只合并一列
-                totalRow.appendChild(subjectCell);
+                const totalLabelCell = document.createElement('td');
+                totalLabelCell.className = 'py-1 px-2 border border-gray-300 text-xs font-medium column-width-fixed sticky-first-column';
+                totalLabelCell.textContent = '合计';
+                totalRow.appendChild(totalLabelCell);
                 
-                let pageGrandTotal = 0;
+                let grandTotal = 0;
                 
                 // 计算每个学校的合计
                 this.schoolHeaders.forEach(school => {
                     const cell = document.createElement('td');
                     cell.className = 'py-1 px-2 border border-gray-300 text-xs font-medium text-right';
                     
-                    // 计算该学校在本页的合计
-                    const total = currentData.reduce((sum, item) => {
+                    const total = this.filteredData.reduce((sum, item) => {
                         const value = Utils.parseNumber(item[school]);
                         return sum + value;
                     }, 0);
                     
-                    pageGrandTotal += total;
+                    grandTotal += total;
                     cell.textContent = Utils.formatNumber(total);
                     totalRow.appendChild(cell);
                 });
                 
                 // 添加单品总册数合计
-                const varietyTotalCell = document.createElement('td');
-                varietyTotalCell.className = 'py-1 px-2 border border-gray-300 text-xs font-medium text-right bg-blue-100';
-                varietyTotalCell.textContent = Utils.formatNumber(pageGrandTotal);
-                totalRow.appendChild(varietyTotalCell);
+                const totalVarietyCell = document.createElement('td');
+                totalVarietyCell.className = 'py-1 px-2 border border-gray-300 text-xs text-right font-medium bg-blue-200';
+                totalVarietyCell.textContent = Utils.formatNumber(grandTotal);
+                totalRow.appendChild(totalVarietyCell);
+                
+                return totalRow;
+            }
+            
+            // 创建转置模式小计行
+            createTransposedSubtotalRow(subjects, currentPageSchools, schoolData) {
+                if (!currentPageSchools || currentPageSchools.length === 0) return null;
+                
+                const subtotalRow = document.createElement('tr');
+                subtotalRow.className = 'page-subtotal-row fade-in bg-blue-100';
+                
+                const subtotalLabelCell = document.createElement('td');
+                subtotalLabelCell.className = 'py-1 px-2 border border-gray-300 text-xs font-medium column-width-fixed sticky-first-column';
+                subtotalLabelCell.textContent = '小计';
+                subtotalRow.appendChild(subtotalLabelCell);
+                
+                let pageTotal = 0;
+                
+                // 计算当前页每个教材科目的小计
+                subjects.forEach(subject => {
+                    const cell = document.createElement('td');
+                    cell.className = 'py-1 px-2 border border-gray-300 text-xs font-medium text-right';
+                    
+                    let subtotal = 0;
+                    currentPageSchools.forEach(school => {
+                        const value = schoolData[school].subjects[subject];
+                        if (value) {
+                            subtotal += Utils.parseNumber(value);
+                        }
+                    });
+                    
+                    pageTotal += subtotal;
+                    cell.textContent = Utils.formatNumber(subtotal);
+                    subtotalRow.appendChild(cell);
+                });
+                
+                // 添加当前页单品总册数小计
+                const subtotalVarietyCell = document.createElement('td');
+                subtotalVarietyCell.className = 'py-1 px-2 border border-gray-300 text-xs text-right font-medium bg-blue-100';
+                subtotalVarietyCell.textContent = Utils.formatNumber(pageTotal);
+                subtotalRow.appendChild(subtotalVarietyCell);
+                
+                return subtotalRow;
+            }
+            
+            // 创建转置模式合计行
+            createTransposedTotalRow(subjects, schools, schoolData) {
+                if (schools.length === 0) return null;
+                
+                const totalRow = document.createElement('tr');
+                totalRow.className = 'grand-total-row fade-in bg-blue-200';
+                
+                const totalLabelCell = document.createElement('td');
+                totalLabelCell.className = 'py-1 px-2 border border-gray-300 text-xs font-medium column-width-fixed sticky-first-column';
+                totalLabelCell.textContent = '合计';
+                totalRow.appendChild(totalLabelCell);
+                
+                let grandTotal = 0;
+                
+                // 计算每个教材科目的合计
+                subjects.forEach(subject => {
+                    const cell = document.createElement('td');
+                    cell.className = 'py-1 px-2 border border-gray-300 text-xs font-medium text-right';
+                    
+                    let total = 0;
+                    schools.forEach(school => {
+                        const value = schoolData[school].subjects[subject];
+                        if (value) {
+                            total += Utils.parseNumber(value);
+                        }
+                    });
+                    
+                    grandTotal += total;
+                    cell.textContent = Utils.formatNumber(total);
+                    totalRow.appendChild(cell);
+                });
+                
+                // 添加单品总册数合计
+                const totalVarietyCell = document.createElement('td');
+                totalVarietyCell.className = 'py-1 px-2 border border-gray-300 text-xs text-right font-medium bg-blue-200';
+                totalVarietyCell.textContent = Utils.formatNumber(grandTotal);
+                totalRow.appendChild(totalVarietyCell);
                 
                 return totalRow;
             }
             
             // 渲染空状态
             renderEmptyState() {
+                this.elements.tableBody.innerHTML = '';
+                
                 const emptyRow = document.createElement('tr');
                 
                 // 计算列数（教材科目列 + 学校列数）
@@ -1219,96 +2064,199 @@
                         </td>
                     `;
                 }
-                this.tableBody.appendChild(emptyRow);
+                this.elements.tableBody.appendChild(emptyRow);
             }
             
-            // 更新表头
+            // 更新表头 - 最终优化版本，确保与数据完全同步
             updateTableHeaders() {
-                // 清空现有的表头
-                const headerRow = this.tableHeader.querySelector('tr');
-                headerRow.innerHTML = '';
-                
-                if (this.isTransposed) {
-                    // 转置模式表头：学校 | 教材科目1 | 教材科目2 | ... | 单品总册数
-                    const schoolTh = document.createElement('th');
-                    schoolTh.className = 'py-2 px-2 border border-blue-500 text-left font-semibold text-xs';
-                    schoolTh.textContent = '学校';
-                    headerRow.appendChild(schoolTh);
+                try {
+                    // 清空现有的表头
+                    const headerRow = this.elements.tableHeader.querySelector('tr');
+                    headerRow.innerHTML = '';
+                    headerRow.className = 'row-height-fixed sticky-header'; // 添加固定行样式
                     
-                    // 获取所有唯一的教材科目
-                    const subjects = [...new Set(this.bookData.map(item => item.subject).filter(subject => subject))];
-                    subjects.forEach(subject => {
-                        const th = document.createElement('th');
-                        th.className = 'py-2 px-2 border border-blue-500 text-left font-semibold text-xs';
-                        th.textContent = subject;
-                        headerRow.appendChild(th);
-                    });
+                    if (this.isTransposed) {
+                        // 转置模式表头：学校 | 教材科目1 | 教材科目2 | ... | 单品总册数
+                        const schoolTh = document.createElement('th');
+                        schoolTh.className = 'py-2 px-2 border border-blue-500 text-left font-semibold text-xs column-width-fixed row-height-fixed sticky-first-column';
+                        schoolTh.textContent = '学校';
+                        schoolTh.style.width = '96px'; // 固定宽度（六个汉字）
+                        schoolTh.style.minWidth = '96px'; // 最小宽度（六个汉字）
+                        schoolTh.style.maxWidth = '96px'; // 最大宽度（六个汉字）
+                        headerRow.appendChild(schoolTh);
+                        
+                        // 获取所有唯一的教材科目
+                        const subjects = [...new Set(this.bookData.map(item => item.subject).filter(subject => subject))];
+                        subjects.forEach(subject => {
+                            const th = document.createElement('th');
+                            th.className = 'py-2 px-2 border border-blue-500 text-left font-semibold text-xs column-width-fixed row-height-fixed';
+                            th.textContent = subject;
+                            th.setAttribute('data-subject', subject); // 添加数据属性用于匹配
+                            th.style.width = '96px'; // 固定宽度（六个汉字）
+                            th.style.minWidth = '96px'; // 最小宽度（六个汉字）
+                            th.style.maxWidth = '96px'; // 最大宽度（六个汉字）
+                            headerRow.appendChild(th);
+                        });
+                        
+                        // 添加学校总册数列（转置模式下）
+                        const varietyTotalTh = document.createElement('th');
+                        varietyTotalTh.className = 'py-2 px-2 border border-blue-500 text-left font-semibold text-xs bg-blue-700 column-width-fixed row-height-fixed';
+                        varietyTotalTh.textContent = '学校总册数';
+                        varietyTotalTh.setAttribute('data-total', 'school'); // 添加数据属性标识
+                        varietyTotalTh.style.width = '96px'; // 固定宽度（六个汉字）
+                        varietyTotalTh.style.minWidth = '96px'; // 最小宽度（六个汉字）
+                        varietyTotalTh.style.maxWidth = '96px'; // 最大宽度（六个汉字）
+                        headerRow.appendChild(varietyTotalTh);
+                    } else {
+                        // 正常模式表头：教材科目 | 学校1 | 学校2 | ... | 单品总册数
+                        
+                        // 使用原始表头的第一列作为教材科目列标题
+                        const subjectHeaderText = this.originalHeaders && this.originalHeaders.length > 0 ? this.originalHeaders[0] : '教材科目';
+                        const subjectTh = document.createElement('th');
+                        subjectTh.className = 'py-2 px-2 border border-blue-500 text-left font-semibold text-xs column-width-fixed row-height-fixed sticky-first-column';
+                        subjectTh.textContent = subjectHeaderText;
+                        subjectTh.setAttribute('data-header-type', 'subject'); // 添加数据属性标识
+                        subjectTh.style.width = '96px'; // 固定宽度（六个汉字）
+                        subjectTh.style.minWidth = '96px'; // 最小宽度（六个汉字）
+                        subjectTh.style.maxWidth = '96px'; // 最大宽度（六个汉字）
+                        headerRow.appendChild(subjectTh);
+                        
+                        // 添加学校列表头 - 使用原始表头确保严格对应
+                        this.schoolHeaders.forEach((school, index) => {
+                            const th = document.createElement('th');
+                            th.className = 'py-2 px-2 border border-blue-500 text-left font-semibold text-xs column-width-fixed row-height-fixed';
+                            th.textContent = school;
+                            th.setAttribute('data-school', school); // 添加数据属性用于匹配
+                            th.setAttribute('data-index', index); // 添加索引用于严格对应
+                            th.style.width = '96px'; // 固定宽度（六个汉字）
+                            th.style.minWidth = '96px'; // 最小宽度（六个汉字）
+                            th.style.maxWidth = '96px'; // 最大宽度（六个汉字）
+                            headerRow.appendChild(th);
+                        });
+                        
+                        // 添加单品总册数列
+                        const varietyTotalTh = document.createElement('th');
+                        varietyTotalTh.className = 'py-2 px-2 border border-blue-500 text-left font-semibold text-xs bg-blue-700 column-width-fixed row-height-fixed';
+                        varietyTotalTh.textContent = '单品总册数';
+                        varietyTotalTh.setAttribute('data-total', 'variety'); // 添加数据属性标识
+                        varietyTotalTh.style.width = '96px'; // 固定宽度（六个汉字）
+                        varietyTotalTh.style.minWidth = '96px'; // 最小宽度（六个汉字）
+                        varietyTotalTh.style.maxWidth = '96px'; // 最大宽度（六个汉字）
+                        headerRow.appendChild(varietyTotalTh);
+                    }
                     
-                    // 添加学校总册数列（转置模式下）
-                    const varietyTotalTh = document.createElement('th');
-                    varietyTotalTh.className = 'py-2 px-2 border border-blue-500 text-left font-semibold text-xs bg-blue-700';
-                    varietyTotalTh.textContent = '学校总册数';
-                    headerRow.appendChild(varietyTotalTh);
-                } else {
-                    // 正常模式表头：教材科目 | 学校1 | 学校2 | ... | 单品总册数
+                    // 重置表头的transform，确保位置正确
+                    this.elements.tableHeader.style.transform = 'translateX(0)';
                     
-                    const subjectTh = document.createElement('th');
-                    subjectTh.className = 'py-2 px-2 border border-blue-500 text-left font-semibold text-xs';
-                    subjectTh.textContent = '教材科目';
-                    headerRow.appendChild(subjectTh);
+                    // 确保表头容器重新计算宽度
+                    setTimeout(() => {
+                        const headerContainer = this.elements.tableHeaderContainer;
+                        const bodyContainer = this.elements.tableBodyContainer;
+                        if (headerContainer && bodyContainer) {
+                            // 强制重新计算宽度
+                            headerContainer.style.width = bodyContainer.offsetWidth + 'px';
+                            bodyContainer.style.width = 'auto';
+                            
+                            // 触发重排
+                            void headerContainer.offsetWidth;
+                            void bodyContainer.offsetWidth;
+                            
+                            // 确保表头和表体宽度一致
+                            const headerWidth = headerContainer.offsetWidth;
+                            bodyContainer.style.minWidth = headerWidth + 'px';
+                            
+                            // 强制设置表格容器的宽度
+                            const tableContainer = this.elements.tableContainer;
+                            if (tableContainer) {
+                                tableContainer.style.width = 'auto';
+                                void tableContainer.offsetWidth;
+                            }
+                            
+                            // 确保表头和表体列宽完全一致
+                            this.syncColumnWidths();
+                        }
+                    }, 100);
                     
-                    // 添加学校列表头
-                    this.schoolHeaders.forEach(school => {
-                        const th = document.createElement('th');
-                        th.className = 'py-2 px-2 border border-blue-500 text-left font-semibold text-xs';
-                        th.textContent = school;
-                        headerRow.appendChild(th);
-                    });
-                    
-                    // 添加单品总册数列（正常模式下）
-                    const varietyTotalTh = document.createElement('th');
-                    varietyTotalTh.className = 'py-2 px-2 border border-blue-500 text-left font-semibold text-xs bg-blue-700';
-                    varietyTotalTh.textContent = '单品总册数';
-                    headerRow.appendChild(varietyTotalTh);
+                    // 标记表头已更新
+                    this.headersUpdated = true;
+                } catch (error) {
+                    console.error('Error updating table headers:', error);
+                    this.headersUpdated = false;
                 }
             }
             
             // 更新分页信息
             updatePaginationInfo() {
-                const totalPages = Math.ceil(this.filteredData.length / this.itemsPerPage);
-                const startIndex = (this.currentPage - 1) * this.itemsPerPage + 1;
-                const endIndex = Math.min(this.currentPage * this.itemsPerPage, this.filteredData.length);
+                // 确保使用正确的数据长度进行计算
+                const dataLength = this.filteredData.length;
+                const totalPages = Math.ceil(dataLength / this.itemsPerPage);
                 
-                this.currentRangeElement.textContent = this.filteredData.length > 0 ? `${startIndex}-${endIndex}` : '0-0';
-                this.totalRecordsElement.textContent = this.filteredData.length;
-                this.currentPageElement.textContent = this.filteredData.length > 0 ? this.currentPage : '0';
-                this.totalPagesElement.textContent = totalPages > 0 ? totalPages : '0';
-                
-                // 禁用/启用分页按钮
-                this.prevPageBtn.disabled = this.currentPage === 1 || this.filteredData.length === 0;
-                this.nextPageBtn.disabled = this.currentPage === totalPages || this.filteredData.length === 0;
-                
-                if (this.prevPageBtn.disabled) {
-                    this.prevPageBtn.classList.add('opacity-50', 'cursor-not-allowed');
-                } else {
-                    this.prevPageBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                // 确保当前页码有效
+                if (this.currentPage > totalPages && totalPages > 0) {
+                    this.currentPage = totalPages;
                 }
                 
-                if (this.nextPageBtn.disabled) {
-                    this.nextPageBtn.classList.add('opacity-50', 'cursor-not-allowed');
-                } else {
-                    this.nextPageBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                const startIndex = dataLength > 0 ? (this.currentPage - 1) * this.itemsPerPage + 1 : 0;
+                const endIndex = Math.min(this.currentPage * this.itemsPerPage, dataLength);
+                
+                // 更新显示的分页信息
+                if (this.elements.currentRangeElement) {
+                    this.elements.currentRangeElement.textContent = dataLength > 0 ? `${startIndex}-${endIndex}` : '0-0';
+                }
+                if (this.elements.totalRecordsElement) {
+                    this.elements.totalRecordsElement.textContent = dataLength;
+                }
+                if (this.elements.currentPageElement) {
+                    this.elements.currentPageElement.textContent = dataLength > 0 ? this.currentPage : '0';
+                }
+                if (this.elements.totalPagesElement) {
+                    this.elements.totalPagesElement.textContent = totalPages > 0 ? totalPages : '0';
+                }
+                
+                // 禁用/启用分页按钮
+                const prevDisabled = this.currentPage === 1 || dataLength === 0;
+                const nextDisabled = this.currentPage === totalPages || dataLength === 0;
+                
+                if (this.elements.prevPageBtn) {
+                    this.elements.prevPageBtn.disabled = prevDisabled;
+                    if (prevDisabled) {
+                        this.elements.prevPageBtn.classList.add('opacity-50', 'cursor-not-allowed');
+                    } else {
+                        this.elements.prevPageBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                    }
+                }
+                
+                if (this.elements.nextPageBtn) {
+                    this.elements.nextPageBtn.disabled = nextDisabled;
+                    if (nextDisabled) {
+                        this.elements.nextPageBtn.classList.add('opacity-50', 'cursor-not-allowed');
+                    } else {
+                        this.elements.nextPageBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                    }
                 }
             }
             
-            // 更新统计信息
-            updateStatistics() {
-                // 优化：使用缓存的统计结果提高性能
+            // 计算统计信息（使用缓存优化）
+            calculateStatistics() {
+                // 生成缓存键
+                const cacheKey = `stats_${this.isTransposed}_${this.currentSchoolFilter}_${this.currentSearchTerm}_${this.filteredData.length}`;
+                
+                // 检查缓存中是否有结果
+                if (DataCache.has(cacheKey)) {
+                    return DataCache.get(cacheKey).value;
+                }
+                
+                // 如果没有缓存，计算统计信息
+                const stats = {
+                    totalVariety: 0,
+                    totalCopies: 0,
+                    totalSchools: 0
+                };
+                
                 if (this.filteredData.length === 0) {
-                    this.totalVarietyElement.textContent = '0';
-                    this.totalCopiesElement.textContent = '0';
-                    this.totalVarietyCopiesElement.textContent = '0';
-                    return;
+                    // 缓存空结果
+                    DataCache.set(cacheKey, stats);
+                    return stats;
                 }
                 
                 // 确定当前需要统计的学校列表
@@ -1324,59 +2272,55 @@
                     schoolsToCount = [this.currentSchoolFilter];
                 }
                 
-                // 计算总册数（所有学校的合计）
+                // 使用更高效的方式计算统计信息
+                // 一次性遍历数据，计算所有统计信息
                 let totalCopies = 0;
+                let totalVarietyCopies = 0;
+                const schoolDataCount = new Map();
+                const varietyDataCount = new Set();
+                
+                // 初始化学校数据计数
                 schoolsToCount.forEach(school => {
-                    const schoolTotal = this.filteredData.reduce((sum, item) => {
-                        const value = Utils.parseNumber(item[school]);
-                        return sum + value;
-                    }, 0);
-                    totalCopies += schoolTotal;
+                    schoolDataCount.set(school, false);
                 });
                 
-                // 计算单品总册数（每行的合计之和）
-                let totalVarietyCopies = 0;
+                // 遍历数据，计算统计信息
                 this.filteredData.forEach(item => {
                     let rowTotal = 0;
+                    let hasDataInRow = false;
+                    
                     schoolsToCount.forEach(school => {
                         const value = Utils.parseNumber(item[school]);
-                        rowTotal += value;
-                    });
-                    totalVarietyCopies += rowTotal;
-                });
-                
-                // 计算不为空的学校数量（有数据的学校数量）
-                let nonEmptySchoolCount = 0;
-                schoolsToCount.forEach(school => {
-                    const hasData = this.filteredData.some(item => {
-                        const value = Utils.parseNumber(item[school]);
-                        return !isNaN(value) && value > 0;
-                    });
-                    if (hasData) {
-                        nonEmptySchoolCount++;
-                    }
-                });
-                
-                // 计算不为空的品种数量（有数据的品种数量）
-                let nonEmptyVarietyCount = 0;
-                this.filteredData.forEach(item => {
-                    let hasData = false;
-                    schoolsToCount.forEach(school => {
-                        const value = Utils.parseNumber(item[school]);
-                        if (!isNaN(value) && value > 0) {
-                            hasData = true;
+                        
+                        if (!isNaN(value)) {
+                            rowTotal += value;
+                            totalCopies += value;
+                            
+                            // 检查学校是否有数据
+                            if (value > 0) {
+                                schoolDataCount.set(school, true);
+                                hasDataInRow = true;
+                            }
                         }
                     });
-                    if (hasData) {
-                        nonEmptyVarietyCount++;
+                    
+                    totalVarietyCopies += rowTotal;
+                    
+                    // 检查品种是否有数据
+                    if (hasDataInRow) {
+                        varietyDataCount.add(item.subject);
                     }
                 });
+                
+                // 计算不为空的学校数量和品种数量
+                const nonEmptySchoolCount = Array.from(schoolDataCount.values()).filter(Boolean).length;
+                const nonEmptyVarietyCount = varietyDataCount.size;
                 
                 // 在转置模式下，总册数和学校总数的含义互换
                 if (this.isTransposed) {
                     // 转置模式：总册数显示单品总册数，学校总数显示学校的合计数
-                    this.totalCopiesLabel.textContent = '总册数:';
-                    this.totalVarietyCopiesLabel.textContent = '学校总数:';
+                    stats.totalCopiesLabel = '总册数:';
+                    stats.totalSchoolsLabel = '学校总数:';
                     
                     // 如果在转置模式下选择了特定学校，只计算该学校的统计数据
                     if (this.currentSchoolFilter && this.schoolHeaders.includes(this.currentSchoolFilter)) {
@@ -1393,35 +2337,57 @@
                         }).length;
                         
                         // 总册数显示选中学校的总册数，学校总数显示为1（表示选中了1个学校）
-                        this.totalCopiesElement.textContent = Utils.formatNumber(selectedSchoolTotal);
-                        this.totalVarietyCopiesElement.textContent = '1';
+                        stats.totalCopies = selectedSchoolTotal;
+                        stats.totalSchools = 1;
                         
                         // 总品种数显示选中学校中有数据的品种数量
-                        this.totalVarietyElement.textContent = selectedSchoolNonEmptyVarieties;
+                        stats.totalVariety = selectedSchoolNonEmptyVarieties;
                     } else {
                         // 没有选择特定学校时，显示所有匹配学校的统计数据
-                        this.totalCopiesElement.textContent = Utils.formatNumber(totalVarietyCopies);
+                        stats.totalCopies = totalVarietyCopies;
                         
                         // 如果有搜索结果，显示匹配的学校数量，否则显示所有不为空的学校数量
                         if (this._matchingSchools) {
-                            this.totalVarietyCopiesElement.textContent = Utils.formatNumber(this._matchingSchools.length);
+                            stats.totalSchools = this._matchingSchools.length;
                         } else {
-                            this.totalVarietyCopiesElement.textContent = Utils.formatNumber(nonEmptySchoolCount);
+                            stats.totalSchools = nonEmptySchoolCount;
                         }
                         
                         // 总品种数显示不为空的品种数量
-                        this.totalVarietyElement.textContent = nonEmptyVarietyCount;
+                        stats.totalVariety = nonEmptyVarietyCount;
                     }
                 } else {
                     // 正常模式：保持原有显示，但学校总数显示不为空的学校数量
-                    this.totalCopiesLabel.textContent = '总册数:';
-                    this.totalVarietyCopiesLabel.textContent = '学校总数:';
-                    this.totalCopiesElement.textContent = Utils.formatNumber(totalCopies);
-                    this.totalVarietyCopiesElement.textContent = Utils.formatNumber(nonEmptySchoolCount);
+                    stats.totalCopiesLabel = '总册数:';
+                    stats.totalSchoolsLabel = '学校总数:';
+                    stats.totalCopies = totalCopies;
+                    stats.totalSchools = nonEmptySchoolCount;
                     
                     // 总品种数显示不为空的品种数量
-                    this.totalVarietyElement.textContent = nonEmptyVarietyCount;
+                    stats.totalVariety = nonEmptyVarietyCount;
                 }
+                
+                // 缓存结果
+                DataCache.set(cacheKey, stats);
+                
+                return stats;
+            }
+            
+            // 更新统计信息
+            updateStatistics() {
+                PerformanceMonitor.start('updateStatistics');
+                
+                // 使用缓存的统计结果
+                const stats = this.calculateStatistics();
+                
+                // 更新DOM元素
+                this.elements.totalVarietyElement.textContent = Utils.formatNumber(stats.totalVariety);
+                this.elements.totalCopiesElement.textContent = Utils.formatNumber(stats.totalCopies);
+                this.elements.totalVarietyCopiesElement.textContent = Utils.formatNumber(stats.totalSchools);
+                this.elements.totalCopiesLabel.textContent = stats.totalCopiesLabel || '总册数:';
+                this.elements.totalVarietyCopiesLabel.textContent = stats.totalSchoolsLabel || '学校总数:';
+                
+                PerformanceMonitor.end('updateStatistics');
             }
             
             // 按学校筛选
@@ -1430,6 +2396,9 @@
                 
                 // 清除搜索匹配的学校列表
                 this._matchingSchools = null;
+                
+                // 清除相关缓存
+                DataCache.clear();
                 
                 // 应用筛选
                 this.applyFilters();
@@ -1446,10 +2415,13 @@
             
             // 按教材科目筛选
             filterBySubject(subject) {
-                this.currentSchoolFilter = subject;
+                this.currentSubjectFilter = subject;
                 
                 // 清除搜索匹配的学校列表
                 this._matchingSchools = null;
+                
+                // 清除相关缓存
+                DataCache.clear();
                 
                 // 应用筛选
                 this.applyFilters();
@@ -1458,7 +2430,7 @@
                 document.querySelectorAll('.sidebar-item').forEach(item => {
                     item.classList.remove('active');
                 });
-                const activeButton = document.querySelector(`[data-school="${subject}"]`);
+                const activeButton = document.querySelector(`[data-subject="${subject}"]`);
                 if (activeButton) {
                     activeButton.classList.add('active');
                 }
@@ -1466,17 +2438,24 @@
             
             // 搜索功能
             performSearch() {
-                this.currentSearchTerm = this.searchInput.value.trim();
+                this.currentSearchTerm = this.elements.searchInput.value.trim();
+                
+                // 清除相关缓存
+                DataCache.clear();
+                
                 this.applyFilters();
             }
             
-            // 应用所有筛选
+            // 应用所有筛选 - 最终优化版本，确保表头和数据完全同步
             applyFilters() {
+                PerformanceMonitor.start('applyFilters');
+                
                 // 优化：使用缓存减少重复计算
-                const filterKey = `${this.currentSchoolFilter}_${this.currentSearchTerm}_${this.isTransposed}`;
+                const filterKey = `${this.currentSchoolFilter}_${this.currentSubjectFilter}_${this.currentSearchTerm}_${this.isTransposed}`;
                 
                 // 如果筛选条件没有变化，直接返回
                 if (this.lastFilterKey === filterKey) {
+                    PerformanceMonitor.end('applyFilters');
                     return;
                 }
                 
@@ -1505,8 +2484,16 @@
                     }
                 } else {
                     // 正常模式：根据选择的教材科目筛选数据
+                    if (this.currentSubjectFilter) {
+                        filtered = filtered.filter(item => item.subject === this.currentSubjectFilter);
+                    }
+                    
+                    // 正常模式：根据选择的学校筛选数据
                     if (this.currentSchoolFilter) {
-                        filtered = filtered.filter(item => item.subject === this.currentSchoolFilter);
+                        filtered = filtered.filter(item => {
+                            const value = Utils.parseNumber(item[this.currentSchoolFilter]);
+                            return !isNaN(value) && value > 0;
+                        });
                     }
                 }
                 
@@ -1519,11 +2506,36 @@
                 this.currentPage = 1;
                 
                 // 强制重新渲染表格和更新统计信息
-                this.renderTable();
-                this.updateStatistics();
-                
-                // 确保筛选按钮状态正确更新
-                this.updateSchoolFilters();
+                // 使用setTimeout确保异步执行，避免DOM更新冲突
+                setTimeout(() => {
+                    try {
+                        // 重置表头更新状态
+                        this.headersUpdated = false;
+                        
+                        // 先更新表头
+                        this.updateTableHeaders();
+                        
+                        // 等待表头更新完成后再渲染表格
+                        setTimeout(() => {
+                            if (this.headersUpdated) {
+                                // 只有在表头更新成功后才渲染表格
+                                this.renderTable();
+                                this.updateStatistics();
+                                this.updatePaginationInfo();
+                                
+                                // 确保筛选按钮状态正确更新
+                                this.updateSchoolFilters();
+                            } else {
+                                console.warn('Table headers update failed, skipping table render');
+                            }
+                            
+                            PerformanceMonitor.end('applyFilters');
+                        }, 150); // 增加等待时间，确保表头完全更新
+                    } catch (error) {
+                        console.error('Error in applyFilters:', error);
+                        PerformanceMonitor.end('applyFilters');
+                    }
+                }, 0);
             }
             
             // 按搜索词筛选数据
@@ -1569,10 +2581,12 @@
             
             // 清除搜索
             clearSearch() {
-                this.searchInput.value = '';
+                this.elements.searchInput.value = '';
                 this.currentSearchTerm = '';
                 // 清除匹配的学校列表
                 this._matchingSchools = null;
+                // 清除相关缓存
+                DataCache.clear();
                 this.applyFilters();
             }
             
@@ -1580,6 +2594,8 @@
             previousPage() {
                 if (this.currentPage > 1) {
                     this.currentPage--;
+                    // 先更新分页信息，再渲染表格
+                    this.updatePaginationInfo();
                     this.renderTable();
                 }
             }
@@ -1588,13 +2604,17 @@
                 const totalPages = Math.ceil(this.filteredData.length / this.itemsPerPage);
                 if (this.currentPage < totalPages) {
                     this.currentPage++;
+                    // 先更新分页信息，再渲染表格
+                    this.updatePaginationInfo();
                     this.renderTable();
                 }
             }
             
             changePageSize() {
-                this.itemsPerPage = parseInt(this.pageSizeSelect.value);
+                this.itemsPerPage = parseInt(this.elements.pageSizeSelect.value);
                 this.currentPage = 1;
+                // 先更新分页信息，再渲染表格
+                this.updatePaginationInfo();
                 this.renderTable();
             }
             
@@ -1724,7 +2744,7 @@
                         
                         // 设置列宽
                         const wscols = [
-                            {wch: 20}, // 教材科目
+                            {wch: 15}, // 教材科目
                         ];
                         
                         // 为每个学校列设置宽度
@@ -1793,7 +2813,7 @@
                                 .page-total-row { background-color: #e5e7eb; font-weight: 600; }
                                 .grand-total-row { background-color: #dbeafe; font-weight: 700; }
                                 
-                                /* 打印页脚样式 - 已修改为包含"共几页"和数据中心信息 */
+                                /* 打印页脚样式 - 包含"共几页"和数据中心信息 */
                                 @page {
                                     @bottom-left {
                                         content: "第 " counter(page) " 页，共 " counter(pages) " 页";
@@ -1931,9 +2951,9 @@
                                 
                                 /* 优化表格列宽 */
                                 .column-width-fixed {
-                                    width: 120px;
-                                    min-width: 120px;
-                                    max-width: 120px;
+                                    width: 90px;
+                                    min-width: 90px;
+                                    max-width: 90px;
                                     word-break: break-all;
                                 }
                                 
@@ -2076,7 +3096,7 @@
                                              (this.currentSchoolFilter ? [this.currentSchoolFilter] : this.schoolHeaders);
                         
                         // 计算每页可以显示的科目数量
-                        const subjectsPerPage = 10; // 每页显示10个科目
+                        const subjectsPerPage = 15; // 每页显示15个科目，增加每页显示数量
                         const totalPages = Math.ceil(subjects.length / subjectsPerPage);
                         
                         // 分多页打印
@@ -2195,7 +3215,7 @@
                         // 正常模式打印：按教材科目显示
                         
                         // 计算每页可以显示的学校数量
-                        const schoolsPerPage = 10; // 每页显示10个学校
+                        const schoolsPerPage = 15; // 每页显示15个学校，增加每页显示数量
                         const totalPages = Math.ceil(this.schoolHeaders.length / schoolsPerPage);
                         
                         // 分多页打印
@@ -2339,15 +3359,15 @@
                                 <tbody>
                                     <tr>
                                         <td style="text-align: left; font-weight: 500;">总品种数</td>
-                                        <td style="text-align: right; font-weight: 600; color: #1e40af;">${this.totalVarietyElement.textContent}</td>
+                                        <td style="text-align: right; font-weight: 600; color: #1e40af;">${this.elements.totalVarietyElement.textContent}</td>
                                     </tr>
                                     <tr>
                                         <td style="text-align: left; font-weight: 500;">总册数</td>
-                                        <td style="text-align: right; font-weight: 600; color: #1e40af;">${this.totalCopiesElement.textContent}</td>
+                                        <td style="text-align: right; font-weight: 600; color: #1e40af;">${this.elements.totalCopiesElement.textContent}</td>
                                     </tr>
                                     <tr>
                                         <td style="text-align: left; font-weight: 500;">学校总数</td>
-                                        <td style="text-align: right; font-weight: 600; color: #1e40af;">${this.totalVarietyCopiesElement.textContent}</td>
+                                        <td style="text-align: right; font-weight: 600; color: #1e40af;">${this.elements.totalVarietyCopiesElement.textContent}</td>
                                     </tr>
                                     <tr>
                                         <td style="text-align: left; font-weight: 500;">总记录数</td>
@@ -2426,41 +3446,78 @@
             
             // 显示加载状态
             showLoading(text = '正在处理，请稍候...', showProgress = false, showCancel = false) {
-                this.loadingText.textContent = text;
-                this.loadingOverlay.classList.remove('hidden');
+                this.elements.loadingText.textContent = text;
+                this.elements.loadingOverlay.classList.remove('hidden');
                 
                 // 显示或隐藏进度条
                 if (showProgress) {
-                    this.progressBar.parentElement.classList.remove('hidden');
-                    this.progressText.parentElement.classList.remove('hidden');
-                    this.progressBar.style.width = '0%';
-                    this.progressText.textContent = '0%';
+                    this.elements.progressBar.parentElement.classList.remove('hidden');
+                    this.elements.progressText.parentElement.classList.remove('hidden');
+                    this.elements.progressBar.style.width = '0%';
+                    this.elements.progressText.textContent = '0%';
                 } else {
-                    this.progressBar.parentElement.classList.add('hidden');
-                    this.progressText.parentElement.classList.add('hidden');
+                    this.elements.progressBar.parentElement.classList.add('hidden');
+                    this.elements.progressText.parentElement.classList.add('hidden');
                 }
                 
                 // 显示或隐藏取消按钮
+                
+                // 显示或隐藏取消按钮
                 if (showCancel) {
-                    this.cancelImportBtn.classList.remove('hidden');
+                    this.elements.cancelImportBtn.classList.remove('hidden');
                 } else {
-                    this.cancelImportBtn.classList.add('hidden');
+                    this.elements.cancelImportBtn.classList.add('hidden');
                 }
             }
             
             // 更新进度条
             updateProgress(progress) {
                 const percentage = Math.min(Math.max(progress, 0), 100);
-                this.progressBar.style.width = `${percentage}%`;
-                this.progressText.textContent = `${Math.round(percentage)}%`;
+                this.elements.progressBar.style.width = `${percentage}%`;
+                this.elements.progressText.textContent = `${Math.round(percentage)}%`;
             }
             
             // 隐藏加载状态
             hideLoading() {
-                this.loadingOverlay.classList.add('hidden');
-                this.cancelImportBtn.classList.add('hidden');
+                this.elements.loadingOverlay.classList.add('hidden');
+                this.elements.cancelImportBtn.classList.add('hidden');
                 this.isImporting = false;
                 this.importAbortController = null;
+            }
+            
+            // 同步左右模块高度
+            syncModuleHeights() {
+                const sidebar = document.getElementById('sidebarContainer');
+                const mainContent = document.getElementById('mainContent');
+                const tableBodyContainer = document.getElementById('tableBodyContainer');
+                
+                if (sidebar && mainContent) {
+                    // 固定表体容器高度，确保导入前后一致 - 增加高度以显示更多行
+                    if (tableBodyContainer) {
+                        tableBodyContainer.style.height = '480px';
+                    }
+                    
+                    // 重置高度以获取真实高度
+                    sidebar.style.height = 'auto';
+                    mainContent.style.height = 'auto';
+                    
+                    // 等待DOM更新
+                    setTimeout(() => {
+                        const sidebarHeight = sidebar.offsetHeight;
+                        const mainContentHeight = mainContent.offsetHeight;
+                        
+                        // 设置相同的固定高度
+                        const targetHeight = Math.max(sidebarHeight, mainContentHeight, 600); // 最小600px
+                        sidebar.style.height = targetHeight + 'px';
+                        mainContent.style.height = targetHeight + 'px';
+                        
+                        // 确保flex容器也有足够高度
+                        const flexContainer = document.querySelector('.flex-container');
+                        if (flexContainer) {
+                            flexContainer.style.minHeight = targetHeight + 'px';
+                        }
+                    }, 100);
+                }
             }
             
             // 显示通知
@@ -2498,8 +3555,119 @@
             
             // 显示导入成功模态框
             showImportSuccessModal(message) {
-                this.importSuccessMessage.textContent = message;
-                this.importSuccessModal.classList.remove('hidden');
+                this.elements.importSuccessMessage.textContent = message;
+                this.elements.importSuccessModal.classList.remove('hidden');
+                
+                // 导入成功后延迟调整布局，确保水平滚动条正确显示
+                setTimeout(() => {
+                    this.adjustTableLayout();
+                    // 重新设置同步滚动，确保表头和表体同步
+                    this.setupSyncScroll();
+                    // 同步左右模块高度，确保布局一致
+                    this.syncModuleHeights();
+                }, 100);
+            }
+            
+            // 调整表格布局，确保水平滚动条正确显示
+            adjustTableLayout() {
+                const headerContainer = this.elements.tableHeaderContainer;
+                const bodyContainer = this.elements.tableBodyContainer;
+                const headerTable = document.getElementById('headerTable');
+                const bodyTable = this.elements.dataTable;
+                
+                if (headerContainer && bodyContainer && headerTable && bodyTable) {
+                    // 设置容器高度 - 减少顶部和底部的间距，增加表格可见区域
+                    const totalHeight = 'calc(100vh - 280px)';
+                    const headerHeight = headerContainer.offsetHeight;
+                    const bodyHeight = `calc(${totalHeight} - ${headerHeight}px)`;
+                    
+                    bodyContainer.style.maxHeight = bodyHeight;
+                    
+                    // 确保表头和表体列宽一致
+                    setTimeout(() => {
+                        const headerCells = headerTable.querySelectorAll('th');
+                        const bodyRows = bodyTable.querySelectorAll('tr');
+                        
+                        if (bodyRows.length > 0) {
+                            const bodyCells = bodyRows[0].querySelectorAll('td');
+                            
+                            headerCells.forEach((headerCell, index) => {
+                                if (bodyCells[index]) {
+                                    const headerWidth = headerCell.offsetWidth;
+                                    bodyCells[index].style.width = headerWidth + 'px';
+                                    bodyCells[index].style.minWidth = headerWidth + 'px';
+                                    bodyCells[index].style.maxWidth = headerWidth + 'px';
+                                }
+                            });
+                        }
+                    }, 0);
+                    
+                    // 触发重排
+                    void headerContainer.offsetWidth;
+                    void bodyContainer.offsetWidth;
+                }
+            }
+            
+            // 设置同步滚动 - 完全重写，确保只有一个滚动条且表头跟随滚动
+            setupSyncScroll() {
+                const headerContainer = this.elements.tableHeaderContainer;
+                const bodyContainer = this.elements.tableBodyContainer;
+                const tableHeader = this.elements.tableHeader;
+                
+                if (!headerContainer || !bodyContainer || !tableHeader) return;
+                
+                // 移除之前的事件监听器（如果存在）
+                if (this.syncScrollHandler) {
+                    bodyContainer.removeEventListener('scroll', this.syncScrollHandler);
+                }
+                
+                // 确保表头容器样式正确
+                headerContainer.style.overflow = 'hidden';
+                headerContainer.style.position = 'sticky';
+                headerContainer.style.top = '0';
+                headerContainer.style.zIndex = '10';
+                
+                // 创建新的同步滚动处理函数
+                this.syncScrollHandler = (e) => {
+                    // 当表体滚动时，同步表头的水平位置（除了第一列）
+                    if (tableHeader) {
+                        // 只对表头的非第一列应用transform
+                        const headerCells = tableHeader.querySelectorAll('th:not(:first-child)');
+                        headerCells.forEach(cell => {
+                            cell.style.transform = `translateX(-${e.target.scrollLeft}px)`;
+                        });
+                    }
+                    
+                    // 确保第一列的所有单元格都保持固定
+                    const firstColumnCells = document.querySelectorAll('.sticky-first-column');
+                    firstColumnCells.forEach(cell => {
+                        cell.style.position = 'sticky';
+                        cell.style.left = '0';
+                        cell.style.zIndex = '1';
+                        cell.style.transform = 'translateX(0)'; // 确保不跟随滚动
+                        cell.style.backgroundColor = getComputedStyle(cell).backgroundColor; // 确保背景色不透明
+                    });
+                };
+                
+                // 只添加表体的滚动事件监听器
+                bodyContainer.addEventListener('scroll', this.syncScrollHandler);
+                
+                // 确保初始化时表头和表体宽度一致
+                setTimeout(() => {
+                    if (bodyContainer && headerContainer) {
+                        headerContainer.style.width = bodyContainer.offsetWidth + 'px';
+                    }
+                    
+                    // 初始化第一列单元格的固定样式
+                    const firstColumnCells = document.querySelectorAll('.sticky-first-column');
+                    firstColumnCells.forEach(cell => {
+                        cell.style.position = 'sticky';
+                        cell.style.left = '0';
+                        cell.style.zIndex = '1';
+                        cell.style.transform = 'translateX(0)'; // 确保不跟随滚动
+                        cell.style.backgroundColor = getComputedStyle(cell).backgroundColor; // 确保背景色不透明
+                    });
+                }, 100);
             }
             
             // 动态更新筛选列表（根据转置状态切换显示内容）
@@ -2508,12 +3676,14 @@
                 this.clearSchoolFilters();
                 
                 // 更新全部按钮文本
-                const allButton = document.querySelector('[data-school=""]');
+                const allButton = document.querySelector('[data-subject=""]');
                 if (allButton) {
                     if (this.isTransposed) {
                         allButton.innerHTML = '<i class="fas fa-school mr-2 w-5 text-center text-blue-500"></i>全部学校';
+                        allButton.setAttribute('data-action', 'all-schools');
                     } else {
                         allButton.innerHTML = '<i class="fas fa-book mr-2 w-5 text-center text-blue-500"></i>全部科目';
+                        allButton.setAttribute('data-action', 'all-subjects');
                     }
                 }
                 
@@ -2521,22 +3691,22 @@
                     // 转置模式：显示学校筛选
                     this.schoolHeaders.forEach(school => {
                         const button = this.createFilterButton(school, 'school');
-                        this.schoolFilterContainer.appendChild(button);
+                        this.elements.schoolFilterContainer.appendChild(button);
                     });
                 } else {
                     // 正常模式：显示教材科目筛选
                     const subjects = [...new Set(this.bookData.map(item => item.subject).filter(subject => subject))];
                     subjects.forEach(subject => {
                         const button = this.createFilterButton(subject, 'subject');
-                        this.schoolFilterContainer.appendChild(button);
+                        this.elements.schoolFilterContainer.appendChild(button);
                     });
                 }
             }
             
             // 清空筛选容器，但保留"全部"选项
             clearSchoolFilters() {
-                while (this.schoolFilterContainer.children.length > 1) {
-                    this.schoolFilterContainer.removeChild(this.schoolFilterContainer.lastChild);
+                while (this.elements.schoolFilterContainer.children.length > 1) {
+                    this.elements.schoolFilterContainer.removeChild(this.elements.schoolFilterContainer.lastChild);
                 }
             }
             
@@ -2581,7 +3751,6 @@
                         this.filterBySubject(value);
                         this.updateActiveSchoolFilter(button);
                     });
-
                 }
                 
                 return button;
@@ -2609,6 +3778,8 @@
                 try {
                     this.showLoading('正在导入数据...', true, true);
                     
+                    console.log('开始导入数据，数据量:', data.length);
+                    
                     // 分批处理数据
                     const batchSize = APP_CONSTANTS.BATCH_SIZE;
                     const totalItems = data.length;
@@ -2624,7 +3795,10 @@
                     this.currentPage = 1;
                     
                     // 清除搜索框
-                    this.searchInput.value = '';
+                    this.elements.searchInput.value = '';
+                    
+                    // 清除缓存
+                    DataCache.clear();
                     
                     // 分批处理数据
                     for (let batchIndex = 0; batchIndex < totalBatches; batchIndex++) {
@@ -2648,8 +3822,10 @@
                         this.updateProgress(progress);
                         
                         // 让出主线程，提高UI响应性
-                        await new Promise(resolve => setTimeout(resolve, 0));
+                        await Utils.delay(0);
                     }
+                    
+                    console.log('数据导入完成，总数据量:', this.bookData.length);
                     
                     // 隐藏加载状态
                     this.hideLoading();
@@ -2658,18 +3834,44 @@
                     document.querySelectorAll('.sidebar-item').forEach(item => {
                         item.classList.remove('active');
                     });
-                    document.querySelector('[data-school=""]').classList.add('active');
+                    const allBtn = document.querySelector('[data-subject=""]');
+                    if (allBtn) {
+                        allBtn.classList.add('active');
+                        // 根据当前模式更新按钮文本
+                        if (this.isTransposed) {
+                            allBtn.innerHTML = '<i class="fas fa-school mr-2 w-5 text-center text-blue-500"></i>全部学校';
+                        } else {
+                            allBtn.innerHTML = '<i class="fas fa-book mr-2 w-5 text-center text-blue-500"></i>全部科目';
+                        }
+                    }
+                    
+                    // 更新学校筛选列表
+                    this.updateSchoolFilters();
                     
                     // 应用筛选并渲染表格
                     this.applyFilters();
                     
-                    // 显示导入成功模态框
-                    this.showImportSuccessModal(`成功导入 ${Utils.formatNumber(this.bookData.length)} 条数据，包含 ${this.schoolHeaders.length} 所学校`);
+                    // 同步左右模块高度，确保布局一致
+                    this.syncModuleHeights();
+                    
+                    // 延迟更新表头，确保数据已完全导入
+                    setTimeout(() => {
+                        this.updateTableHeaders();
+                        
+                        // 显示导入成功模态框
+                        this.showImportSuccessModal(`成功导入 ${Utils.formatNumber(this.bookData.length)} 条数据，包含 ${this.schoolHeaders.length} 所学校`);
+                        
+                        // 重置导入状态
+                        this.isImporting = false;
+                        
+                    }, 200);
                     
                 } catch (error) {
+                    console.error('导入过程中发生错误:', error);
                     if (!signal.aborted) {
                         this.hideLoading();
                         this.showNotification('导入失败: ' + error.message, 'error');
+                        this.isImporting = false;
                     }
                 }
             }
@@ -2681,151 +3883,6 @@
                 }
             }
             
-            // 渲染转置表格
-            renderTransposedTable(currentData, fragment) {
-                // 确保使用与导出功能相同的数据源
-                const dataToUse = this.filteredData.length > 0 ? this.filteredData : currentData;
-                
-                // 获取所有唯一的教材科目
-                const subjects = [...new Set(dataToUse.map(item => item.subject).filter(subject => subject))];
-                
-                // 按学校分组数据
-                const schoolData = {};
-                
-                // 确定要处理的学校列表（考虑搜索结果和筛选条件）
-                // 与导出功能保持完全一致的逻辑
-                const schoolsToProcess = this._matchingSchools && this._matchingSchools.length > 0 ? this._matchingSchools : 
-                                       (this.currentSchoolFilter ? [this.currentSchoolFilter] : this.schoolHeaders);
-                
-                // 初始化学校数据
-                schoolsToProcess.forEach(school => {
-                    schoolData[school] = {
-                        subjects: {},
-                        total: 0 // 学校总册数
-                    };
-                });
-                
-                // 填充数据并计算学校总册数
-                // 与导出功能保持完全一致的逻辑
-                schoolsToProcess.forEach(school => {
-                    subjects.forEach(subject => {
-                        const item = dataToUse.find(i => i.subject === subject);
-                        const value = item ? item[school] || '' : '';
-                        schoolData[school].subjects[subject] = value;
-                        
-                        // 累加学校总册数
-                        const numValue = Utils.parseNumber(value);
-                        if (!isNaN(numValue)) {
-                            schoolData[school].total += numValue;
-                        }
-                    });
-                });
-                
-                // 渲染每行（按学校）
-                let index = 0;
-                const schoolsToRender = schoolsToProcess;
-                
-                // 检查是否有学校需要渲染
-                if (schoolsToRender.length === 0) {
-                    // 如果没有学校需要渲染，显示空状态
-                    const emptyRow = document.createElement('tr');
-                    const colSpan = 1 + subjects.length + 1; // 学校列 + 科目列 + 合计列
-                    emptyRow.innerHTML = `
-                        <td colspan="${colSpan}" class="py-4 px-3 text-center border border-gray-300 text-gray-500 text-sm bg-gray-50">
-                            暂无符合条件的数据
-                        </td>
-                    `;
-                    fragment.appendChild(emptyRow);
-                    return;
-                }
-                
-                schoolsToRender.forEach(school => {
-                    const row = document.createElement('tr');
-                    const rowClass = index % 2 === 0 
-                        ? 'compact-row fade-in hover:bg-blue-50 transition-colors' 
-                        : 'compact-row fade-in hover:bg-blue-50 transition-colors bg-blue-50';
-                    row.className = rowClass;
-                    
-                    // 学校名称列
-                    const schoolCell = document.createElement('td');
-                    schoolCell.className = 'py-1 px-2 border border-gray-300 text-xs font-medium auto-font-size tooltip-cell';
-                    schoolCell.textContent = school;
-                    schoolCell.setAttribute('data-tooltip', school);
-                    this.adjustFontSize(schoolCell, school);
-                    row.appendChild(schoolCell);
-                    
-                    // 各教材科目列
-                    subjects.forEach(subject => {
-                        const cell = document.createElement('td');
-                        cell.className = 'py-1 px-2 border border-gray-300 text-xs text-right';
-                        
-                        const value = schoolData[school].subjects[subject] || '';
-                        
-                        // 如果值为空，添加红色背景样式
-                        if (value === '' || value === null || value === undefined) {
-                            cell.classList.add('empty-value-cell');
-                            cell.textContent = '空';
-                        } else {
-                            // 尝试将值转换为数字并格式化
-                            const numValue = Utils.parseNumber(value);
-                            if (!isNaN(numValue)) {
-                                cell.textContent = Utils.formatNumber(numValue);
-                            } else {
-                                cell.textContent = value;
-                            }
-                        }
-                        
-                        row.appendChild(cell);
-                    });
-                    
-                    // 添加单品总册数列（这里显示学校总册数）
-                    const varietyTotalCell = document.createElement('td');
-                    varietyTotalCell.className = 'py-1 px-2 border border-gray-300 text-xs text-right font-medium bg-blue-50';
-                    varietyTotalCell.textContent = Utils.formatNumber(schoolData[school].total);
-                    row.appendChild(varietyTotalCell);
-                    
-                    fragment.appendChild(row);
-                    index++;
-                });
-                
-                // 添加合计行
-                const totalRow = document.createElement('tr');
-                totalRow.className = 'page-total-row fade-in bg-blue-100';
-                
-                const totalLabelCell = document.createElement('td');
-                totalLabelCell.className = 'py-1 px-2 border border-gray-300 text-xs font-medium';
-                totalLabelCell.textContent = '合计';
-                totalRow.appendChild(totalLabelCell);
-                
-                let grandTotal = 0;
-                
-                // 计算每个教材科目的合计
-                subjects.forEach(subject => {
-                    const cell = document.createElement('td');
-                    cell.className = 'py-1 px-2 border border-gray-300 text-xs font-medium text-right';
-                    
-                    let total = 0;
-                    schoolsToProcess.forEach(school => {
-                        const value = schoolData[school].subjects[subject];
-                        if (value) {
-                            total += Utils.parseNumber(value);
-                        }
-                    });
-                    
-                    grandTotal += total;
-                    cell.textContent = Utils.formatNumber(total);
-                    totalRow.appendChild(cell);
-                });
-                
-                // 添加单品总册数合计
-                const totalVarietyCell = document.createElement('td');
-                totalVarietyCell.className = 'py-1 px-2 border border-gray-300 text-xs text-right font-medium bg-blue-100';
-                totalVarietyCell.textContent = Utils.formatNumber(grandTotal);
-                totalRow.appendChild(totalVarietyCell);
-                
-                fragment.appendChild(totalRow);
-            }
-            
             // 切换表格转置
             toggleTranspose() {
                 if (this.bookData.length === 0) {
@@ -2834,6 +3891,9 @@
                 }
                 
                 this.isTransposed = !this.isTransposed;
+                
+                // 清除相关缓存
+                DataCache.clear();
                 
                 // 更新转置按钮文本
                 const transposeBtn = document.getElementById('transposeBtn');
@@ -2847,17 +3907,87 @@
                     transposeBtn.classList.add('bg-indigo-500', 'hover:bg-indigo-600');
                 }
                 
+                // 更新全部按钮文本
+                const allBtn = document.querySelector('[data-subject=""]');
+                if (allBtn) {
+                    if (this.isTransposed) {
+                        allBtn.innerHTML = '<i class="fas fa-school mr-2 w-5 text-center text-blue-500"></i>全部学校';
+                    } else {
+                        allBtn.innerHTML = '<i class="fas fa-book mr-2 w-5 text-center text-blue-500"></i>全部科目';
+                    }
+                }
+                
                 // 更新表头
                 this.updateTableHeaders();
                 
                 // 重新渲染表格
                 this.renderTable();
                 
+                // 确保表头和表体列宽同步
+                setTimeout(() => {
+                    this.syncColumnWidths();
+                    // 重新设置同步滚动
+                    this.setupSyncScroll();
+                }, 200);
+                
                 // 更新学校筛选列表
                 this.updateSchoolFilters();
                 
                 // 显示状态提示
                 this.showNotification(this.isTransposed ? '已转置表格' : '已恢复表格', 'info');
+            }
+            
+            // 销毁应用实例，清理资源
+            destroy() {
+                this.cleanupEventListeners();
+                DataCache.clear();
+            }
+            
+            // 同步表头和表体的列宽
+            syncColumnWidths() {
+                try {
+                    const headerCells = this.elements.tableHeader.querySelectorAll('th');
+                    const bodyRows = this.elements.tableBody.querySelectorAll('tr');
+                    
+                    if (bodyRows.length === 0) return;
+                    
+                    const firstBodyRow = bodyRows[0];
+                    const bodyCells = firstBodyRow.querySelectorAll('td');
+                    
+                    // 确保表头和表体的列数一致
+                    if (headerCells.length !== bodyCells.length) {
+                        console.warn('表头和表体列数不一致，无法同步列宽');
+                        return;
+                    }
+                    
+                    // 同步每一列的宽度
+                    headerCells.forEach((headerCell, index) => {
+                        if (bodyCells[index]) {
+                            // 获取表头单元格的实际宽度
+                            const headerWidth = headerCell.offsetWidth;
+                            
+                            // 设置表体单元格的宽度
+                            bodyCells[index].style.width = headerWidth + 'px';
+                            bodyCells[index].style.minWidth = headerWidth + 'px';
+                            bodyCells[index].style.maxWidth = headerWidth + 'px';
+                            
+                            // 同时设置其他行的相同列
+                            for (let i = 1; i < bodyRows.length; i++) {
+                                const rowCells = bodyRows[i].querySelectorAll('td');
+                                if (rowCells[index]) {
+                                    rowCells[index].style.width = headerWidth + 'px';
+                                    rowCells[index].style.minWidth = headerWidth + 'px';
+                                    rowCells[index].style.maxWidth = headerWidth + 'px';
+                                }
+                            }
+                        }
+                    });
+                    
+                    // 触发重排以确保宽度生效
+                    void this.elements.tableBody.offsetWidth;
+                } catch (error) {
+                    console.error('Error syncing column widths:', error);
+                }
             }
         }
 
@@ -2873,7 +4003,7 @@
             adjustSidebarHeight();
             
             // 窗口大小改变时重新调整高度
-            window.addEventListener('resize', adjustSidebarHeight);
+            window.addEventListener('resize', Utils.debounce(adjustSidebarHeight, 200));
         });
         
         // 调整侧边栏和主内容区高度一致
@@ -2962,13 +4092,22 @@
 
         // 处理文件上传
         function handleFileUpload(event) {
+            console.log('文件上传处理函数被调用');
             const file = event.target.files[0];
-            if (!file) return;
+            if (!file) {
+                console.log('未选择文件');
+                return;
+            }
+            
+            console.log('选择的文件:', file.name);
             
             // 验证文件类型和大小
             if (!validateFile(file)) {
+                console.log('文件验证失败');
                 return;
             }
+            
+            console.log('文件验证通过');
             
             // 保存文件引用，用于后续处理
             window.currentImportFile = file;
@@ -2977,6 +4116,7 @@
             event.target.value = '';
             
             // 显示密码输入模态框
+            console.log('准备显示密码模态框');
             showPasswordModal();
         }
         
@@ -3023,7 +4163,10 @@
                             cellDates: true,
                             cellNF: false,
                             cellText: false,
-                            raw: false
+                            raw: false,
+                            bookVBA: false,
+                            bookSheets: false,
+                            bookProps: false
                         });
                         
                         // 获取第一个工作表
@@ -3032,8 +4175,13 @@
                         
                         // 转换为JSON，保留原始表头
                         const jsonData = XLSX.utils.sheet_to_json(worksheet, { 
-                            header: 1 // 保留原始表头
+                            header: 1, // 保留原始表头
+                            defval: '', // 空单元格使用空字符串
+                            range: 0 // 从第一行开始
                         });
+                        
+                        console.log('解析到的Excel数据:', jsonData);
+                        console.log('数据行数:', jsonData.length);
                         
                         // 检查数据是否为空
                         if (jsonData.length <= 1) {
@@ -3042,17 +4190,20 @@
                         
                         // 提取表头和数据
                         const headers = jsonData[0];
+                        console.log('表头:', headers);
                         
                         // 检查是否至少有2列（教材科目、至少一个学校）
-                        if (headers.length < 2) {
+                        if (!headers || headers.length < 2) {
                             throw new Error('Excel文件格式不正确，至少需要包含教材科目和一个学校列');
                         }
                         
                         // 固定第一列为教材科目
                         const subjectHeader = headers[0];
+                        console.log('科目表头:', subjectHeader);
                         
                         // 后面的列全部为学校名称
                         const schoolHeaders = headers.slice(1);
+                        console.log('学校表头数量:', schoolHeaders.length);
                         
                         // 检查是否有学校列
                         if (schoolHeaders.length === 0) {
@@ -3095,20 +4246,14 @@
                             throw new Error('Excel文件中没有找到有效数据');
                         }
                         
-                        // 保存学校表头
-                        window.app.schoolHeaders = schoolHeaders;
+                        // 保存学校表头和原始表头
+                        window.app.originalHeaders = headers; // 保存完整的原始表头
+                        window.app.schoolHeaders = schoolHeaders; // 保存学校表头
                         
-                        // 更新表头
-                        window.app.updateTableHeaders();
+                        console.log('准备导入数据，数据对象数量:', dataObjects.length);
                         
-                        // 隐藏加载状态
-                        window.app.hideLoading();
-                        
-                        // 导入数据
+                        // 导入数据 - importFromExcel 内部会处理加载状态和后续操作
                         window.app.importFromExcel(dataObjects);
-                        
-                        // 更新学校筛选列表
-                        window.app.updateSchoolFilters();
                         
                     } catch (error) {
                         handleImportError('处理文件失败: ' + error.message);
@@ -3136,6 +4281,8 @@
         
         // 显示密码输入模态框
         function showPasswordModal() {
+            console.log('显示密码模态框函数被调用');
+            
             // 获取模态框元素
             const passwordModal = document.getElementById('passwordModal');
             const passwordInput = document.getElementById('passwordInput');
@@ -3143,22 +4290,40 @@
             const confirmPasswordBtn = document.getElementById('confirmPasswordBtn');
             const cancelPasswordBtn = document.getElementById('cancelPasswordBtn');
             
+            console.log('模态框元素:', {
+                passwordModal: !!passwordModal,
+                passwordInput: !!passwordInput,
+                passwordError: !!passwordError,
+                confirmPasswordBtn: !!confirmPasswordBtn,
+                cancelPasswordBtn: !!cancelPasswordBtn
+            });
+            
+            if (!passwordModal) {
+                console.error('未找到密码模态框元素');
+                return;
+            }
+            
             // 重置输入和错误状态
             passwordInput.value = '';
             passwordError.classList.add('hidden');
             passwordInput.focus();
             
             // 显示模态框
+            console.log('显示密码模态框');
             passwordModal.classList.remove('hidden');
             
             // 确认按钮点击事件
             const handleConfirm = function() {
                 const password = passwordInput.value.trim();
+                console.log('输入的密码:', password);
+                console.log('正确密码:', APP_CONSTANTS.IMPORT_PASSWORD);
+                console.log('密码匹配:', password === APP_CONSTANTS.IMPORT_PASSWORD);
                 
                 // 验证密码
                 if (password === APP_CONSTANTS.IMPORT_PASSWORD) {
                     // 密码正确，隐藏模态框并处理文件
                     passwordModal.classList.add('hidden');
+                    console.log('密码正确，开始处理文件');
                     processFile(window.currentImportFile);
                     
                     // 移除事件监听器
@@ -3166,6 +4331,7 @@
                     cancelPasswordBtn.removeEventListener('click', handleCancel);
                 } else {
                     // 密码错误，显示错误信息
+                    console.log('密码错误');
                     passwordError.classList.remove('hidden');
                     passwordInput.select();
                 }
@@ -3192,6 +4358,13 @@
                 }
             });
         }
+        
+        // 页面卸载时清理资源
+        window.addEventListener('beforeunload', () => {
+            if (window.app) {
+                window.app.destroy();
+            }
+        });
     </script>
 </body>
 </html>
