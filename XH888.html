@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>包头新华数据管理平台</title>
+    <title>包头新华管理平台</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Font Awesome -->
@@ -139,7 +139,7 @@
             /* 打印页脚样式 - 已修改为包含"共几页" */
             @page {
                 @bottom-left {
-                    content: "包头市新华书店 - 第 " counter(page) " 页，共 " counter(pages) " 页";
+                    content: "包头新华管理平台 - 第 " counter(page) " 页，共 " counter(pages) " 页";
                     font-size: 10pt;
                     color: #666;
                 }
@@ -307,7 +307,7 @@
             min-height: 0; /* 允许内容溢出时收缩 */
         }
         
-        /* 优化学校筛选区域高度 */
+        /* 优化库房筛选区域高度 */
         #schoolFilterContainer {
             max-height: calc(100vh - 320px);
             overflow-y: auto;
@@ -315,7 +315,7 @@
             flex: 1; /* 允许占满可用空间 */
         }
         
-        /* 优化表格容器高度，使其与左侧学校筛选区域一致 */
+        /* 优化表格容器高度，使其与左侧库房筛选区域一致 */
         .scroll-container {
             max-height: calc(100vh - 320px); /* 调整减去的高度以匹配左侧 */
             overflow-y: auto;
@@ -523,7 +523,7 @@
     <nav class="bg-gradient-primary text-white p-4 shadow-lg no-print">
         <div class="container mx-auto flex flex-col md:flex-row justify-between items-center">
             <!-- 美化标题字体 -->
-            <h1 class="text-xl md:text-2xl font-bold text-shadow mb-2 md:mb-0 title-beautify">包头新华数据管理平台</h1>
+            <h1 class="text-xl md:text-2xl font-bold text-shadow mb-2 md:mb-0 title-beautify">包头新华管理平台</h1>
             <!-- 将时间放到最右侧 -->
             <div class="flex items-center justify-end w-full md:w-auto">
                 <span id="currentTime" class="text-sm md:text-base font-medium"></span>
@@ -536,7 +536,7 @@
         <div class="carousel-container shadow-lg">
             <!-- 轮播图片1 -->
             <div class="carousel-slide active">
-                <img src="https://wx1.sinaimg.cn/large/a67b36c3ly1hxftbz7ilbj20yw0jmn0v.jpg" alt="网格化管理系统">
+                <img src="https://5b0988e595225.cdn.sohucs.com/images/20180923/614bc69cfa594f1abb233da6b87b96db.jpeg" alt="网格化管理系统">
                 <div class="carousel-caption">
                     <h3 class="text-xl font-bold">全面的数据管理</h3>
                     <p></p>
@@ -545,7 +545,7 @@
             
             <!-- 轮播图片2 -->
             <div class="carousel-slide">
-                <img src="https://5b0988e595225.cdn.sohucs.com/images/20180923/614bc69cfa594f1abb233da6b87b96db.jpeg" alt="数据管理系统">
+                <img src="https://gips0.baidu.com/it/u=3860229528,721047818&fm=3074&app=3074&f=PNG?w=2560&h=1440" alt="数据管理系统">
                 <div class="carousel-caption">
                     <h3 class="text-xl font-bold">精准的数据分析</h3>
                     <p></p>
@@ -554,13 +554,13 @@
             
             <!-- 轮播图片3 -->
             <div class="carousel-slide">
-                <img src="https://www.xinhuabookstores.cn/upload/202104/1617942099.png" alt="信息管理平台">
+                <img src="https://bpic.588ku.com/video_library/cover/24/04/06/a75f382ef789bf643f4d4901a102736a_snapshot_t0.jpg" alt="信息管理平台">
                 <div class="carousel-caption">
                     <h3 class="text-xl font-bold">智能化信息管理</h3>
                     <p></p>
                 </div>
             </div>
-
+            
             <!-- 轮播控制箭头 -->
             <div class="carousel-arrow prev" onclick="changeSlide(-1)">
                 <i class="fas fa-chevron-left text-white"></i>
@@ -589,12 +589,12 @@
                     <i class="fas fa-filter mr-2 text-blue-500"></i>筛选
                 </h2>
                 
-                <!-- 学校筛选按钮组 -->
+                <!-- 库房筛选按钮组 -->
                 <div class="space-y-2 mb-4 bg-white rounded-lg p-2 shadow-sm" id="schoolFilterContainer">
                     <button data-school="" class="sidebar-item w-full text-left px-3 py-2 rounded hover:bg-blue-50 transition-colors active flex items-center">
-                        <i class="fas fa-school mr-2 w-5 text-center text-blue-500"></i>全部学校
+                        <i class="fas fa-school mr-2 w-5 text-center text-blue-500"></i>全部库房
                     </button>
-                    <!-- 学校筛选按钮将通过JavaScript动态生成 -->
+                    <!-- 库房筛选按钮将通过JavaScript动态生成 -->
                 </div>
 
                 <!-- 统计信息 -->
@@ -628,7 +628,7 @@
                         <div class="flex flex-col sm:flex-row items-center gap-2 w-full lg:w-auto">
                             <!-- 搜索框 - 缩短宽度 -->
                             <div class="relative w-full sm:w-48 md:w-56 flex-grow sm:flex-grow-0">
-                                <input type="text" id="searchInput" placeholder="搜索书名、订单号、书号..." 
+                                <input type="text" id="searchInput" placeholder="搜索书名、商品特征号、书号..." 
                                        class="w-full pl-9 pr-3 py-1.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-300 text-sm">
                                 <i class="fas fa-search absolute left-3 top-2.5 text-gray-400"></i>
                             </div>
@@ -671,16 +671,16 @@
                                 <!-- 表头 -->
                                 <thead id="tableHeader" class="bg-gradient-to-r from-blue-600 to-blue-700 text-white sticky top-0 z-10">
                                     <tr>
-                                        <th class="py-2 px-2 border border-blue-500 text-left font-semibold text-xs">学校</th>
-                                        <th class="py-2 px-2 border border-blue-500 text-left font-semibold text-xs">订单</th>
+                                        <th class="py-2 px-2 border border-blue-500 text-left font-semibold text-xs">库房</th>
+                                        <th class="py-2 px-2 border border-blue-500 text-left font-semibold text-xs">商品特征</th>
                                         <th class="py-2 px-2 border border-blue-500 text-left font-semibold text-xs">书号</th>
                                         <th class="py-2 px-2 border border-blue-500 text-left font-semibold text-xs">书名</th>
-                                        <th class="py-2 px-2 border border-blue-500 text-left font-semibold text-xs">作者</th>
-                                        <th class="py-2 px-2 border border-blue-500 text-left font-semibold text-xs">出版社</th>
+                                        <th class="py-2 px-2 border border-blue-500 text-left font-semibold text-xs">分类名称</th>
+                                        <th class="py-2 px-2 border border-blue-500 text-left font-semibold text-xs">版别</th>
                                         <th class="py-2 px-2 border border-blue-500 text-right font-semibold text-xs">定价</th>
                                         <th class="py-2 px-2 border border-blue-500 text-right font-semibold text-xs">册数</th>
                                         <th class="py-2 px-2 border border-blue-500 text-right font-semibold text-xs">码洋</th>
-                                        <th class="py-2 px-2 border border-blue-500 text-left font-semibold text-xs">日期</th>
+                                        <th class="py-2 px-2 border border-blue-500 text-left font-semibold text-xs">出版年月</th>
                                     </tr>
                                 </thead>
                                 <!-- 表体 -->
@@ -809,30 +809,30 @@
             
             // 系统支持的标准字段
             STANDARD_FIELDS: [
-                { id: '学校', name: '学校', required: true },
-                { id: '订单', name: '订单', required: true },
+                { id: '库房', name: '库房', required: true },
+                { id: '商品特征', name: '商品特征', required: true },
                 { id: '书号', name: '书号', required: true },
                 { id: '书名', name: '书名', required: true },
-                { id: '作者', name: '作者', required: false },
-                { id: '出版社', name: '出版社', required: false },
+                { id: '分类名称', name: '分类名称', required: false },
+                { id: '版别', name: '版别', required: false },
                 { id: '定价', name: '定价', required: true },
                 { id: '册数', name: '册数', required: true },
                 { id: '码洋', name: '码洋', required: true },
-                { id: '日期', name: '日期', required: false }
+                { id: '出版年月', name: '出版年月', required: false }
             ],
             
             // 常见的表头变体映射
             COMMON_HEADER_VARIANTS: {
-                '学校': ['学校', '学校名称', '学校名', '单位', '机构', '客户单位', '客户名称'],
-                '订单': ['订单', '订单号', '订单编号', '订单ID', '定单号', '订购单'],
+                '库房': ['核算单位', '库房名称', '库房名', '单位', '库房', '客户单位', '客户名称'],
+                '商品特征': ['商品特征', '商品特征号', '商品特征编号', '商品特征ID', '定单号', '订购单'],
                 '书号': ['书号', 'ISBN', 'ISBN号', '图书编号', '出版物号', '标准书号'],
                 '书名': ['书名', '图书名称', '书名全称', '书籍名称', '书的名称'],
-                '作者': ['作者', '著者', '编者', '作者名', '作者姓名'],
-                '出版社': ['出版社', '出版单位', '出版机构', '出版商', '出版公司'],
+                '分类名称': ['分类名称', '著者', '编者', '分类名称名', '分类名称姓名'],
+                '版别': ['版别', '出版单位', '出版机构', '出版商', '版别'],
                 '定价': ['定价', '价格', '单价', '原价', '售价', '金额'],
                 '册数': ['册数', '数量', '本数', '份数', '册', '本', '份'],
                 '码洋': ['码洋', '总金额', '合计金额', '总码洋', '总价', '金额合计', '合计'],
-                '日期': ['日期', '订单日期', '订购日期', '下单日期', '交易日期', '日期时间']
+                '出版年月': ['出版年月', '商品特征出版年月', '订购出版年月', '下单出版年月', '交易出版年月', '出版年月时间']
             },
             
             // 相似度阈值，用于自动匹配表头
@@ -889,7 +889,7 @@
                 });
             },
 
-            // 根据学校类型获取图标类
+            // 根据库房类型获取图标类
             getSchoolIconClass(school) {
                 if (school.includes('大学')) {
                     return 'fa-university';
@@ -990,18 +990,18 @@
                 return APP_CONSTANTS.COMMON_HEADER_VARIANTS[fieldId] || [fieldId];
             },
             
-            // 格式化日期
+            // 格式化出版年月
             formatDate(dateValue) {
                 if (!dateValue) return '';
                 
-                // 如果已经是日期字符串，直接返回
+                // 如果已经是出版年月字符串，直接返回
                 if (typeof dateValue === 'string' && /^\d{4}-\d{2}-\d{2}/.test(dateValue)) {
-                    return dateValue.split(' ')[0]; // 只保留日期部分
+                    return dateValue.split(' ')[0]; // 只保留出版年月部分
                 }
                 
                 // 如果是数字，尝试作为时间戳处理
                 if (typeof dateValue === 'number') {
-                    // Excel日期序列号转换（Excel的日期起始于1900年1月1日）
+                    // Excel出版年月序列号转换（Excel的出版年月起始于1900年1月1日）
                     if (dateValue > 25569) { // 25569是1970-01-01的Excel序列号
                         const timestamp = (dateValue - 25569) * 86400000;
                         const date = new Date(timestamp);
@@ -1014,7 +1014,7 @@
                     return dateValue.toISOString().split('T')[0];
                 }
                 
-                // 尝试解析各种日期格式
+                // 尝试解析各种出版年月格式
                 const dateFormats = [
                     /(\d{4})-(\d{1,2})-(\d{1,2})/, // YYYY-MM-DD
                     /(\d{1,2})\/(\d{1,2})\/(\d{4})/, // MM/DD/YYYY
@@ -1139,7 +1139,7 @@
                 // 取消导入按钮
                 this.cancelImportBtn.addEventListener('click', () => this.cancelImport());
                 
-                // 全部学校筛选按钮
+                // 全部库房筛选按钮
                 document.querySelector('[data-school=""]').addEventListener('click', () => {
                     this.filterBySchool('');
                     
@@ -1265,8 +1265,8 @@
                     // 获取字段值
                     let value = item[field.id] || '';
                     
-                    // 特殊处理定价和码洋字段，格式化显示
-                    if (field.id === '定价' || field.id === '码洋') {
+                    // 特殊处理码洋字段，格式化显示
+                    if (field.id === '码洋') {
                         const amount = Utils.parseNumber(value);
                         value = Utils.formatPrice(amount);
                     }
@@ -1310,8 +1310,8 @@
                     const td = document.createElement('td');
                     td.className = 'py-1 px-2 border border-gray-300 text-xs font-medium';
                     
-                    if (field.id === '学校') {
-                        // 在学校列显示"本页合计"
+                    if (field.id === '库房') {
+                        // 在库房列显示"本页合计"
                         td.textContent = '本页合计';
                         td.style.textAlign = 'center';
                     } else if (field.id === '册数') {
@@ -1350,7 +1350,7 @@
                 } else {
                     emptyRow.innerHTML = `
                         <td colspan="${colspan}" class="py-4 px-3 text-center border border-gray-300 text-gray-500 text-sm bg-gray-50">
-                            暂无符合条件的订单数据
+                            暂无符合条件的商品特征数据
                         </td>
                     `;
                 }
@@ -1444,7 +1444,7 @@
                 }
             }
             
-            // 按学校筛选
+            // 按库房筛选
             filterBySchool(school) {
                 this.currentSchoolFilter = school;
                 this.applyFilters();
@@ -1469,7 +1469,7 @@
                 // 保存当前筛选条件
                 this.lastFilterKey = filterKey;
                 
-                // 先应用学校筛选
+                // 先应用库房筛选
                 let filtered = [...this.bookData];
                 
                 if (this.currentSchoolFilter) {
@@ -1497,8 +1497,8 @@
                 // 获取筛选列表中的所有项
                 const filterItems = this.schoolFilterContainer.querySelectorAll('.sidebar-item');
                 
-                // 获取"学校"字段的Excel表头
-                const schoolHeader = this.headerMapping['学校'] || '学校';
+                // 获取"库房"字段的Excel表头
+                const schoolHeader = this.headerMapping['库房'] || '库房';
                 
                 // 更新"全部"选项的显示
                 const allItem = document.querySelector('[data-school=""]');
@@ -1520,9 +1520,9 @@
                 }
             }
             
-            // 按学校名称筛选数据
+            // 按库房名称筛选数据
             filterBySchoolName(data, schoolName) {
-                return data.filter(item => item.学校 === schoolName);
+                return data.filter(item => item.库房 === schoolName);
             }
             
             // 按搜索词筛选数据
@@ -1615,13 +1615,7 @@
                         const exportData = this.filteredData.map(item => {
                             const exportItem = {};
                             for (const [standardField, excelHeader] of Object.entries(exportMapping)) {
-                                // 特殊处理定价和码洋字段，确保保留两位小数
-                                if (standardField === '定价' || standardField === '码洋') {
-                                    const value = Utils.parseNumber(item[standardField]);
-                                    exportItem[excelHeader] = value.toFixed(2);
-                                } else {
-                                    exportItem[excelHeader] = item[standardField];
-                                }
+                                exportItem[excelHeader] = item[standardField];
                             }
                             return exportItem;
                         });
@@ -1635,19 +1629,14 @@
                         
                         // 为总计行设置值，只包含已匹配的列
                         for (const [standardField, excelHeader] of Object.entries(exportMapping)) {
-                            if (standardField === '学校') {
+                            if (standardField === '库房') {
                                 totalRow[excelHeader] = '总计';
-                            } else if (standardField === '订单') {
+                            } else if (standardField === '商品特征') {
                                 totalRow[excelHeader] = `${this.filteredData.length} 笔`;
                             } else if (standardField === '册数') {
                                 totalRow[excelHeader] = grandTotals.totalCopies;
                             } else if (standardField === '码洋') {
-                                // 确保码洋总计保留两位小数
-                                const amount = Utils.parseNumber(grandTotals.totalAmount.replace('¥', ''));
-                                totalRow[excelHeader] = `¥${amount.toFixed(2)}`;
-                            } else if (standardField === '定价') {
-                                // 定价总计留空
-                                totalRow[excelHeader] = '';
+                                totalRow[excelHeader] = grandTotals.totalAmount;
                             } else {
                                 // 其他字段留空
                                 totalRow[excelHeader] = '';
@@ -1658,21 +1647,21 @@
                         
                         const ws = XLSX.utils.json_to_sheet(exportData);
                         const wb = XLSX.utils.book_new();
-                        XLSX.utils.book_append_sheet(wb, ws, "书目订单");
+                        XLSX.utils.book_append_sheet(wb, ws, "书目商品特征");
                         
                         // 设置列宽，只包含已匹配的列
                         const wscols = [];
                         const columnWidths = {
-                            '学校': 15,
-                            '订单': 10,
+                            '库房': 15,
+                            '商品特征': 10,
                             '书号': 15,
                             '书名': 30,
-                            '作者': 10,
-                            '出版社': 15,
+                            '分类名称': 10,
+                            '版别': 15,
                             '定价': 10,
                             '册数': 10,
                             '码洋': 12,
-                            '日期': 10
+                            '出版年月': 10
                         };
                         
                         for (const [standardField, excelHeader] of Object.entries(exportMapping)) {
@@ -1682,9 +1671,9 @@
                         ws['!cols'] = wscols;
                         
                         // 根据查询条件生成文件名
-                        let fileName = "书目订单数据";
+                        let fileName = "书目商品特征数据";
                         
-                        // 如果有学校筛选条件，添加到文件名
+                        // 如果有库房筛选条件，添加到文件名
                         if (this.currentSchoolFilter) {
                             fileName += `_${this.currentSchoolFilter}`;
                         }
@@ -1698,7 +1687,7 @@
                             fileName += `_搜索_${searchTerm}`;
                         }
                         
-                        // 添加日期
+                        // 添加出版年月
                         const today = new Date();
                         const dateStr = today.toISOString().split('T')[0]; // YYYY-MM-DD
                         fileName += `_${dateStr}.xlsx`;
@@ -1756,7 +1745,7 @@
                                 /* 打印页脚样式 - 已修改为包含"共几页" */
                                 @page {
                                     @bottom-left {
-                                        content: "包头市新华书店 - 第 " counter(page) " 页，共 " counter(pages) " 页";
+                                        content: "包头新华管理平台 - 第 " counter(page) " 页，共 " counter(pages) " 页";
                                         font-size: 10pt;
                                         color: #666;
                                     }
@@ -1883,7 +1872,7 @@
                                 </div>
                                 <div class="page-info-item">
                                     <i class="fas fa-filter"></i>
-                                    <span>${this.currentSchoolFilter ? '筛选条件: ' + this.currentSchoolFilter : '全部'}</span>
+                                    <span>${this.currentSchoolFilter ? '库房筛选: ' + this.currentSchoolFilter : '全部库房'}</span>
                                 </div>
                             </div>
                             <div class="page-info">
@@ -1922,13 +1911,7 @@
                         
                         // 为每个已匹配的标准字段添加单元格
                         mappedFields.forEach((field, index) => {
-                            let value = item[field.id] || '';
-                            
-                            // 特殊处理定价和码洋字段，确保保留两位小数
-                            if (field.id === '定价' || field.id === '码洋') {
-                                const numValue = Utils.parseNumber(value);
-                                value = numValue.toFixed(2);
-                            }
+                            const value = item[field.id] || '';
                             
                             // 特殊处理数字字段的对齐方式
                             if (['定价', '册数', '码洋'].includes(field.id)) {
@@ -1946,19 +1929,15 @@
                     
                     // 为每个已匹配的标准字段添加单元格
                     mappedFields.forEach((field, index) => {
-                        if (field.id === '学校') {
-                            // 在学校列显示"总计"
+                        if (field.id === '库房') {
+                            // 在库房列显示"总计"
                             printContent += `<td style="text-align: center;">总计</td>`;
                         } else if (field.id === '册数') {
                             // 册数合计
                             printContent += `<td style="text-align: right;">${grandTotals.totalCopies}</td>`;
                         } else if (field.id === '码洋') {
-                            // 码洋合计，确保保留两位小数
-                            const amount = Utils.parseNumber(grandTotals.totalAmount.replace('¥', ''));
-                            printContent += `<td style="text-align: right;">¥${amount.toFixed(2)}</td>`;
-                        } else if (field.id === '定价') {
-                            // 定价总计留空
-                            printContent += `<td style="text-align: right;"></td>`;
+                            // 码洋合计
+                            printContent += `<td style="text-align: right;">${grandTotals.totalAmount}</td>`;
                         } else {
                             // 其他列留空
                             printContent += `<td></td>`;
@@ -1971,11 +1950,11 @@
                             </tbody>
                         </table>
                         
-                        <!-- 按学校统计部分 -->
+                        <!-- 按库房统计部分 -->
                         <div class="page-break-after"></div>
                         <div class="summary-page">
                             <div class="page-header">
-                                <div class="page-title">包头新华管理平台 </div>
+                                <div class="page-title">包头新华管理平台 - 单据统计</div>
                                 <div class="page-info">
                                     <div class="page-info-item">
                                         <i class="fas fa-clock"></i>
@@ -1983,17 +1962,17 @@
                                     </div>
                                     <div class="page-info-item">
                                         <i class="fas fa-chart-pie"></i>
-                                        <span>统计</span>
+                                        <span>数据分析报告</span>
                                     </div>
                                 </div>
                             </div>
                             
                             <div style="margin-top: 20px;">
-                                <div class="summary-title">单据统计</div>
+                                <div class="summary-title">按库房统计</div>
                                 <table class="stats-table">
                                     <thead>
                                         <tr>
-                                            <th>${printMapping['学校'] || '学校'}</th>
+                                            <th>${printMapping['库房'] || '库房'}</th>
                                             <th>品种数</th>
                                             <th>${printMapping['册数'] || '册数'}</th>
                                             <th>${printMapping['码洋'] || '码洋'}</th>
@@ -2003,10 +1982,10 @@
                                     <tbody>
                     `;
                     
-                    // 按学校统计
+                    // 按库房统计
                     const schoolStats = {};
                     this.filteredData.forEach(item => {
-                        const school = item.学校;
+                        const school = item.库房;
                         if (!schoolStats[school]) {
                             schoolStats[school] = {
                                 orders: 0,
@@ -2019,7 +1998,7 @@
                         schoolStats[school].amount += Utils.parseNumber(item.码洋);
                     });
                     
-                    // 添加学校统计行
+                    // 添加库房统计行
                     Object.keys(schoolStats).forEach(school => {
                         const stats = schoolStats[school];
                         const percentage = (stats.amount / Utils.parseNumber(grandTotals.totalAmount.replace('¥', '')) * 100).toFixed(2);
@@ -2049,7 +2028,7 @@
                         </div>
                         
                         <div style="margin-top: 30px; font-size: 10px; text-align: center; color: #666;">
-                            <p>包头新华数据管理平台</p>
+                            <p>包头新华管理平台 - 统计分析</p>
                         </div>
                     </div>
                     `;
@@ -2173,35 +2152,35 @@
                 }, APP_CONSTANTS.NOTIFICATION_DURATION);
             }
             
-            // 动态更新学校筛选列表
+            // 动态更新库房筛选列表
             updateSchoolFilters() {
-                // 获取所有不重复的学校名称
-                const schools = [...new Set(this.bookData.map(item => item.学校))];
+                // 获取所有不重复的库房名称
+                const schools = [...new Set(this.bookData.map(item => item.库房))];
                 
-                // 清空学校筛选容器，但保留"全部学校"选项
+                // 清空库房筛选容器，但保留"全部库房"选项
                 this.clearSchoolFilters();
                 
-                // 为每个学校创建筛选按钮
+                // 为每个库房创建筛选按钮
                 schools.forEach(school => {
                     const button = this.createSchoolFilterButton(school);
                     this.schoolFilterContainer.appendChild(button);
                 });
             }
             
-            // 清空学校筛选容器，但保留"全部学校"选项
+            // 清空库房筛选容器，但保留"全部库房"选项
             clearSchoolFilters() {
                 while (this.schoolFilterContainer.children.length > 1) {
                     this.schoolFilterContainer.removeChild(this.schoolFilterContainer.lastChild);
                 }
             }
             
-            // 创建学校筛选按钮
+            // 创建库房筛选按钮
             createSchoolFilterButton(school) {
                 const button = document.createElement('button');
                 button.className = 'sidebar-item w-full text-left px-3 py-2 rounded hover:bg-blue-50 transition-colors flex items-center';
                 button.setAttribute('data-school', school);
                 
-                // 根据学校类型选择图标
+                // 根据库房类型选择图标
                 const iconClass = Utils.getSchoolIconClass(school);
                 
                 button.innerHTML = `<i class="fas ${iconClass} mr-2 w-5 text-center"></i>${school}`;
@@ -2215,7 +2194,7 @@
                 return button;
             }
             
-            // 更新学校筛选激活状态
+            // 更新库房筛选激活状态
             updateActiveSchoolFilter(activeButton) {
                 document.querySelectorAll('.sidebar-item').forEach(item => {
                     item.classList.remove('active');
@@ -2281,7 +2260,7 @@
                         
                         // 如果是最后一批，更新UI
                         if (batchIndex === totalBatches - 1) {
-                            // 动态更新学校筛选列表
+                            // 动态更新库房筛选列表
                             this.updateSchoolFilters();
                             
                             // 重置侧边栏选中状态
@@ -2299,7 +2278,7 @@
                     }
                     
                     this.hideLoading();
-                    this.showNotification(`成功导入 ${Utils.formatNumber(this.bookData.length)} 条数据，包含 ${[...new Set(this.bookData.map(item => item.学校))].length} 所学校`, 'success');
+                    this.showNotification(`成功导入 ${Utils.formatNumber(this.bookData.length)} 条数据，包含 ${[...new Set(this.bookData.map(item => item.库房))].length} 所库房`, 'success');
                 } catch (error) {
                     if (!signal.aborted) {
                         this.hideLoading();
@@ -2321,7 +2300,7 @@
                 for (const [standardField, excelField] of Object.entries(mapping)) {
                     if (excelField && excelField !== 'none' && row.hasOwnProperty(excelField)) {
                         // 根据字段类型进行适当的格式化
-                        if (standardField === '日期') {
+                        if (standardField === '出版年月') {
                             mappedRow[standardField] = Utils.formatDate(row[excelField]);
                         } else if (['定价', '册数', '码洋'].includes(standardField)) {
                             // 处理数字字段，去除千位分隔符
@@ -2670,10 +2649,10 @@
                 // 设置侧边栏高度与主内容区一致
                 sidebarContainer.style.height = `${mainContentHeight}px`;
                 
-                // 调整学校筛选区域的最大高度
+                // 调整库房筛选区域的最大高度
                 const schoolFilterContainer = document.getElementById('schoolFilterContainer');
                 if (schoolFilterContainer) {
-                    // 计算学校筛选区域的最大高度（减去标题和统计信息的高度）
+                    // 计算库房筛选区域的最大高度（减去标题和统计信息的高度）
                     const headerHeight = document.querySelector('.sidebar-container h2').offsetHeight;
                     const statsHeight = document.querySelector('.sidebar-container .mt-4').offsetHeight;
                     const padding = 32; // 考虑内边距
@@ -2964,5 +2943,4 @@
         }
     </script>
 </body>
-
 </html>
