@@ -384,21 +384,22 @@
             color: white;
         }
         
-        /* 表格内容容器 - 允许垂直和水平滚动 */
-        .table-body-container {
-            flex: 1;
-            overflow: auto;
-            overflow-x: auto;
-            min-height: 200px;
-            height: 600px;
-        }
-        
-        /* 确保表格占满容器 */
-        .sticky-table {
-            width: 100%;
-            min-width: max-content;
-            table-layout: auto; /* 自动表格布局，根据内容调整列宽 */
-        }
+        /* 替换原有的 .table-body-container 定义 */
+.table-body-container {
+    flex: 1;
+    overflow: auto;
+    min-height: 150px; /* 最小高度，防止没有数据时太矮 */
+    max-height: 600px; /* 设置最大高度，超过这个高度才出现滚动条 */
+    border: 1px solid #e2e8f0;
+    border-radius: 0 0 0.375rem 0.375rem;
+    background-color: #fff;
+}
+
+/* 优化表格行的样式，确保固定高度 */
+.sticky-table tbody tr {
+    height: 36px; /* 固定行高，便于计算 */
+    line-height: 36px;
+}
         
         /* 优化滚动条样式 */
         .table-body-container::-webkit-scrollbar {
@@ -984,33 +985,31 @@
                 </div>
 
                 <!-- 数据表格 - 优化的表格容器结构 -->
-                <div class="bg-white rounded-lg shadow-card transition-all duration-300 hover:shadow-card-hover flex-grow flex flex-col border border-gray-100" style="overflow: hidden;">
-                    <!-- 表头容器 - 只水平滚动 -->
-                    <div class="table-header-container" id="tableHeaderContainer" style="overflow: hidden; border-bottom: 1px solid #e5e7eb; flex-shrink: 0; position: relative;">
-                        <table class="sticky-table compact-table bordered-table" id="headerTable">
-                            <thead id="tableHeader" class="bg-gradient-to-r from-blue-600 to-blue-700 text-white">
-                                <tr class="row-height-fixed">
-                                    <th class="py-2 px-2 border border-blue-500 text-left font-semibold text-xs column-width-fixed row-height-fixed sticky-first-column" style="position: sticky !important; left: 0 !important; z-index: 3 !important; background: linear-gradient(to right, #1e40af, #1e3a8a) !important; color: white !important;">教材科目</th>
-                                    <!-- 学校列将通过JavaScript动态生成 -->
-                                </tr>
-                            </thead>
-                        </table>
-                    </div>
-                    
-                    <!-- 表体容器 - 垂直和水平滚动 -->
-                    <div class="table-body-container" id="tableBodyContainer" style="flex: 1; overflow: auto; height: 480px;">
-                        <table class="sticky-table compact-table bordered-table" id="dataTable">
-                            <tbody id="tableBody" class="divide-y divide-gray-200">
-                                <!-- 数据将通过JavaScript动态加载 -->
-                                <tr>
-                                    <td colspan="10" class="py-4 px-3 text-center border border-gray-300 text-gray-500 text-sm bg-gray-50">
-                                        暂无数据，请导入Excel文件
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
+<div class="bg-white rounded-lg shadow-card transition-all duration-300 hover:shadow-card-hover flex-grow flex flex-col border border-gray-100">
+    <!-- 表头容器 -->
+    <div class="table-header-container" id="tableHeaderContainer" style="flex-shrink: 0;">
+        <table class="sticky-table compact-table bordered-table" id="headerTable">
+            <thead id="tableHeader" class="bg-gradient-to-r from-blue-600 to-blue-700 text-white">
+                <tr class="row-height-fixed">
+                    <th class="py-2 px-2 border border-blue-500 text-left font-semibold text-xs column-width-fixed row-height-fixed sticky-first-column" style="position: sticky !important; left: 0 !important; z-index: 3 !important; background: linear-gradient(to right, #1e40af, #1e3a8a) !important; color: white !important;">教材科目</th>
+                </tr>
+            </thead>
+        </table>
+    </div>
+    
+    <!-- 表体容器 - 修复重点：移除固定height，使用max-h -->
+    <div class="table-body-container" id="tableBodyContainer">
+        <table class="sticky-table compact-table bordered-table" id="dataTable">
+            <tbody id="tableBody" class="divide-y divide-gray-200">
+                <tr>
+                    <td colspan="10" class="py-4 px-3 text-center border border-gray-300 text-gray-500 text-sm bg-gray-50">
+                        暂无数据，请导入Excel文件
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
 
                 <!-- 分页控件 -->
                 <div class="flex flex-col sm:flex-row justify-between items-center mt-3 bg-white rounded-lg shadow-card p-2 no-print transition-all duration-300 hover:shadow-card-hover">
@@ -3485,40 +3484,44 @@
                 this.importAbortController = null;
             }
             
-            // 同步左右模块高度
-            syncModuleHeights() {
-                const sidebar = document.getElementById('sidebarContainer');
-                const mainContent = document.getElementById('mainContent');
-                const tableBodyContainer = document.getElementById('tableBodyContainer');
-                
-                if (sidebar && mainContent) {
-                    // 固定表体容器高度，确保导入前后一致 - 增加高度以显示更多行
-                    if (tableBodyContainer) {
-                        tableBodyContainer.style.height = '480px';
-                    }
-                    
-                    // 重置高度以获取真实高度
-                    sidebar.style.height = 'auto';
-                    mainContent.style.height = 'auto';
-                    
-                    // 等待DOM更新
-                    setTimeout(() => {
-                        const sidebarHeight = sidebar.offsetHeight;
-                        const mainContentHeight = mainContent.offsetHeight;
-                        
-                        // 设置相同的固定高度
-                        const targetHeight = Math.max(sidebarHeight, mainContentHeight, 600); // 最小600px
-                        sidebar.style.height = targetHeight + 'px';
-                        mainContent.style.height = targetHeight + 'px';
-                        
-                        // 确保flex容器也有足够高度
-                        const flexContainer = document.querySelector('.flex-container');
-                        if (flexContainer) {
-                            flexContainer.style.minHeight = targetHeight + 'px';
-                        }
-                    }, 100);
-                }
-            }
+                        // 同步左右模块高度 - 修复版
+syncModuleHeights() {
+    const sidebar = document.getElementById('sidebarContainer');
+    const mainContent = document.getElementById('mainContent');
+    const tableBodyContainer = document.getElementById('tableBodyContainer');
+    
+    if (sidebar && mainContent) {
+        // 1. 重置高度以获取真实内容高度
+        sidebar.style.height = 'auto';
+        mainContent.style.height = 'auto';
+        
+        // 2. 获取主要内容区域的实际高度（不包含表格时的静态高度）
+        // 这里假设顶部搜索栏+底部分页大约占 200px，给表格留出剩余空间
+        const staticContentHeight = 200; 
+        const windowHeight = window.innerHeight;
+        const availableTableHeight = windowHeight - staticContentHeight;
+
+        // 3. 设置表格容器的最大高度，但允许其根据内容收缩
+        if (tableBodyContainer) {
+            // 如果内容很少，就显示实际高度；如果内容很多，就出现滚动条
+            tableBodyContainer.style.maxHeight = `${availableTableHeight}px`;
+            tableBodyContainer.style.minHeight = '150px'; // 至少显示一点高度
+        }
+
+        // 4. 强制侧边栏和主内容区高度一致（基于视口或内容）
+        const targetHeight = Math.max(
+            sidebar.offsetHeight, 
+            mainContent.offsetHeight,
+            400 // 最小高度
+        );
+        
+        // 只有当内容很高时才强制等高，否则让其自然流动
+        if (targetHeight > 400) {
+            sidebar.style.height = `${targetHeight}px`;
+            mainContent.style.height = `${targetHeight}px`;
+        }
+    }
+}
             
             // 显示通知
             showNotification(message, type = 'info') {
