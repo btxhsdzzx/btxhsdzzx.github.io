@@ -2185,55 +2185,78 @@
             }
             
             // 更新分页信息
-            updatePaginationInfo() {
-                // 确保使用正确的数据长度进行计算
-                const dataLength = this.filteredData.length;
-                const totalPages = Math.ceil(dataLength / this.itemsPerPage);
-                
-                // 确保当前页码有效
-                if (this.currentPage > totalPages && totalPages > 0) {
-                    this.currentPage = totalPages;
-                }
-                
-                const startIndex = dataLength > 0 ? (this.currentPage - 1) * this.itemsPerPage + 1 : 0;
-                const endIndex = Math.min(this.currentPage * this.itemsPerPage, dataLength);
-                
-                // 更新显示的分页信息
-                if (this.elements.currentRangeElement) {
-                    this.elements.currentRangeElement.textContent = dataLength > 0 ? `${startIndex}-${endIndex}` : '0-0';
-                }
-                if (this.elements.totalRecordsElement) {
-                    this.elements.totalRecordsElement.textContent = dataLength;
-                }
-                if (this.elements.currentPageElement) {
-                    this.elements.currentPageElement.textContent = dataLength > 0 ? this.currentPage : '0';
-                }
-                if (this.elements.totalPagesElement) {
-                    this.elements.totalPagesElement.textContent = totalPages > 0 ? totalPages : '0';
-                }
-                
-                // 禁用/启用分页按钮
-                const prevDisabled = this.currentPage === 1 || dataLength === 0;
-                const nextDisabled = this.currentPage === totalPages || dataLength === 0;
-                
-                if (this.elements.prevPageBtn) {
-                    this.elements.prevPageBtn.disabled = prevDisabled;
-                    if (prevDisabled) {
-                        this.elements.prevPageBtn.classList.add('opacity-50', 'cursor-not-allowed');
-                    } else {
-                        this.elements.prevPageBtn.classList.remove('opacity-50', 'cursor-not-allowed');
-                    }
-                }
-                
-                if (this.elements.nextPageBtn) {
-                    this.elements.nextPageBtn.disabled = nextDisabled;
-                    if (nextDisabled) {
-                        this.elements.nextPageBtn.classList.add('opacity-50', 'cursor-not-allowed');
-                    } else {
-                        this.elements.nextPageBtn.classList.remove('opacity-50', 'cursor-not-allowed');
-                    }
-                }
-            }
+updatePaginationInfo() {
+    // 【修复开始】
+    // 核心修复：根据是否转置，选择正确的数据长度
+    let dataLength = 0;
+    
+    if (this.isTransposed) {
+        // 转置模式：分页依据是学校数量
+        // 1. 如果有搜索匹配的学校列表，使用匹配的数量
+        if (this._matchingSchools && this._matchingSchools.length > 0) {
+            dataLength = this._matchingSchools.length;
+        } 
+        // 2. 如果有学校筛选，显示1页（因为筛选通常只显示一个学校）
+        else if (this.currentSchoolFilter) {
+            dataLength = 1;
+        } 
+        // 3. 否则，显示所有学校的总数量
+        else {
+            dataLength = this.schoolHeaders.length;
+        }
+    } else {
+        // 正常模式：分页依据是科目/数据行数量
+        dataLength = this.filteredData.length;
+    }
+    // 【修复结束】
+
+    // 计算总页数
+    const totalPages = Math.ceil(dataLength / this.itemsPerPage);
+
+    // 确保当前页码有效（防止删除数据后页码越界）
+    if (this.currentPage > totalPages && totalPages > 0) {
+        this.currentPage = totalPages;
+    }
+
+    // 计算当前显示范围（例如：1-20）
+    const startIndex = dataLength > 0 ? (this.currentPage - 1) * this.itemsPerPage + 1 : 0;
+    const endIndex = Math.min(this.currentPage * this.itemsPerPage, dataLength);
+
+    // 更新DOM显示
+    if (this.elements.currentRangeElement) {
+        this.elements.currentRangeElement.textContent = dataLength > 0 ? `${startIndex}-${endIndex}` : '0-0';
+    }
+    if (this.elements.totalRecordsElement) {
+        this.elements.totalRecordsElement.textContent = dataLength;
+    }
+    if (this.elements.currentPageElement) {
+        this.elements.currentPageElement.textContent = dataLength > 0 ? this.currentPage : '0';
+    }
+    if (this.elements.totalPagesElement) {
+        this.elements.totalPagesElement.textContent = totalPages > 0 ? totalPages : '0';
+    }
+
+    // 更新分页按钮状态（禁用/启用）
+    const prevDisabled = this.currentPage === 1 || dataLength === 0;
+    const nextDisabled = this.currentPage === totalPages || dataLength === 0;
+    
+    if (this.elements.prevPageBtn) {
+        this.elements.prevPageBtn.disabled = prevDisabled;
+        if (prevDisabled) {
+            this.elements.prevPageBtn.classList.add('opacity-50', 'cursor-not-allowed');
+        } else {
+            this.elements.prevPageBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+        }
+    }
+    if (this.elements.nextPageBtn) {
+        this.elements.nextPageBtn.disabled = nextDisabled;
+        if (nextDisabled) {
+            this.elements.nextPageBtn.classList.add('opacity-50', 'cursor-not-allowed');
+        } else {
+            this.elements.nextPageBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+        }
+    }
+}
             
             // 计算统计信息（使用缓存优化）
             calculateStatistics() {
