@@ -991,7 +991,7 @@
         <table class="sticky-table compact-table bordered-table" id="headerTable">
             <thead id="tableHeader" class="bg-gradient-to-r from-blue-600 to-blue-700 text-white">
                 <tr class="row-height-fixed">
-                    <th class="py-2 px-2 border border-blue-500 text-left font-semibold text-xs column-width-fixed row-height-fixed sticky-first-column" style="position: sticky !important; left: 0 !important; z-index: 3 !important; background: linear-gradient(to right, #1e40af, #1e3a8a) !important; color: white !important;">教材科目</th>
+                    <th class="py-2 px-2 border border-blue-500 text-left font-semibold text-xs column-width-fixed row-height-fixed sticky-first-column" style="position: sticky !important; left: 0 !important; z-index: 3 !important; background: linear-gradient(to right, #1e40af, #1e3a8a) !important; color: white !important;">科目</th>
                 </tr>
             </thead>
         </table>
@@ -1584,7 +1584,7 @@
                                 // 转置模式：按学校显示行
                                 this.renderTransposedTable();
                             } else {
-                                // 正常模式：按教材科目显示行
+                                // 正常模式：按科目显示行
                                 this.renderNormalTable();
                             }
                             
@@ -1660,7 +1660,7 @@
                 // 确保使用与导出功能相同的数据源
                 const dataToUse = this.filteredData.length > 0 ? this.filteredData : this.bookData;
                 
-                // 获取所有唯一的教材科目
+                // 获取所有唯一的科目
                 const subjects = [...new Set(dataToUse.map(item => item.subject).filter(subject => subject))];
                 
                 // 按学校分组数据
@@ -1756,7 +1756,7 @@
                     : 'compact-row fade-in hover:bg-blue-50 transition-colors bg-blue-50';
                 row.className = rowClass;
                 
-                // 添加教材科目列 - 添加固定列样式
+                // 添加科目列 - 添加固定列样式
                 const subjectCell = document.createElement('td');
                 subjectCell.className = 'py-1 px-2 border border-gray-300 text-xs auto-font-size tooltip-cell column-width-fixed sticky-first-column';
                 const subjectText = item.subject || '';
@@ -1843,7 +1843,7 @@
                 this.adjustFontSize(schoolCell, school);
                 row.appendChild(schoolCell);
                 
-                // 各教材科目列
+                // 各科目列
                 subjects.forEach(subject => {
                     const cell = document.createElement('td');
                     cell.className = 'py-1 px-2 border border-gray-300 text-xs text-right';
@@ -1973,7 +1973,7 @@
                 
                 let pageTotal = 0;
                 
-                // 计算当前页每个教材科目的小计
+                // 计算当前页每个科目的小计
                 subjects.forEach(subject => {
                     const cell = document.createElement('td');
                     cell.className = 'py-1 px-2 border border-gray-300 text-xs font-medium text-right';
@@ -2014,7 +2014,7 @@
                 
                 let grandTotal = 0;
                 
-                // 计算每个教材科目的合计
+                // 计算每个科目的合计
                 subjects.forEach(subject => {
                     const cell = document.createElement('td');
                     cell.className = 'py-1 px-2 border border-gray-300 text-xs font-medium text-right';
@@ -2047,7 +2047,7 @@
                 
                 const emptyRow = document.createElement('tr');
                 
-                // 计算列数（教材科目列 + 学校列数）
+                // 计算列数（科目列 + 学校列数）
                 const colSpan = 1 + this.schoolHeaders.length;
                 
                 if (this.bookData.length === 0) {
@@ -2075,7 +2075,7 @@
                     headerRow.className = 'row-height-fixed sticky-header'; // 添加固定行样式
                     
                     if (this.isTransposed) {
-                        // 转置模式表头：学校 | 教材科目1 | 教材科目2 | ... | 单品总册数
+                        // 转置模式表头：学校 | 科目1 | 科目2 | ... | 单品总册数
                         const schoolTh = document.createElement('th');
                         schoolTh.className = 'py-2 px-2 border border-blue-500 text-left font-semibold text-xs column-width-fixed row-height-fixed sticky-first-column';
                         schoolTh.textContent = '学校';
@@ -2084,7 +2084,7 @@
                         schoolTh.style.maxWidth = '96px'; // 最大宽度（六个汉字）
                         headerRow.appendChild(schoolTh);
                         
-                        // 获取所有唯一的教材科目
+                        // 获取所有唯一的科目
                         const subjects = [...new Set(this.bookData.map(item => item.subject).filter(subject => subject))];
                         subjects.forEach(subject => {
                             const th = document.createElement('th');
@@ -2107,10 +2107,10 @@
                         varietyTotalTh.style.maxWidth = '96px'; // 最大宽度（六个汉字）
                         headerRow.appendChild(varietyTotalTh);
                     } else {
-                        // 正常模式表头：教材科目 | 学校1 | 学校2 | ... | 单品总册数
+                        // 正常模式表头：科目 | 学校1 | 学校2 | ... | 单品总册数
                         
-                        // 使用原始表头的第一列作为教材科目列标题
-                        const subjectHeaderText = this.originalHeaders && this.originalHeaders.length > 0 ? this.originalHeaders[0] : '教材科目';
+                        // 使用原始表头的第一列作为科目列标题
+                        const subjectHeaderText = this.originalHeaders && this.originalHeaders.length > 0 ? this.originalHeaders[0] : '科目';
                         const subjectTh = document.createElement('th');
                         subjectTh.className = 'py-2 px-2 border border-blue-500 text-left font-semibold text-xs column-width-fixed row-height-fixed sticky-first-column';
                         subjectTh.textContent = subjectHeaderText;
@@ -2435,28 +2435,28 @@ updatePaginationInfo() {
                 }
             }
             
-            // 按教材科目筛选
-            filterBySubject(subject) {
-                this.currentSubjectFilter = subject;
-                
-                // 清除搜索匹配的学校列表
-                this._matchingSchools = null;
-                
-                // 清除相关缓存
-                DataCache.clear();
-                
-                // 应用筛选
-                this.applyFilters();
-                
-                // 更新侧边栏激活状态
-                document.querySelectorAll('.sidebar-item').forEach(item => {
-                    item.classList.remove('active');
-                });
-                const activeButton = document.querySelector(`[data-subject="${subject}"]`);
-                if (activeButton) {
-                    activeButton.classList.add('active');
-                }
-            }
+            // 按科目筛选
+filterBySubject(subject) {
+    this.currentSubjectFilter = subject;
+    this.currentSchoolFilter = ''; // 清除学校筛选，避免冲突
+    this._matchingSchools = null;
+    
+    // 清除相关缓存
+    DataCache.clear();
+    
+    // 应用筛选
+    this.applyFilters();
+    
+    // 更新侧边栏激活状态
+    document.querySelectorAll('.sidebar-item').forEach(item => {
+        item.classList.remove('active');
+    });
+    
+    const activeButton = document.querySelector(`[data-subject="${subject}"]`);
+    if (activeButton) {
+        activeButton.classList.add('active');
+    }
+}
             
             // 搜索功能
             performSearch() {
@@ -2505,7 +2505,7 @@ updatePaginationInfo() {
                         }
                     }
                 } else {
-                    // 正常模式：根据选择的教材科目筛选数据
+                    // 正常模式：根据选择的科目筛选数据
                     if (this.currentSubjectFilter) {
                         filtered = filtered.filter(item => item.subject === this.currentSubjectFilter);
                     }
@@ -2592,7 +2592,7 @@ updatePaginationInfo() {
                     return data;
                 }
                 
-                // 正常模式下搜索教材科目（模糊搜索）
+                // 正常模式下搜索科目（模糊搜索）
                 return data.filter(item => {
                     if (item.subject && item.subject.toLowerCase().includes(lowerSearchTerm)) {
                         return true;
@@ -2667,7 +2667,7 @@ updatePaginationInfo() {
                             schoolsToExport.forEach(school => {
                                 const schoolRow = {'学校': school};
                                 
-                                // 添加每个教材科目的数据
+                                // 添加每个科目的数据
                                 subjects.forEach(subject => {
                                     const item = this.filteredData.find(i => i.subject === subject);
                                     schoolRow[subject] = item ? item[school] || '' : '';
@@ -2693,8 +2693,8 @@ updatePaginationInfo() {
                             exportData = this.filteredData.map(item => {
                                 const exportItem = {};
                                 
-                                // 添加教材科目
-                                exportItem['教材科目'] = item.subject || '';
+                                // 添加科目
+                                exportItem['科目'] = item.subject || '';
                                 
                                 // 添加学校列
                                 this.schoolHeaders.forEach(school => {
@@ -2722,10 +2722,10 @@ updatePaginationInfo() {
                             // 转置模式下的总计行
                             totalRow = {'学校': '总计'};
                             
-                            // 获取所有教材科目
+                            // 获取所有科目
                             const subjects = [...new Set(this.filteredData.map(item => item.subject).filter(subject => subject))];
                             
-                            // 计算每个教材科目的合计
+                            // 计算每个科目的合计
                             subjects.forEach(subject => {
                                 const total = exportData.reduce((sum, row) => {
                                     return sum + (Utils.parseNumber(row[subject]) || 0);
@@ -2740,7 +2740,7 @@ updatePaginationInfo() {
                             totalRow['学校总册数'] = schoolTotalTotal;
                         } else {
                             // 正常模式下的总计行
-                            totalRow = {'教材科目': '总计'};
+                            totalRow = {'科目': '总计'};
                             
                             // 计算每个学校的合计
                             this.schoolHeaders.forEach(school => {
@@ -2766,7 +2766,7 @@ updatePaginationInfo() {
                         
                         // 设置列宽
                         const wscols = [
-                            {wch: 15}, // 教材科目
+                            {wch: 15}, // 科目
                         ];
                         
                         // 为每个学校列设置宽度
@@ -3155,7 +3155,7 @@ updatePaginationInfo() {
                                                 <th class="column-width-fixed">学校</th>
                             `;
                             
-                            // 添加当前页的教材科目表头
+                            // 添加当前页的科目表头
                             currentPageSubjects.forEach(subject => {
                                 printContent += `<th class="column-width-fixed">${subject}</th>`;
                             });
@@ -3178,7 +3178,7 @@ updatePaginationInfo() {
                                 
                                 let schoolTotal = 0;
                                 
-                                // 添加当前页每个教材科目的数据
+                                // 添加当前页每个科目的数据
                                 currentPageSubjects.forEach(subject => {
                                     const item = this.filteredData.find(i => i.subject === subject);
                                     const value = item ? item[school] || '' : '';
@@ -3207,7 +3207,7 @@ updatePaginationInfo() {
                             
                             let grandTotal = 0;
                             
-                            // 计算当前页每个教材科目的合计
+                            // 计算当前页每个科目的合计
                             currentPageSubjects.forEach(subject => {
                                 const total = this.filteredData.reduce((sum, item) => {
                                     if (item.subject === subject) {
@@ -3234,7 +3234,7 @@ updatePaginationInfo() {
                             `;
                         }
                     } else {
-                        // 正常模式打印：按教材科目显示
+                        // 正常模式打印：按科目显示
                         
                         // 计算每页可以显示的学校数量
                         const schoolsPerPage = 15; // 每页显示15个学校，增加每页显示数量
@@ -3271,7 +3271,7 @@ updatePaginationInfo() {
                                     <table class="adaptive-table full-width-table multi-page-table auto-width-columns">
                                         <thead>
                                             <tr class="sticky-header">
-                                                <th class="column-width-fixed">教材科目</th>
+                                                <th class="column-width-fixed">科目</th>
                             `;
                             
                             // 添加当前页的学校列表头
@@ -3292,7 +3292,7 @@ updatePaginationInfo() {
                             this.filteredData.forEach((item, index) => {
                                 printContent += `<tr class="table-content">`;
                                 
-                                // 添加教材科目
+                                // 添加科目
                                 printContent += `<td class="column-width-fixed">${item.subject || ''}</td>`;
                                 
                                 // 添加当前页学校列数据
@@ -3720,7 +3720,7 @@ syncModuleHeights() {
                         this.elements.schoolFilterContainer.appendChild(button);
                     });
                 } else {
-                    // 正常模式：显示教材科目筛选
+                    // 正常模式：显示科目筛选
                     const subjects = [...new Set(this.bookData.map(item => item.subject).filter(subject => subject))];
                     subjects.forEach(subject => {
                         const button = this.createFilterButton(subject, 'subject');
@@ -3741,7 +3741,7 @@ syncModuleHeights() {
                 return this.createFilterButton(school, 'school');
             }
             
-            // 创建筛选按钮（支持学校和教材科目）
+            // 创建筛选按钮（支持学校和科目）
             createFilterButton(value, type) {
                 const button = document.createElement('button');
                 button.className = 'sidebar-item w-full text-left px-3 py-2 rounded hover:bg-blue-50 transition-colors flex items-center';
@@ -4218,12 +4218,12 @@ syncModuleHeights() {
                         const headers = jsonData[0];
                         console.log('表头:', headers);
                         
-                        // 检查是否至少有2列（教材科目、至少一个学校）
+                        // 检查是否至少有2列（科目、至少一个学校）
                         if (!headers || headers.length < 2) {
-                            throw new Error('Excel文件格式不正确，至少需要包含教材科目和一个学校列');
+                            throw new Error('Excel文件格式不正确，至少需要包含科目和一个学校列');
                         }
                         
-                        // 固定第一列为教材科目
+                        // 固定第一列为科目
                         const subjectHeader = headers[0];
                         console.log('科目表头:', subjectHeader);
                         
