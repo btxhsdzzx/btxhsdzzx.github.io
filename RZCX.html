@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>我的工作日志查询系统</title>
+    <title>我的日志查询</title>
     <style>
         :root {
             --glass-bg: rgba(255, 255, 255, 0.15);
@@ -39,16 +39,50 @@
             max-width: 900px;
         }
         header {
-            text-align: center;
-            margin-bottom: 40px;
-        }
-        h1 {
-            font-size: 2.8rem;
-            font-weight: 800;
-            letter-spacing: 2px;
-            text-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-            margin-bottom: 10px;
-        }
+    text-align: center;
+    margin-bottom: 40px;
+    /* 开启3D空间 */
+    perspective: 1000px; 
+}
+
+/* 替换原有的 h1 样式 */
+h1 {
+    font-size: 2.8rem;
+    font-weight: 800;
+    letter-spacing: 2px;
+    margin-bottom: 10px;
+    /* 核心3D设置 */
+    transform-style: preserve-3d;
+    /* 添加动画 */
+    animation: float3D 6s ease-in-out infinite;
+    /* 文字立体阴影 */
+    text-shadow: 
+        0 1px 0 #ccc,
+        0 2px 0 #c9c9c9,
+        0 3px 0 #bbb,
+        0 4px 0 #b9b9b9,
+        0 5px 0 #aaa,
+        0 6px 1px rgba(0,0,0,.1),
+        0 0 5px rgba(0,0,0,.1),
+        0 1px 3px rgba(0,0,0,.3),
+        0 3px 5px rgba(0,0,0,.2),
+        0 5px 10px rgba(0,0,0,.25),
+        0 10px 10px rgba(0,0,0,.2),
+        0 20px 20px rgba(0,0,0,.15);
+}
+
+/* 定义3D浮动动画关键帧 */
+@keyframes float3D {
+    0% {
+        transform: rotateX(10deg) rotateY(10deg) translateZ(0);
+    }
+    50% {
+        transform: rotateX(-10deg) rotateY(-5deg) translateZ(20px) scale(1.05);
+    }
+    100% {
+        transform: rotateX(10deg) rotateY(10deg) translateZ(0);
+    }
+}
         header p {
             font-size: 1.1rem;
             opacity: 0.9;
@@ -145,37 +179,37 @@
 <body>
     <div class="container">
         <header>
-            <h1>✨星星✨Work Log</h1>
+            <h1>✨ Work Log</h1>
             <p>输入关键词，快速检索您的工作记录</p>
         </header>
         <input type="text" id="searchInput" class="search-box" placeholder="🔍 搜索日期、关键词或内容...">
         <ul id="logList" class="log-list"></ul>
         <div id="noResults" class="no-results">😔 抱歉，未找到匹配的日志条目。</div>
     </div>
-    <script>
+        <script>
         const logs = [
-            { date: "2016.03.31", content: "删除远程桌面连接MSTSC多余的信息，即找到注册表里面:HKEY_CURRENT_USER\\ Software\\Microsoft\\Terminal ServerClient\\Default 其中右边的就是，你连接过的记录了。删除您需要清除的文件即可。" },
+            { date: "", content: "删除远程桌面连接MSTSC多余的信息，即找到注册表里面:HKEY_CURRENT_USER\\ Software\\Microsoft\\Terminal ServerClient\\Default 其中右边的就是，你连接过的记录了。删除您需要清除的文件即可。" },
             { date: "2016.06.10", content: "在财务管理模块中，补录的旧单据不在维护对账单里显示，生成的对账单在结算里可以看到。" },
             { date: "2016.06.18", content: "业务员手动添货的页面中【在途册数】是所有订货的合计，与其到没到货没有关系。如果【库存数】大于【到货数减去销售数】说明此书目不止一个购进单位。" },
             { date: "2016.06.30", content: "录入员在单据明细里如果实收录入错误，可以在【检索】里按条件筛选出该书目条目后更改。具体错误表现在【到货单据】和【单据明细】的数量与实洋不一致，其他数据一样。" },
             { date: "2016.07.01", content: "当批销音像时，选择客户档案里的音像固定折扣，在【批销管理】下的浮动折扣定义中，选择【音像制品批价制定原则】中的【按客户固定折扣和零售价推算】后确认。" },
-            { date: "2016.07.01", content: "打折促销的设置" },
-            { date: "2016.07.01", content: "只要是涉及到打折的情况，全部选取书目ID号，所以货位打折情况是在某种书目上到一个货位的情况才实用。当某一种图书在一个货区不同货位上都有库存，这时设置该固定货位折扣则会把该书目ID号选中，导致这一书目其他货位全部都打折，而不是设置过的这个货位才打折。" },
-            { date: "2016.07.01", content: "批销里的现金客户一般是当时付款，不用核销的客户，托收客户是必须核销的。" },
-            { date: "2016.07.01", content: "RF按任务下架中，可退数为该店号总库存，库存为该库房库存，任务数是此次下达的任务。" },
-            { date: "2016.07.01", content: "下架重新定位输入书号后，显示的定价和书名不是该书号的信息。" },
-            { date: "2016.07.01", content: "重新定位是指没有下过架的书目，修改是指已经下架过的书目。" },
-            { date: "2016.07.01", content: "当卖场预退到退货库图书不想实退而要返回卖场时，因为该数据被预退占用，返回后不能二次预退。只能更改数据库。此时可以把图书返回卖场，记住该预退批次等数据，销售完成后再次拉单返回退货库做预退修改即可。select * from t_hythmx_yt where id='9787513100885002' for update" },
-            { date: "2016.07.01", content: "下架可退书数是减掉预退数的结果，当预退数没有变成实退返回部组后会导致可退数小(减去预退数后的数值)" },
-            { date: "2016.07.01", content: "卖场RF下架时，当某种书在该库房有多货位时，会在货位信息栏后出现三个小点，点击可以查看该书的具体货位库存情况。(打开的可视界面只显示一条货位信息)" },
-            { date: "2016.07.01", content: "卖场RF下架时，如遇按任务要求实在找不到所要下架的书目时，可以点击【跳过】并继续下一种书目的查找。" },
-            { date: "2016.07.01", content: "在未确认此预退批次前如果又找到了此前跳过的书目，这时候可以点击【重新定位】按键扫描该书号后重新执行下架操作。" },
-            { date: "2016.07.01", content: "如果已经确认生成预退批次，在15日内找到该书且退货库没有发运该书货源的退货，可以继续在任务里执行下架操作。" },
-            { date: "2016.07.01", content: "卖场RF下架时，如遇按任务要求实在找不到所要下架的书目时，可以直接在下架栏里输入0并回车，此时该书目默认已经下架且数量为零。" },
-            { date: "2016.07.01", content: "在未确认此预退批次前如果又找到了该书，这时候可以点击【修改】按键扫描该书号后重新执行下架操作。" },
-            { date: "2016.07.01", content: "如果已经确认生成预退批次，但又找到了之前下架数为零该书，此时该书只能改为主动下架。" },
-            { date: "2016.07.01", content: "【进货销售情况】查询的销售指的是某单据的日期或调拨日期截止现在的销售数据，而【货区销售情况】或【货源销售情况】指的是某销售时间段的销售数据，以上必须反勾才能实现查询。" },
-            { date: "2017.3.21", content: "财务自进货按单结账" },
+            { date: "", content: "打折促销的设置" },
+            { date: "", content: "只要是涉及到打折的情况，全部选取书目ID号，所以货位打折情况是在某种书目上到一个货位的情况才实用。当某一种图书在一个货区不同货位上都有库存，这时设置该固定货位折扣则会把该书目ID号选中，导致这一书目其他货位全部都打折，而不是设置过的这个货位才打折。" },
+            { date: "", content: "批销里的现金客户一般是当时付款，不用核销的客户，托收客户是必须核销的。" },
+            { date: "", content: "RF按任务下架中，可退数为该店号总库存，库存为该库房库存，任务数是此次下达的任务。" },
+            { date: "", content: "下架重新定位输入书号后，显示的定价和书名不是该书号的信息。" },
+            { date: "", content: "重新定位是指没有下过架的书目，修改是指已经下架过的书目。" },
+            { date: "", content: "当卖场预退到退货库图书不想实退而要返回卖场时，因为该数据被预退占用，返回后不能二次预退。只能更改数据库。此时可以把图书返回卖场，记住该预退批次等数据，销售完成后再次拉单返回退货库做预退修改即可。select * from t_hythmx_yt where id='9787513100885002' for update" },
+            { date: "", content: "下架可退书数是减掉预退数的结果，当预退数没有变成实退返回部组后会导致可退数小(减去预退数后的数值)" },
+            { date: "", content: "卖场RF下架时，当某种书在该库房有多货位时，会在货位信息栏后出现三个小点，点击可以查看该书的具体货位库存情况。(打开的可视界面只显示一条货位信息)" },
+            { date: "", content: "卖场RF下架时，如遇按任务要求实在找不到所要下架的书目时，可以点击【跳过】并继续下一种书目的查找。" },
+            { date: "", content: "在未确认此预退批次前如果又找到了此前跳过的书目，这时候可以点击【重新定位】按键扫描该书号后重新执行下架操作。" },
+            { date: "", content: "如果已经确认生成预退批次，在15日内找到该书且退货库没有发运该书货源的退货，可以继续在任务里执行下架操作。" },
+            { date: "", content: "卖场RF下架时，如遇按任务要求实在找不到所要下架的书目时，可以直接在下架栏里输入0并回车，此时该书目默认已经下架且数量为零。" },
+            { date: "", content: "在未确认此预退批次前如果又找到了该书，这时候可以点击【修改】按键扫描该书号后重新执行下架操作。" },
+            { date: "", content: "如果已经确认生成预退批次，但又找到了之前下架数为零该书，此时该书只能改为主动下架。" },
+            { date: "", content: "【进货销售情况】查询的销售指的是某单据的日期或调拨日期截止现在的销售数据，而【货区销售情况】或【货源销售情况】指的是某销售时间段的销售数据，以上必须反勾才能实现查询。" },
+            { date: "3.21", content: "财务自进货按单结账" },
             { date: "", content: "在发票页面，托收单金额一般不做更改。价款栏系统会自带出和托收单金额一致的价款。" },
             { date: "", content: "如付款小于托收金额，此时可以按付款金额更改发票金额和实付金额，并且会在本次调整金额里显示出其差价。" },
             { date: "04.13", content: "如果发卡写卡的时候出现忘记勾选下一个卡号，而在不同卡上写入N次同一卡号(如系统的卡号依次为001，002，003等)，对应的卡上显示的也是001，002，003等，此时操作错误(001正确，002正确，003写卡时系统还是勾选002，并已经执行写卡操作)，此时再想写入正确的003卡号系统已经终止执行，因为此卡已经写入数据了(错误的002卡)。这个时候可以把已经写入002卡信息的003卡进行初始化，再进行发卡写卡。" },
@@ -276,62 +310,55 @@
             { date: "4.24", content: "如果本机自动获取的IP出现网络冲突，可以开始运行CMD命令提示符，输入“ipconfig /release”,释放全部适配器由DHCP分配的动态IP地址。再输入“ipconfig /renew”重新分配IP地址。" },
             { date: "4.29", content: "当网络打印机某电脑找不到的时候，可能是IP4协议属性下的高级选项没有勾选MMHOSTS,并将一般默认的改为打勾启用TDP/IP上的NERBIOS即可。" },
             { date: "5.6", content: "文档中查找回车键想替换时，可以使用^p，即按住shift+6,再按p。视同回车键。" },
-            { date: "6.08", content: "连锁店正式地址：http://lsd.nmgxhsd.cn/centrinerp/centrinerp.htm；\nPOS销售正式地址：http://lsdpos.nmgxhsd.cn/posmain/pos.htm。" },
             { date: "8.20", content: "抖音本地生活读者85折买的100元书券，款台按原价销售，财务做账处理，其中有平台服务费扣除以及15元的费用，其他为实际销售收入。不可做折扣处理。" },
             { date: "9.05", content: "新的安装谷歌浏览器剪切复制插件、扩展程序步骤：\n1、 将下载的XX.crx插件的扩展名改成.zip或者.rar。解压到同一路径同名文件。\n2、在扩展程序界面（chrome://extensions/或更多工具-扩展程序）右上方的开发者模式按钮打开；\n3、直接拖入压缩文件即可，\n4、需要更改同名解压文件下的manifest.json里的manifest_version:2改为manifest_version:3，\n5、为什么拖入压缩文件，更改解压后的文件还可用？？" },
             { date: "5.06", content: "在 Excel 中将未填写的空白单元格标记为黄色，推荐使用‌条件格式‌功能，可实现输入内容后颜色自动消失的动态效果。\n条件格式自动标记（推荐）\n此方法设置后，单元格为空时显示黄色，填入数据后颜色自动取消，适合长期使用的表格。\n‌选中区域‌：鼠标选中需要设置的数据区域 。‌‌‌\n‌新建规则‌：点击【开始】选项卡下的【条件格式】，选择【新建规则】。‌‌‌\n‌设置条件‌：选择“只为包含以下内容的单元格设置格式”，在下拉菜单中选择‌空值‌。‌‌‌\n‌设置格式‌：点击【格式】按钮，在【填充】选项卡中选择‌黄色‌，连续点击确定保存 。‌" },
             { date: "7.10", content: "财务推凭销项税按类别区分税率，进项税按发票上的税率。但是都和发行卡里的税率没有关系，发行卡的税率是书目库的税率是第一次录入时候单头填的税率。" }
         ];
 
-        // 获取DOM元素
+
         const searchInput = document.getElementById('searchInput');
         const logList = document.getElementById('logList');
         const noResults = document.getElementById('noResults');
 
-        // 转义HTML特殊字符，防止XSS攻击
-        function escapeHtml(text) {
-            const div = document.createElement('div');
-            div.textContent = text;
-            return div.innerHTML;
-        }
+        // 核心逻辑：初始隐藏，输入后显示
+        searchInput.addEventListener('input', function() {
+            const keyword = this.value.trim().toLowerCase();
+            
+            // 1. 如果搜索框为空，隐藏所有内容
+            if (!keyword) {
+                logList.innerHTML = '';
+                noResults.style.display = 'none';
+                return;
+            }
 
-        // 高亮关键词函数
-        function highlightText(text, keyword) {
-            if (!keyword) return escapeHtml(text);
-            const escapedKeyword = keyword.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
-            const regex = new RegExp(`(${escapedKeyword})`, 'gi');
-            return escapeHtml(text).replace(regex, '<span class="highlight">$1</span>');
-        }
+            // 2. 过滤数据
+            const filteredLogs = logs.filter(log => 
+                log.content.toLowerCase().includes(keyword) || 
+                log.date.toLowerCase().includes(keyword)
+            );
 
-        // 渲染列表函数
-        function renderLogs(keyword = '') {
-            logList.innerHTML = '';
-            let matchCount = 0;
-            logs.forEach(log => {
-                const searchText = `${log.date} ${log.content}`.toLowerCase();
-                const lowerKeyword = keyword.toLowerCase();
-                if (!keyword || searchText.includes(lowerKeyword)) {
-                    matchCount++;
-                    const li = document.createElement('li');
-                    li.className = 'log-item';
-                    const dateHtml = log.date ? `<span class="log-date">${highlightText(log.date, keyword)}</span>` : '';
-                    li.innerHTML = `
-                        ${dateHtml}
-                        <div class="log-content">${highlightText(log.content, keyword)}</div>
+            // 3. 渲染结果
+            if (filteredLogs.length > 0) {
+                noResults.style.display = 'none';
+                logList.innerHTML = filteredLogs.map(log => {
+                    // 高亮关键词逻辑
+                    const regex = new RegExp(`(${keyword})`, 'gi');
+                    const highlightedContent = log.content.replace(regex, '<span class="highlight">$1</span>');
+                    const highlightedDate = log.date.replace(regex, '<span class="highlight">$1</span>');
+
+                    return `
+                        <li class="log-item">
+                            ${log.date ? `<span class="log-date">${highlightedDate}</span>` : ''}
+                            <div class="log-content">${highlightedContent}</div>
+                        </li>
                     `;
-                    logList.appendChild(li);
-                }
-            });
-            noResults.style.display = matchCount === 0 ? 'block' : 'none';
-        }
-
-        // 监听搜索框输入事件
-        searchInput.addEventListener('input', (e) => {
-            renderLogs(e.target.value.trim());
+                }).join('');
+            } else {
+                logList.innerHTML = '';
+                noResults.style.display = 'block';
+            }
         });
-
-        // 初始化渲染
-        renderLogs();
     </script>
 </body>
 </html>
