@@ -296,6 +296,7 @@ h1 {
             { date: "12.30", content: "如有大厦和蒙新打回的退货单据，应在物流管理下的连锁店处理据退中，点击无实物据退，选择好业务部门为000001的是大厦，000002是蒙新，选择好单据打勾，点击确定即可由退货库直接到卖场，且自动上架。蒙新的多元来货不和图书一样，无法接收数据，必须手工录入。" },
             { date: "3.21", content: "云结算未生成销售小票的，刷新成功后再结账，只在原有收银员账号里能查看最近销售小票。" },
             { date: "4.26", content: "卸载更新使用运行wusa /uninstall /kb:5025221即可。" },
+            { date: "12.12", content: "图书零售POS系统卸载流程：\n1、控制面板-管理服务-服务，找到MySql服务，点击右键停止；\n2、删除windows--MySql服务，开始菜单运行：sc delete MySql    \n3、然后在控制面板添加或删除程序中找到pos程序正常卸载；\n4、删除数据库文件；\n开始菜单运行：regedit,打开注册表。：HKEY_LOCAL_MACHINE\SOFTWARE\MySql AB\MySql Server 5.0；\n打开DataLocation子项，删除DataLocation键值指向目录下的所有文件(此为删除数据库文件)；\n打开Location子项，删除Location键值指向目录下的所有文件(此为删除数据库文件)。\n4、最后删除对应注册表项\nHKEY_LOCAL_MACHINE\SOFTWARE\(32位系统)\nHKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\PDReg(64位系统)\nMySql AB（数据库）\nPosReg（POS程序）\nPDReg(盘点系统)；\n5：c盘的C:\Program Files\MySQL 全删除（把路径从文档里复制出来，直接在地址栏里粘贴，然后回车）；\nC:\Documents and Settings\All Users\Application Data\MySQL\MySQL Server 5.5 目录下 全删除（把路径从文档里复制出来，直接在地址栏里粘贴，然后回车）；\n6、如果更新后无法启动, 你可能需要: XP用户: 删除 %userprofile%\Local Settings\Apps 目录下的2.0目录 ；Vista及Win7用户: 删除 %userprofile%\AppData\Local\Apps 目录下的2.0目录。" },
             { date: "5.26", content: "cms程序下微商城的订单列表后，出现下载订单说明没有传到ERP系统，需点击下传。正常已下传的订单不会有这个按钮的。月底前应筛选下，防止订单跨月。跨月不可操作的还有云结算流水未成功的，必须当月刷新成功，再到未结账小票处理打印小票。" },
             { date: "6.15", content: "如果U盘安装系统就后PE后找不到硬盘了，应该选中SATA那个选项，按回车后出来两个选项，选中AHCI 那个选项，将他切换为IDE就可以了。" },
             { date: "11.08", content: "期货订货提交后，只有操作员定义里设定的业务员上级主管才可以进行期货订货审核。即使该上级主管是注销状态，启用后也可看到提交的审核数据。" },
