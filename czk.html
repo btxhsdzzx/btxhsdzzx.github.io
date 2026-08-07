@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>包头地区储值卡余额情况汇总表</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(135deg, #0c0c1d 0%, #1a1a3e 50%, #0c0c1d 100%);
+            min-height: 100vh;
+            color: #e0e0e0;
+            overflow-x: hidden;
+        }
+        .bg-particles {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; z-index: 0; overflow: hidden;
+        }
+        .particle {
+            position: absolute; width: 4px; height: 4px;
+            background: rgba(100, 180, 255, 0.3); border-radius: 50%;
+            animation: float linear infinite;
+        }
+        @keyframes float {
+            0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(-10vh) rotate(720deg); opacity: 0; }
+        }
+        .container {
+            position: relative; z-index: 1;
+            max-width: 1400px; margin: 0 auto; padding: 30px 20px;
+        }
+        .header {
+            text-align: center; margin-bottom: 40px;
+            padding: 40px 20px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(20px);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            position: relative; overflow: hidden;
+        }
+        .header::before {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+            background: linear-gradient(90deg, #00d2ff, #7b2ff7, #ff2d95, #00d2ff);
+            background-size: 300% 100%; animation: gradientMove 4s ease infinite;
+        }
+        @keyframes gradientMove {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        .header h1 {
+            font-size: 2.2rem; font-weight: 700;
+            background: linear-gradient(135deg, #00d2ff, #7b2ff7, #ff2d95);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            background-clip: text; margin-bottom: 10px; letter-spacing: 2px;
+        }
+        .header p { color: #888; font-size: 1rem; }
+        .filter-panel {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px; border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px); padding: 30px; margin-bottom: 30px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+        }
+        .filter-title {
+            font-size: 1.1rem; font-weight: 600; color: #00d2ff;
+            margin-bottom: 20px; display: flex; align-items: center; gap: 10px;
+        }
+        .filter-title::before {
+            content: ''; width: 4px; height: 20px;
+            background: linear-gradient(180deg, #00d2ff, #7b2ff7); border-radius: 2px;
+        }
+        .filter-row { display: flex; gap: 20px; flex-wrap: wrap; align-items: flex-end; }
+        .filter-group { flex: 1; min-width: 200px; }
+        .filter-group label {
+            display: block; font-size: 0.85rem; color: #999;
+            margin-bottom: 8px; letter-spacing: 1px; text-transform: uppercase;
+        }
+        .filter-group select {
+            width: 100%; padding: 12px 18px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 12px; color: #e0e0e0; font-size: 1rem;
+            cursor: pointer; transition: all 0.3s ease;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2300d2ff' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat; background-position: right 15px center;
+        }
+        .filter-group select:focus {
+            outline: none; border-color: #00d2ff;
+            box-shadow: 0 0 0 3px rgba(0, 210, 255, 0.15);
+        }
+        .filter-group select option { background: #1a1a3e; color: #e0e0e0; }
+        .btn-reset {
+            padding: 12px 28px;
+            background: linear-gradient(135deg, #7b2ff7, #ff2d95);
+            border: none; border-radius: 12px; color: white;
+            font-size: 1rem; font-weight: 600; cursor: pointer;
+            transition: all 0.3s ease; letter-spacing: 1px;
+        }
+        .btn-reset:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(123, 47, 247, 0.4);
+        }
+        .btn-reset:active { transform: translateY(0); }
+        .stats-row {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px; margin-bottom: 30px;
+        }
+        .stat-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 16px; border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(15px); padding: 24px; text-align: center;
+            transition: all 0.3s ease; position: relative; overflow: hidden;
+        }
+        .stat-card::after {
+            content: ''; position: absolute; top: 0; left: -100%;
+            width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.05), transparent);
+            transition: left 0.5s ease;
+        }
+        .stat-card:hover::after { left: 100%; }
+        .stat-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(0, 210, 255, 0.3);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+        }
+        .stat-label {
+            font-size: 0.8rem; color: #888;
+            text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 10px;
+        }
+        .stat-value {
+            font-size: 1.8rem; font-weight: 700;
+            background: linear-gradient(135deg, #00d2ff, #7b2ff7);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .stat-card:nth-child(2) .stat-value {
+            background: linear-gradient(135deg, #ff2d95, #ff8a65);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .stat-card:nth-child(3) .stat-value {
+            background: linear-gradient(135deg, #00e676, #00b0ff);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .stat-card:nth-child(4) .stat-value {
+            background: linear-gradient(135deg, #ffd740, #ff6d00);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .table-panel {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px; border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px); overflow: hidden;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+        }
+        .table-header {
+            padding: 24px 30px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .table-title { font-size: 1.2rem; font-weight: 600; color: #fff; }
+        .table-count {
+            font-size: 0.85rem; color: #888;
+            background: rgba(255, 255, 255, 0.08);
+            padding: 6px 14px; border-radius: 20px;
+        }
+        .table-wrapper { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; }
+        thead th {
+            background: rgba(0, 210, 255, 0.1);
+            color: #00d2ff; font-weight: 600; font-size: 0.9rem;
+            padding: 16px 20px; text-align: center; white-space: nowrap;
+            position: sticky; top: 0; z-index: 10;
+            border-bottom: 2px solid rgba(0, 210, 255, 0.2);
+            letter-spacing: 1px; text-transform: uppercase;
+        }
+        tbody tr {
+            transition: all 0.2s ease;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+        }
+        tbody tr:hover {
+            background: rgba(0, 210, 255, 0.05);
+            transform: scale(1.002);
+        }
+        tbody tr.row-heji {
+            background: rgba(123, 47, 247, 0.08);
+            border-top: 1px solid rgba(123, 47, 247, 0.2);
+            border-bottom: 1px solid rgba(123, 47, 247, 0.1);
+        }
+        tbody tr.row-heji:hover { background: rgba(123, 47, 247, 0.15); }
+        tbody td {
+            padding: 14px 20px; text-align: center;
+            font-size: 0.95rem; color: #d0d0d0; white-space: nowrap;
+        }
+        tbody td:nth-child(1) { color: #aaa; font-weight: 500; }
+        tbody td:nth-child(2) { color: #fff; font-weight: 600; text-align: left; }
+        tbody tr.row-heji td:nth-child(2) { color: #b388ff; font-weight: 700; }
+        .num {
+            font-family: 'SF Mono', 'Consolas', monospace;
+            font-weight: 500;
+        }
+        .num.highlight { color: #00e676; font-weight: 600; }
+        .no-data { text-align: center; padding: 60px 20px; color: #666; }
+        .footer {
+            text-align: center; padding: 30px 20px;
+            color: #555; font-size: 0.85rem;
+        }
+        @media (max-width: 768px) {
+            .header h1 { font-size: 1.5rem; }
+            .filter-row { flex-direction: column; }
+            .filter-group { min-width: 100%; }
+            .stats-row { grid-template-columns: repeat(2, 1fr); }
+            .stat-value { font-size: 1.4rem; }
+        }
+        .fade-in { animation: fadeIn 0.5s ease forwards; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-particles" id="particles"></div>
+    <div class="container">
+        <div class="header fade-in">
+            <h1>包头地区储值卡余额情况汇总表</h1>
+            <p>2016 - 2025 年度数据统计分析</p>
+        </div>
+        <div class="filter-panel fade-in">
+            <div class="filter-title">筛选条件</div>
+            <div class="filter-row">
+                <div class="filter-group">
+                    <label>按年度筛选</label>
+                    <select id="yearFilter"><option value="all">全部年度</option></select>
+                </div>
+                <div class="filter-group">
+                    <label>按部门名称筛选</label>
+                    <select id="deptFilter"><option value="all">全部部门</option></select>
+                </div>
+                <div class="filter-group" style="flex: 0;">
+                    <label>&nbsp;</label>
+                    <button class="btn-reset" onclick="resetFilters()">重置筛选</button>
+                </div>
+            </div>
+        </div>
+        <div class="stats-row fade-in" id="statsRow">
+            <div class="stat-card">
+                <div class="stat-label">筛选记录数</div>
+                <div class="stat-value" id="statCount">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">总充值金额</div>
+                <div class="stat-value" id="statRecharge">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">总购书金额</div>
+                <div class="stat-value" id="statPurchase">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">总余额</div>
+                <div class="stat-value" id="statBalance">0</div>
+            </div>
+        </div>
+        <div class="table-panel fade-in">
+            <div class="table-header">
+                <span class="table-title">数据明细</span>
+                <span class="table-count" id="tableCount">共 0 条</span>
+            </div>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>年度</th>
+                            <th>部门名称</th>
+                            <th>数量</th>
+                            <th>充值金额</th>
+                            <th>购书金额</th>
+                            <th>余额</th>
+                            <th>全区卡余额</th>
+                            <th>地区卡余额</th>
+                            <th>门店卡余额</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody"></tbody>
+                </table>
+            </div>
+        </div>
+        <div class="footer">
+            <p>包头地区储值卡余额情况汇总表 &copy; 2016-2025</p>
+        </div>
+    </div>
+    <script>
+        const DATA = {"records": [{"年度": "2016年", "部门名称": "包头书城", "数量": 26979.0, "充值金额": 1763391.36, "购书金额": 1356838.16, "余额": 4837173.6, "全区卡余额": 0.0, "地区卡余额": 4837173.6, "门店卡余额": 0.0}, {"年度": "2016年", "部门名称": "昆区新华书店", "数量": 869.0, "充值金额": 152641.0, "购书金额": 53441.38, "余额": 99199.62, "全区卡余额": 0.0, "地区卡余额": 99199.62, "门店卡余额": 0.0}, {"年度": "2016年", "部门名称": "东河新华书店", "数量": 500.0, "充值金额": 19613.3, "购书金额": 7696.6, "余额": 11916.7, "全区卡余额": 0.0, "地区卡余额": 11916.7, "门店卡余额": 0.0}, {"年度": "2016年", "部门名称": "青山新华书店", "数量": 900.0, "充值金额": 202726.0, "购书金额": 59281.43, "余额": 143444.57, "全区卡余额": 0.0, "地区卡余额": 143444.57, "门店卡余额": 0.0}, {"年度": "2016年", "部门名称": "固阳新华书店", "数量": 99.0, "充值金额": 0.0, "购书金额": 0.0, "余额": 0.0, "全区卡余额": 0.0, "地区卡余额": 0.0, "门店卡余额": 0.0}, {"年度": "2016年", "部门名称": "土右新华书店", "数量": 200.0, "充值金额": 30000.0, "购书金额": 4110.1, "余额": 25889.9, "全区卡余额": 0.0, "地区卡余额": 25889.9, "门店卡余额": 0.0}, {"年度": "2016年", "部门名称": "达茂新华书店", "数量": 200.0, "充值金额": 11200.0, "购书金额": 3196.1, "余额": 8003.9, "全区卡余额": 0.0, "地区卡余额": 8003.9, "门店卡余额": 0.0}, {"年度": "2016年", "部门名称": "合计", "数量": 29747.0, "充值金额": 2179571.66, "购书金额": 1484563.77, "余额": 5125628.290000001, "全区卡余额": 0.0, "地区卡余额": 5125628.290000001, "门店卡余额": 0.0}, {"年度": "2017年", "部门名称": "包头书城", "数量": 31774.0, "充值金额": 1956007.46, "购书金额": 1595823.34, "余额": 5197357.72, "全区卡余额": 1080618.61, "地区卡余额": 4116739.11, "门店卡余额": 0.0}, {"年度": "2017年", "部门名称": "昆区新华书店", "数量": 1609.0, "充值金额": 138782.6, "购书金额": 86304.42, "余额": 151677.8, "全区卡余额": 21079.9, "地区卡余额": 130597.9, "门店卡余额": 0.0}, {"年度": "2017年", "部门名称": "东河新华书店", "数量": 1000.0, "充值金额": 245390.4, "购书金额": 69626.25, "余额": 187680.85, "全区卡余额": 0.0, "地区卡余额": 187680.85, "门店卡余额": 0.0}, {"年度": "2017年", "部门名称": "青山新华书店", "数量": 1998.0, "充值金额": 332138.0, "购书金额": 101629.99, "余额": 373952.58, "全区卡余额": 0.0, "地区卡余额": 373952.58, "门店卡余额": 0.0}, {"年度": "2017年", "部门名称": "固阳新华书店", "数量": 299.0, "充值金额": 14400.0, "购书金额": 4389.05, "余额": 10010.95, "全区卡余额": 0.0, "地区卡余额": 10010.95, "门店卡余额": 0.0}, {"年度": "2017年", "部门名称": "土右新华书店", "数量": 200.0, "充值金额": 1148.6, "购书金额": 7477.29, "余额": 19561.21, "全区卡余额": 0.0, "地区卡余额": 19561.21, "门店卡余额": 0.0}, {"年度": "2017年", "部门名称": "达茂新华书店", "数量": 200.0, "充值金额": 11609.0, "购书金额": 8935.6, "余额": 10677.3, "全区卡余额": 0.0, "地区卡余额": 10677.3, "门店卡余额": 0.0}, {"年度": "2017年", "部门名称": "合计", "数量": 37080.0, "充值金额": 2699476.06, "购书金额": 1874185.9400000002, "余额": 5950918.409999999, "全区卡余额": 1101698.51, "地区卡余额": 4849219.899999999, "门店卡余额": 0.0}, {"年度": "2018年", "部门名称": "包头书城", "数量": 39371.0, "充值金额": 2007507.67, "购书金额": 1680189.65, "余额": 5524675.74, "全区卡余额": 2069458.8, "地区卡余额": 3455216.94, "门店卡余额": 0.0}, {"年度": "2018年", "部门名称": "昆区新华书店", "数量": 1999.0, "充值金额": 65131.15, "购书金额": 55543.17, "余额": 161265.78, "全区卡余额": 18553.9, "地区卡余额": 142711.88, "门店卡余额": 0.0}, {"年度": "2018年", "部门名称": "东河新华书店", "数量": 1999.0, "充值金额": 93312.42, "购书金额": 91266.57, "余额": 189726.7, "全区卡余额": 29004.8, "地区卡余额": 160721.9, "门店卡余额": 0.0}, {"年度": "2018年", "部门名称": "青山新华书店", "数量": 3497.0, "充值金额": 351576.8, "购书金额": 203755.12, "余额": 521774.26, "全区卡余额": 180009.76, "地区卡余额": 341764.5, "门店卡余额": 0.0}, {"年度": "2018年", "部门名称": "固阳新华书店", "数量": 299.0, "充值金额": 4250.0, "购书金额": 4391.4, "余额": 9869.55, "全区卡余额": 0.0, "地区卡余额": 9869.55, "门店卡余额": 0.0}, {"年度": "2018年", "部门名称": "土右新华书店", "数量": 200.0, "充值金额": 19633.0, "购书金额": 7600.38, "余额": 31593.83, "全区卡余额": 0.0, "地区卡余额": 31593.83, "门店卡余额": 0.0}, {"年度": "2018年", "部门名称": "达茂新华书店", "数量": 200.0, "充值金额": 0.0, "购书金额": 2859.4, "余额": 7817.9, "全区卡余额": 0.0, "地区卡余额": 7817.9, "门店卡余额": 0.0}, {"年度": "2018年", "部门名称": "合计", "数量": 47565.0, "充值金额": 2541411.0399999996, "购书金额": 2045605.6899999995, "余额": 6446723.760000001, "全区卡余额": 2297027.26, "地区卡余额": 4149696.4999999995, "门店卡余额": 0.0}, {"年度": "2019年", "部门名称": "包头书城", "数量": 48367.0, "充值金额": 2125029.1, "购书金额": 1596142.54, "余额": 6053562.3, "全区卡余额": 3004628.59, "地区卡余额": 3048933.71, "门店卡余额": 0.0}, {"年度": "2019年", "部门名称": "昆区新华书店", "数量": 1999.0, "充值金额": 24900.0, "购书金额": 43849.92, "余额": 142315.86, "全区卡余额": 15982.1, "地区卡余额": 126333.76, "门店卡余额": 0.0}, {"年度": "2019年", "部门名称": "东河新华书店", "数量": 1999.0, "充值金额": 127020.8, "购书金额": 74103.93, "余额": 242643.57, "全区卡余额": 115985.2, "地区卡余额": 126658.37, "门店卡余额": 0.0}, {"年度": "2019年", "部门名称": "青山新华书店", "数量": 3897.0, "充值金额": 281995.0, "购书金额": 179627.67, "余额": 624141.59, "全区卡余额": 353975.71, "地区卡余额": 270165.88, "门店卡余额": 0.0}, {"年度": "2019年", "部门名称": "固阳新华书店", "数量": 299.0, "充值金额": 30000.0, "购书金额": 11349.79, "余额": 28519.76, "全区卡余额": 0.0, "地区卡余额": 28519.76, "门店卡余额": 0.0}, {"年度": "2019年", "部门名称": "土右新华书店", "数量": 200.0, "充值金额": 20370.5, "购书金额": 16882.38, "余额": 35081.95, "全区卡余额": 0.0, "地区卡余额": 35081.95, "门店卡余额": 0.0}, {"年度": "2019年", "部门名称": "达茂新华书店", "数量": 200.0, "充值金额": 13500.0, "购书金额": 8754.6, "余额": 12563.3, "全区卡余额": 0.0, "地区卡余额": 12563.3, "门店卡余额": 0.0}, {"年度": "2019年", "部门名称": "合计", "数量": 56961.0, "充值金额": 2622815.4, "购书金额": 1930710.8299999998, "余额": 7138828.33, "全区卡余额": 3490571.6, "地区卡余额": 3648256.7299999995, "门店卡余额": 0.0}, {"年度": "2020年", "部门名称": "包头书城", "数量": 57540.0, "充值金额": 2868758.95, "购书金额": 1972787.04, "余额": 6949534.21, "全区卡余额": 3442741.73, "地区卡余额": 3506792.48, "门店卡余额": 0.0}, {"年度": "2020年", "部门名称": "昆区新华书店", "数量": 1999.0, "充值金额": 126300.0, "购书金额": 49050.33, "余额": 219565.53, "全区卡余额": 67426.71, "地区卡余额": 152138.82, "门店卡余额": 0.0}, {"年度": "2020年", "部门名称": "东河新华书店", "数量": 1999.0, "充值金额": 67629.3, "购书金额": 65297.82, "余额": 244975.05, "全区卡余额": 135091.22, "地区卡余额": 109883.83, "门店卡余额": 0.0}, {"年度": "2020年", "部门名称": "青山新华书店", "数量": 5393.0, "充值金额": 541492.4, "购书金额": 204882.42, "余额": 960751.57, "全区卡余额": 724628.15, "地区卡余额": 236123.42, "门店卡余额": 0.0}, {"年度": "2020年", "部门名称": "固阳新华书店", "数量": 299.0, "充值金额": 18750.0, "购书金额": 11548.8, "余额": 35720.96, "全区卡余额": 0.0, "地区卡余额": 35720.96, "门店卡余额": 0.0}, {"年度": "2020年", "部门名称": "土右新华书店", "数量": 1200.0, "充值金额": 39572.5, "购书金额": 15192.43, "余额": 59462.02, "全区卡余额": 29766.5, "地区卡余额": 29695.52, "门店卡余额": 0.0}, {"年度": "2020年", "部门名称": "达茂新华书店", "数量": 200.0, "充值金额": 1400.0, "购书金额": 2394.4, "余额": 11568.9, "全区卡余额": 0.0, "地区卡余额": 11568.9, "门店卡余额": 0.0}, {"年度": "2020年", "部门名称": "合计", "数量": 68630.0, "充值金额": 3663903.15, "购书金额": 2321153.24, "余额": 8481578.24, "全区卡余额": 4399654.3100000005, "地区卡余额": 4081923.9299999997, "门店卡余额": 0.0}, {"年度": "2021年", "部门名称": "包头书城", "数量": 71181.0, "充值金额": 3690109.78, "购书金额": 2303954.46, "余额": 8335689.53, "全区卡余额": 3979014.58, "地区卡余额": 4356674.95, "门店卡余额": 0.0}, {"年度": "2021年", "部门名称": "昆区新华书店", "数量": 2999.0, "充值金额": 281605.18, "购书金额": 113229.86, "余额": 387940.85, "全区卡余额": 58628.71, "地区卡余额": 329312.14, "门店卡余额": 0.0}, {"年度": "2021年", "部门名称": "东河新华书店", "数量": 2599.0, "充值金额": 188656.22, "购书金额": 82124.58, "余额": 351506.69, "全区卡余额": 140281.84, "地区卡余额": 211224.85, "门店卡余额": 0.0}, {"年度": "2021年", "部门名称": "青山新华书店", "数量": 7789.0, "充值金额": 1208635.34, "购书金额": 768777.97, "余额": 1400608.94, "全区卡余额": 1189534.67, "地区卡余额": 211074.27, "门店卡余额": 0.0}, {"年度": "2021年", "部门名称": "固阳新华书店", "数量": 1299.0, "充值金额": 38830.1, "购书金额": 18511.6, "余额": 56039.46, "全区卡余额": 0.0, "地区卡余额": 56039.46, "门店卡余额": 0.0}, {"年度": "2021年", "部门名称": "土右新华书店", "数量": 1200.0, "充值金额": 137758.59, "购书金额": 51980.51, "余额": 145240.1, "全区卡余额": 121703.29, "地区卡余额": 23536.81, "门店卡余额": 0.0}, {"年度": "2021年", "部门名称": "达茂新华书店", "数量": 1199.0, "充值金额": 9900.0, "购书金额": 4800.0, "余额": 16668.9, "全区卡余额": 0.0, "地区卡余额": 16668.9, "门店卡余额": 0.0}, {"年度": "2021年", "部门名称": "合计", "数量": 88266.0, "充值金额": 5555495.21, "购书金额": 3343378.98, "余额": 10693694.47, "全区卡余额": 5489163.09, "地区卡余额": 5204531.379999999, "门店卡余额": 0.0}, {"年度": "2022年", "部门名称": "包头书城", "数量": 87520.0, "充值金额": 3498604.62, "购书金额": 2421768.46, "余额": 9412525.69, "全区卡余额": 4531283.37, "地区卡余额": 4881242.32, "门店卡余额": 0.0}, {"年度": "2022年", "部门名称": "昆区新华书店", "数量": 5993.0, "充值金额": 264303.77, "购书金额": 145942.43, "余额": 506302.19, "全区卡余额": 47316.31, "地区卡余额": 458985.88, "门店卡余额": 0.0}, {"年度": "2022年", "部门名称": "东河新华书店", "数量": 3999.0, "充值金额": 513147.52, "购书金额": 130836.51, "余额": 733817.7, "全区卡余额": 116931.84, "地区卡余额": 616885.86, "门店卡余额": 0.0}, {"年度": "2022年", "部门名称": "青山新华书店", "数量": 15386.0, "充值金额": 801145.06, "购书金额": 614660.12, "余额": 1587093.88, "全区卡余额": 1397474.73, "地区卡余额": 189619.15, "门店卡余额": 0.0}, {"年度": "2022年", "部门名称": "固阳新华书店", "数量": 1299.0, "充值金额": 19100.0, "购书金额": 16438.2, "余额": 58701.26, "全区卡余额": 0.0, "地区卡余额": 58701.26, "门店卡余额": 0.0}, {"年度": "2022年", "部门名称": "土右新华书店", "数量": 1200.0, "充值金额": 14601.45, "购书金额": 35308.19, "余额": 124533.36, "全区卡余额": 103228.86, "地区卡余额": 21304.5, "门店卡余额": 0.0}, {"年度": "2022年", "部门名称": "达茂新华书店", "数量": 1199.0, "充值金额": 38271.0, "购书金额": 11043.7, "余额": 43896.2, "全区卡余额": 0.0, "地区卡余额": 43896.2, "门店卡余额": 0.0}, {"年度": "2022年", "部门名称": "合计", "数量": 116596.0, "充值金额": 5149173.420000001, "购书金额": 3375997.6100000003, "余额": 12466870.279999996, "全区卡余额": 6196235.11, "地区卡余额": 6270635.170000001, "门店卡余额": 0.0}, {"年度": "2023年", "部门名称": "包头书城", "数量": 107435.0, "充值金额": 5014820.22, "购书金额": 3405084.77, "余额": 11022261.14, "全区卡余额": 6991134.65, "地区卡余额": 4031126.49, "门店卡余额": 0.0}, {"年度": "2023年", "部门名称": "昆区新华书店", "数量": 6079.0, "充值金额": 422111.78, "购书金额": 182302.13, "余额": 746111.84, "全区卡余额": 44434.4, "地区卡余额": 701677.44, "门店卡余额": 0.0}, {"年度": "2023年", "部门名称": "东河新华书店", "数量": 7988.0, "充值金额": 733020.33, "购书金额": 310448.71, "余额": 1156389.32, "全区卡余额": 675229.87, "地区卡余额": 481159.45, "门店卡余额": 0.0}, {"年度": "2023年", "部门名称": "青山新华书店", "数量": 15389.0, "充值金额": 851360.78, "购书金额": 646133.95, "余额": 1792320.71, "全区卡余额": 1615916.67, "地区卡余额": 176404.04, "门店卡余额": 0.0}, {"年度": "2023年", "部门名称": "固阳新华书店", "数量": 1299.0, "充值金额": 16366.6, "购书金额": 15570.7, "余额": 59497.16, "全区卡余额": 0.0, "地区卡余额": 59497.16, "门店卡余额": 0.0}, {"年度": "2023年", "部门名称": "土右新华书店", "数量": 1200.0, "充值金额": 62059.0, "购书金额": 46899.79, "余额": 139692.57, "全区卡余额": 122033.75, "地区卡余额": 17658.82, "门店卡余额": 0.0}, {"年度": "2023年", "部门名称": "达茂新华书店", "数量": 1297.0, "充值金额": 24811.1, "购书金额": 15036.19, "余额": 53671.11, "全区卡余额": 2413.1, "地区卡余额": 51258.01, "门店卡余额": 0.0}, {"年度": "2023年", "部门名称": "合计", "数量": 140687.0, "充值金额": 7124549.81, "购书金额": 4621476.24, "余额": 14969943.850000001, "全区卡余额": 9451162.44, "地区卡余额": 5518781.41, "门店卡余额": 0.0}, {"年度": "2024年", "部门名称": "包头书城", "数量": 123421.0, "充值金额": 3884565.78, "购书金额": 2839023.89, "余额": 12067803.03, "全区卡余额": 8463704.6, "地区卡余额": 3604098.43, "门店卡余额": 0.0}, {"年度": "2024年", "部门名称": "昆区新华书店", "数量": 9464.0, "充值金额": 649787.72, "购书金额": 288993.71, "余额": 1106905.85, "全区卡余额": 541947.02, "地区卡余额": 564958.83, "门店卡余额": 0.0}, {"年度": "2024年", "部门名称": "东河新华书店", "数量": 8387.0, "充值金额": 267899.2, "购书金额": 345434.91, "余额": 1074191.28, "全区卡余额": 665978.82, "地区卡余额": 408212.46, "门店卡余额": 0.0}, {"年度": "2024年", "部门名称": "青山新华书店", "数量": 15486.0, "充值金额": 817439.41, "购书金额": 581969.18, "余额": 2027790.94, "全区卡余额": 1862498.38, "地区卡余额": 165292.56, "门店卡余额": 0.0}, {"年度": "2024年", "部门名称": "固阳新华书店", "数量": 1346.0, "充值金额": 24632.8, "购书金额": 12328.4, "余额": 71801.56, "全区卡余额": 10416.5, "地区卡余额": 61385.06, "门店卡余额": 0.0}, {"年度": "2024年", "部门名称": "土右新华书店", "数量": 1200.0, "充值金额": 37352.28, "购书金额": 34088.2, "余额": 142956.65, "全区卡余额": 128166.33, "地区卡余额": 14790.32, "门店卡余额": 0.0}, {"年度": "2024年", "部门名称": "达茂新华书店", "数量": 1378.0, "充值金额": 21040.07, "购书金额": 11871.88, "余额": 62839.3, "全区卡余额": 14672.8, "地区卡余额": 48166.5, "门店卡余额": 0.0}, {"年度": "2024年", "部门名称": "合计", "数量": 160682.0, "充值金额": 5702717.260000001, "购书金额": 4113710.1700000004, "余额": 16554288.61, "全区卡余额": 11687384.450000001, "地区卡余额": 4866904.16, "门店卡余额": 0.0}, {"年度": "2025年", "部门名称": "包头书城", "数量": 139774.0, "充值金额": 4387736.73, "购书金额": 3519126.74, "余额": 12936413.02, "全区卡余额": 9657213.39, "地区卡余额": 3279199.63, "门店卡余额": 0.0}, {"年度": "2025年", "部门名称": "昆区新华书店", "数量": 11858.0, "充值金额": 411979.72, "购书金额": 330997.88, "余额": 1187887.69, "全区卡余额": 705721.06, "地区卡余额": 482166.63, "门店卡余额": 0.0}, {"年度": "2025年", "部门名称": "东河新华书店", "数量": 8785.0, "充值金额": 137523.96, "购书金额": 257501.44, "余额": 949733.91, "全区卡余额": 594694.34, "地区卡余额": 355039.57, "门店卡余额": 0.0}, {"年度": "2025年", "部门名称": "青山新华书店", "数量": 17981.0, "充值金额": 729728.41, "购书金额": 541447.13, "余额": 2216072.22, "全区卡余额": 2060225.45, "地区卡余额": 155846.77, "门店卡余额": 0.0}, {"年度": "2025年", "部门名称": "固阳新华书店", "数量": 1381.0, "充值金额": 22828.31, "购书金额": 16707.1, "余额": 77922.77, "全区卡余额": 13742.7, "地区卡余额": 64180.07, "门店卡余额": 0.0}, {"年度": "2025年", "部门名称": "土右新华书店", "数量": 1200.0, "充值金额": 15089.63, "购书金额": 34671.88, "余额": 123374.4, "全区卡余额": 110434.58, "地区卡余额": 12939.82, "门店卡余额": 0.0}, {"年度": "2025年", "部门名称": "达茂新华书店", "数量": 1457.0, "充值金额": 18300.0, "购书金额": 9189.4, "余额": 71949.9, "全区卡余额": 26627.7, "地区卡余额": 45322.2, "门店卡余额": 0.0}, {"年度": "2025年", "部门名称": "合计", "数量": 182436.0, "充值金额": 5723186.76, "购书金额": 4709641.57, "余额": 17563353.909999996, "全区卡余额": 13168659.219999999, "地区卡余额": 4394694.69, "门店卡余额": 0.0}], "years": ["2016年", "2017年", "2018年", "2019年", "2020年", "2021年", "2022年", "2023年", "2024年", "2025年"], "departments": ["东河新华书店", "包头书城", "固阳新华书店", "土右新华书店", "昆区新华书店", "达茂新华书店", "青山新华书店"]};
+
+        function createParticles() {
+            const container = document.getElementById('particles');
+            for (let i = 0; i < 30; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.width = (Math.random() * 4 + 2) + 'px';
+                particle.style.height = particle.style.width;
+                particle.style.animationDuration = (Math.random() * 20 + 15) + 's';
+                particle.style.animationDelay = (Math.random() * 20) + 's';
+                container.appendChild(particle);
+            }
+        }
+
+        function formatNumber(num) {
+            if (num >= 100000000) return (num / 100000000).toFixed(2) + '亿';
+            else if (num >= 10000) return (num / 10000).toFixed(2) + '万';
+            return num.toLocaleString('zh-CN', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+        }
+
+        function formatNumberFull(num) {
+            return num.toLocaleString('zh-CN', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+        }
+
+        function initFilters() {
+            const yearSelect = document.getElementById('yearFilter');
+            const deptSelect = document.getElementById('deptFilter');
+            DATA.years.forEach(year => {
+                const opt = document.createElement('option');
+                opt.value = year; opt.textContent = year;
+                yearSelect.appendChild(opt);
+            });
+            DATA.departments.forEach(dept => {
+                const opt = document.createElement('option');
+                opt.value = dept; opt.textContent = dept;
+                deptSelect.appendChild(opt);
+            });
+        }
+
+        function renderTable() {
+            const yearVal = document.getElementById('yearFilter').value;
+            const deptVal = document.getElementById('deptFilter').value;
+            let filtered = DATA.records.filter(r => {
+                const yearMatch = yearVal === 'all' || r['年度'] === yearVal;
+                const deptMatch = deptVal === 'all' || r['部门名称'] === deptVal;
+                return yearMatch && deptMatch;
+            });
+
+            const tbody = document.getElementById('tableBody');
+            tbody.innerHTML = '';
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="9"><div class="no-data"><p>没有匹配的数据</p></div></td></tr>';
+            } else {
+                filtered.forEach((r, idx) => {
+                    const tr = document.createElement('tr');
+                    if (r['部门名称'] === '合计') tr.className = 'row-heji';
+                    tr.style.animationDelay = (idx * 0.03) + 's';
+                    tr.classList.add('fade-in');
+                    tr.innerHTML = `
+                        <td>${r['年度']}</td>
+                        <td>${r['部门名称']}</td>
+                        <td class="num">${r['数量'].toLocaleString('zh-CN')}</td>
+                        <td class="num">${formatNumberFull(r['充值金额'])}</td>
+                        <td class="num">${formatNumberFull(r['购书金额'])}</td>
+                        <td class="num highlight">${formatNumberFull(r['余额'])}</td>
+                        <td class="num">${formatNumberFull(r['全区卡余额'])}</td>
+                        <td class="num">${formatNumberFull(r['地区卡余额'])}</td>
+                        <td class="num">${formatNumberFull(r['门店卡余额'])}</td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            }
+
+            const nonHeji = filtered.filter(r => r['部门名称'] !== '合计');
+            document.getElementById('statCount').textContent = nonHeji.length;
+            const totalRecharge = nonHeji.reduce((s, r) => s + r['充值金额'], 0);
+            const totalPurchase = nonHeji.reduce((s, r) => s + r['购书金额'], 0);
+            const totalBalance = nonHeji.reduce((s, r) => s + r['余额'], 0);
+            document.getElementById('statRecharge').textContent = formatNumber(totalRecharge);
+            document.getElementById('statPurchase').textContent = formatNumber(totalPurchase);
+            document.getElementById('statBalance').textContent = formatNumber(totalBalance);
+            document.getElementById('tableCount').textContent = '共 ' + filtered.length + ' 条';
+        }
+
+        function resetFilters() {
+            document.getElementById('yearFilter').value = 'all';
+            document.getElementById('deptFilter').value = 'all';
+            renderTable();
+        }
+
+        document.getElementById('yearFilter').addEventListener('change', renderTable);
+        document.getElementById('deptFilter').addEventListener('change', renderTable);
+
+        createParticles();
+        initFilters();
+        renderTable();
+    </script>
+</body>
+</html>
