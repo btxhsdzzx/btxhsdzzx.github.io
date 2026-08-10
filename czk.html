@@ -126,7 +126,7 @@
         const deptList = [...new Set(rawData.map(d => d.dept))].sort();
         const yearSelect = document.getElementById('yearFilter');
         const deptSelect = document.getElementById('deptFilter');
-        years.forEach(y => { let o = document.createElement('option'); o.value = y; o.textContent = y + '年'; yearSelect.appendChild(o); });
+        years.forEach(y => { let o = document.createElement('option'); o.value = y; o.textContent = y ; yearSelect.appendChild(o); });
         deptList.forEach(d => { let o = document.createElement('option'); o.value = d; o.textContent = d; deptSelect.appendChild(o); });
     }
 
