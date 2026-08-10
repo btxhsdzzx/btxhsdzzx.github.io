@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>包头地区储值卡余额情况汇总表</title>
-    <!-- 仅保留 Excel 导出库 -->
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     <style>
         :root { --primary-color: #6366f1; --secondary-color: #8b5cf6; --glass-bg: rgba(255,255,255,0.1); --glass-border: rgba(255,255,255,0.2); }
@@ -74,23 +73,34 @@
                 <div class="filter-group"><label>按年度筛选</label><select id="yearFilter"><option value="">全部年度</option></select></div>
                 <div class="filter-group"><label>按部门名称筛选</label><select id="deptFilter"><option value="">全部部门</option></select></div>
                 <div class="btn-group">
-                    <button class="btn-reset" onclick="resetFilters()">🔄 重置</button>
-                    <button class="btn-print" onclick="handlePrint()">🖨️ 打印</button>
-                    <button class="btn-excel" onclick="exportExcel()">📊 导出Excel</button>
+                    <button class="btn-reset" onclick="resetFilters()">重置</button>
+                    <button class="btn-print" onclick="handlePrint()">打印</button>
+                    <button class="btn-excel" onclick="exportExcel()">导出Excel</button>
                 </div>
             </div>
         </div>
         <div class="stats-row" id="statsRow">
             <div class="stat-card"><div class="stat-label">筛选记录数</div><div class="stat-value" id="statCount">0</div></div>
+            <div class="stat-card"><div class="stat-label">总数量</div><div class="stat-value" id="statQuantity">0</div></div>
             <div class="stat-card"><div class="stat-label">总充值金额</div><div class="stat-value" id="statRecharge">¥0.00</div></div>
             <div class="stat-card"><div class="stat-label">总购书金额</div><div class="stat-value" id="statPurchase">¥0.00</div></div>
-            <div class="stat-card"><div class="stat-label">总余额</div><div class="stat-value" id="statBalance">¥0.00</div></div>
         </div>
-        <div class="glass-panel welcome-card" id="welcomeCard"><h2>👋 欢迎使用数据查询系统</h2><p>请通过上方的「年度」或「部门」下拉框进行筛选查询</p></div>
+        <div class="glass-panel welcome-card" id="welcomeCard"><h2>欢迎使用数据查询系统</h2><p>请通过上方的「年度」或「部门」下拉框进行筛选查询</p></div>
         <div class="glass-panel hidden" id="tablePanel">
             <div class="table-container">
                 <table id="dataTable">
-                    <thead><tr><th>年度</th><th>部门名称</th><th>期初余额</th><th>本期充值</th><th>本期购书</th><th>期末余额</th></tr></thead>
+                    <thead>
+                        <tr>
+                            <th>年度</th>
+                            <th>部门名称</th>
+                            <th>数量</th>
+                            <th>充值金额</th>
+                            <th>购书金额</th>
+                            <th>余额</th>
+                            <th>全区卡余额</th>
+                            <th>地区卡余额</th>
+                        </tr>
+                    </thead>
                     <tbody id="tableBody"></tbody>
                 </table>
             </div>
@@ -98,22 +108,7 @@
     </div>
 
 <script>
-    // 动态生成80条模拟数据 (10年 × 8家门店)
-    const depts = ["包头书城", "昆区新华书店", "东河新华书店", "青山新华书店", "固阳新华书店", "土右新华书店", "达茂新华书店", "石拐新华书店"];
-    const rawData = [];
-    for (let y = 2025; y >= 2016; y--) {
-        depts.forEach((dept, index) => {
-            const base = 25000 - (index * 3000) - ((2025 - y) * 1000);
-            const recharge = base * 3;
-            const purchase = recharge * 0.95;
-            const end = base + recharge - purchase;
-            rawData.push({
-                year: String(y), dept: dept,
-                begin: Math.max(base, 1000), recharge: Math.max(recharge, 5000),
-                purchase: Math.max(purchase, 4000), end: Math.max(end, 1000)
-            });
-        });
-    }
+    const rawData = [{"year": "2016年", "dept": "包头书城", "quantity": 26979.0, "recharge": 1763391.36, "purchase": 1356838.16, "balance": 4837173.6, "regionBalance": 0.0, "localBalance": 4837173.6}, {"year": "2016年", "dept": "昆区新华书店", "quantity": 869.0, "recharge": 152641.0, "purchase": 53441.38, "balance": 99199.62, "regionBalance": 0.0, "localBalance": 99199.62}, {"year": "2016年", "dept": "东河新华书店", "quantity": 500.0, "recharge": 19613.3, "purchase": 7696.6, "balance": 11916.7, "regionBalance": 0.0, "localBalance": 11916.7}, {"year": "2016年", "dept": "青山新华书店", "quantity": 900.0, "recharge": 202726.0, "purchase": 59281.43, "balance": 143444.57, "regionBalance": 0.0, "localBalance": 143444.57}, {"year": "2016年", "dept": "固阳新华书店", "quantity": 99.0, "recharge": 0.0, "purchase": 0.0, "balance": 0.0, "regionBalance": 0.0, "localBalance": 0.0, }, {"year": "2016年", "dept": "土右新华书店", "quantity": 200.0, "recharge": 30000.0, "purchase": 4110.1, "balance": 25889.9, "regionBalance": 0.0, "localBalance": 25889.9}, {"year": "2016年", "dept": "达茂新华书店", "quantity": 200.0, "recharge": 11200.0, "purchase": 3196.1, "balance": 8003.9, "regionBalance": 0.0, "localBalance": 8003.9}, {"year": "2016年", "dept": "合计", "quantity": 29747.0, "recharge": 2179571.66, "purchase": 1484563.77, "balance": 5125628.290000001, "regionBalance": 0.0, "localBalance": 5125628.290000001}, {"year": "2017年", "dept": "包头书城", "quantity": 31774.0, "recharge": 1956007.46, "purchase": 1595823.34, "balance": 5197357.72, "regionBalance": 1080618.61, "localBalance": 4116739.11}, {"year": "2017年", "dept": "昆区新华书店", "quantity": 1609.0, "recharge": 138782.6, "purchase": 86304.42, "balance": 151677.8, "regionBalance": 21079.9, "localBalance": 130597.9}, {"year": "2017年", "dept": "东河新华书店", "quantity": 1000.0, "recharge": 245390.4, "purchase": 69626.25, "balance": 187680.85, "regionBalance": 0.0, "localBalance": 187680.85}, {"year": "2017年", "dept": "青山新华书店", "quantity": 1998.0, "recharge": 332138.0, "purchase": 101629.99, "balance": 373952.58, "regionBalance": 0.0, "localBalance": 373952.58}, {"year": "2017年", "dept": "固阳新华书店", "quantity": 299.0, "recharge": 14400.0, "purchase": 4389.05, "balance": 10010.95, "regionBalance": 0.0, "localBalance": 10010.95}, {"year": "2017年", "dept": "土右新华书店", "quantity": 200.0, "recharge": 1148.6, "purchase": 7477.29, "balance": 19561.21, "regionBalance": 0.0, "localBalance": 19561.21}, {"year": "2017年", "dept": "达茂新华书店", "quantity": 200.0, "recharge": 11609.0, "purchase": 8935.6, "balance": 10677.3, "regionBalance": 0.0, "localBalance": 10677.3}, {"year": "2017年", "dept": "合计", "quantity": 37080.0, "recharge": 2699476.06, "purchase": 1874185.9400000002, "balance": 5950918.409999999, "regionBalance": 1101698.51, "localBalance": 4849219.899999999}, {"year": "2018年", "dept": "包头书城", "quantity": 39371.0, "recharge": 2007507.67, "purchase": 1680189.65, "balance": 5524675.74, "regionBalance": 2069458.8, "localBalance": 3455216.94}, {"year": "2018年", "dept": "昆区新华书店", "quantity": 1999.0, "recharge": 65131.15, "purchase": 55543.17,"balance": 161265.78, "regionBalance": 18553.9, "localBalance": 142711.88 }, {"year": "2018年", "dept": "东河新华书店", "quantity": 1999.0, "recharge": 93312.42, "purchase": 91266.57, "balance": 189726.7, "regionBalance": 29004.8, "localBalance": 160721.9}, {"year": "2018年", "dept": "青山新华书店", "quantity": 3497.0, "recharge": 351576.8, "purchase": 203755.12, "balance": 521774.26, "regionBalance": 180009.76, "localBalance": 341764.5}, {"year": "2018年", "dept": "固阳新华书店", "quantity": 299.0, "recharge": 4250.0, "purchase": 4391.4, "balance": 9869.55, "regionBalance": 0.0, "localBalance": 9869.55}, {"year": "2018年", "dept": "土右新华书店", "quantity": 200.0, "recharge": 19633.0, "purchase": 7600.38, "balance": 31593.83, "regionBalance": 0.0, "localBalance": 31593.83}, {"year": "2018年", "dept": "达茂新华书店", "quantity": 200.0, "recharge": 0.0, "purchase": 2859.4, "balance": 7817.9, "regionBalance": 0.0, "localBalance": 7817.9}, {"year": "2018年", "dept": "合计", "quantity": 47565.0, "recharge": 2541411.0399999996, "purchase": 2045605.6899999995, "balance": 6446723.760000001, "regionBalance": 2297027.26, "localBalance": 4149696.4999999995}, {"year": "2019年", "dept": "包头书城", "quantity": 48367.0, "recharge": 2125029.1, "purchase": 1596142.54, "balance": 6053562.3, "regionBalance": 3004628.59, "localBalance": 3048933.71}, {"year": "2019年", "dept": "昆区新华书店", "quantity": 1999.0, "recharge": 24900.0, "purchase": 43849.92, "balance": 142315.86, "regionBalance": 15982.1, "localBalance": 126333.76}, {"year": "2019年", "dept": "东河新华书店", "quantity": 1999.0, "recharge": 127020.8, "purchase": 74103.93, "balance": 242643.57, "regionBalance": 115985.2, "localBalance": 126658.37}, {"year": "2019年", "dept": "青山新华书店", "quantity": 3897.0, "recharge": 281995.0, "purchase": 179627.67, "balance": 624141.59, "regionBalance": 353975.71, "localBalance": 270165.88}, {"year": "2019年", "dept": "固阳新华书店", "quantity": 299.0, "recharge": 30000.0, "purchase": 11349.79, "balance": 28519.76, "regionBalance": 0.0, "localBalance": 28519.76}, {"year": "2019年", "dept": "土右新华书店", "quantity": 200.0, "recharge": 20370.5, "purchase": 16882.38, "balance": 35081.95, "regionBalance": 0.0, "localBalance": 35081.95}, {"year": "2019年", "dept": "达茂新华书店", "quantity": 200.0, "recharge": 13500.0, "purchase": 8754.6, "balance": 12563.3, "regionBalance": 0.0, "localBalance": 12563.3}, {"year": "2019年", "dept": "合计", "quantity": 56961.0, "recharge": 2622815.4, "purchase": 1930710.8299999998, "balance": 7138828.33, "regionBalance": 3490571.6, "localBalance": 3648256.7299999995}, {"year": "2020年", "dept": "包头书城", "quantity": 57540.0, "recharge": 2868758.95, "purchase": 1972787.04, "balance": 6949534.21, "regionBalance": 3442741.73, "localBalance": 3506792.48}, {"year": "2020年", "dept": "昆区新华书店", "quantity": 1999.0, "recharge": 126300.0, "purchase": 49050.33, "balance": 219565.53, "regionBalance": 67426.71, "localBalance": 152138.82}, {"year": "2020年", "dept": "东河新华书店", "quantity": 1999.0, "recharge": 67629.3, "purchase": 65297.82, "balance": 244975.05, "regionBalance": 135091.22, "localBalance": 109883.83}, {"year": "2020年", "dept": "青山新华书店", "quantity": 5393.0, "recharge": 541492.4, "purchase": 204882.42, "balance": 960751.57, "regionBalance": 724628.15, "localBalance": 236123.42,}, {"year": "2020年", "dept": "固阳新华书店", "quantity": 299.0, "recharge": 18750.0, "purchase": 11548.8, "balance": 35720.96, "regionBalance": 0.0, "localBalance": 35720.96}, {"year": "2020年", "dept": "土右新华书店", "quantity": 1200.0, "recharge": 39572.5, "purchase": 15192.43, "balance": 59462.02, "regionBalance": 29766.5, "localBalance": 29695.52}, {"year": "2020年", "dept": "达茂新华书店", "quantity": 200.0, "recharge": 1400.0, "purchase": 2394.4, "balance": 11568.9, "regionBalance": 0.0, "localBalance": 11568.9}, {"year": "2020年", "dept": "合计", "quantity": 68630.0, "recharge": 3663903.15, "purchase": 2321153.24, "balance": 8481578.24, "regionBalance": 4399654.3100000005, "localBalance": 4081923.9299999997}, {"year": "2021年", "dept": "包头书城", "quantity": 71181.0, "recharge": 3690109.78, "purchase": 2303954.46, "balance": 8335689.53, "regionBalance": 3979014.58, "localBalance": 4356674.95}, {"year": "2021年", "dept": "昆区新华书店", "quantity": 2999.0, "recharge": 281605.18, "purchase": 113229.86, "balance": 387940.85, "regionBalance": 58628.71, "localBalance": 329312.14}, {"year": "2021年", "dept": "东河新华书店", "quantity": 2599.0, "recharge": 188656.22, "purchase": 82124.58, "balance": 351506.69, "regionBalance": 140281.84, "localBalance": 211224.85}, {"year": "2021年", "dept": "青山新华书店", "quantity": 7789.0, "recharge": 1208635.34, "purchase": 768777.97, "balance": 1400608.94, "regionBalance": 1189534.67, "localBalance": 211074.27}, {"year": "2021年", "dept": "固阳新华书店", "quantity": 1299.0, "recharge": 38830.1, "purchase": 18511.6, "balance": 56039.46, "regionBalance": 0.0, "localBalance": 56039.46}, {"year": "2021年", "dept": "土右新华书店", "quantity": 1200.0, "recharge": 137758.59, "purchase": 51980.51, "balance": 145240.1, "regionBalance": 121703.29, "localBalance": 23536.81}, {"year": "2021年", "dept": "达茂新华书店", "quantity": 1199.0, "recharge": 9900.0, "purchase": 4800.0, "balance": 16668.9, "regionBalance": 0.0, "localBalance": 16668.9}, {"year": "2021年", "dept": "合计", "quantity": 88266.0, "recharge": 5555495.21, "purchase": 3343378.98, "balance": 10693694.47, "regionBalance": 5489163.09, "localBalance": 5204531.379999999}, {"year": "2022年", "dept": "包头书城", "quantity": 87520.0, "recharge": 3498604.62, "purchase": 2421768.46, "balance": 9412525.69, "regionBalance": 4531283.37, "localBalance": 4881242.32}, {"year": "2022年", "dept": "昆区新华书店", "quantity": 5993.0, "recharge": 264303.77, "purchase": 145942.43, "balance": 506302.19, "regionBalance": 47316.31, "localBalance": 458985.88}, {"year": "2022年", "dept": "东河新华书店", "quantity": 3999.0, "recharge": 513147.52, "purchase": 130836.51, "balance": 733817.7, "regionBalance": 116931.84, "localBalance": 616885.86}, {"year": "2022年", "dept": "青山新华书店", "quantity": 15386.0, "recharge": 801145.06, "purchase": 614660.12, "balance": 1587093.88, "regionBalance": 1397474.73, "localBalance": 189619.15}, {"year": "2022年", "dept": "固阳新华书店", "quantity": 1299.0, "recharge": 19100.0, "purchase": 16438.2, "balance": 58701.26, "regionBalance": 0.0, "localBalance": 58701.26}, {"year": "2022年", "dept": "土右新华书店", "quantity": 1200.0, "recharge": 14601.45, "purchase": 35308.19, "balance": 124533.36, "regionBalance": 103228.86, "localBalance": 21304.5}, {"year": "2022年", "dept": "达茂新华书店", "quantity": 1199.0, "recharge": 38271.0, "purchase": 11043.7, "balance": 43896.2, "regionBalance": 0.0, "localBalance": 43896.2}, {"year": "2022年", "dept": "合计", "quantity": 116596.0, "recharge": 5149173.420000001, "purchase": 3375997.6100000003, "balance": 12466870.279999996, "regionBalance": 6196235.11, "localBalance": 6270635.170000001}, {"year": "2023年", "dept": "包头书城", "quantity": 107435.0, "recharge": 5014820.22, "purchase": 3405084.77, "balance": 11022261.14, "regionBalance": 6991134.65, "localBalance": 4031126.49}, {"year": "2023年", "dept": "昆区新华书店", "quantity": 6079.0, "recharge": 422111.78, "purchase": 182302.13, "balance": 746111.84, "regionBalance": 44434.4, "localBalance": 701677.44}, {"year": "2023年", "dept": "东河新华书店", "quantity": 7988.0, "recharge": 733020.33, "purchase": 310448.71, "balance": 1156389.32, "regionBalance": 675229.87, "localBalance": 481159.45}, {"year": "2023年", "dept": "青山新华书店", "quantity": 15389.0, "recharge": 851360.78, "purchase": 646133.95, "balance": 1792320.71, "regionBalance": 1615916.67, "localBalance": 176404.04}, {"year": "2023年", "dept": "固阳新华书店", "quantity": 1299.0, "recharge": 16366.6, "purchase": 15570.7, "balance": 59497.16, "regionBalance": 0.0, "localBalance": 59497.16}, {"year": "2023年", "dept": "土右新华书店", "quantity": 1200.0, "recharge": 62059.0, "purchase": 46899.79, "balance": 139692.57, "regionBalance": 122033.75, "localBalance": 17658.82}, {"year": "2023年", "dept": "达茂新华书店", "quantity": 1297.0, "recharge": 24811.1, "purchase": 15036.19, "balance": 53671.11, "regionBalance": 2413.1, "localBalance": 51258.01}, {"year": "2023年", "dept": "合计", "quantity": 140687.0, "recharge": 7124549.81, "purchase": 4621476.24, "balance": 14969943.850000001, "regionBalance": 9451162.44, "localBalance": 5518781.41}, {"year": "2024年", "dept": "包头书城", "quantity": 123421.0, "recharge": 3884565.78, "purchase": 2839023.89, "balance": 12067803.03, "regionBalance": 8463704.6, "localBalance": 3604098.43}, {"year": "2024年", "dept": "昆区新华书店", "quantity": 9464.0, "recharge": 649787.72, "purchase": 288993.71, "balance": 1106905.85, "regionBalance": 541947.02, "localBalance": 564958.83}, {"year": "2024年", "dept": "东河新华书店", "quantity": 8387.0, "recharge": 267899.2, "purchase": 345434.91, "balance": 1074191.28, "regionBalance": 665978.82, "localBalance": 408212.46}, {"year": "2024年", "dept": "青山新华书店", "quantity": 15486.0, "recharge": 817439.41, "purchase": 581969.18, "balance": 2027790.94, "regionBalance": 1862498.38, "localBalance": 165292.56}, {"year": "2024年", "dept": "固阳新华书店", "quantity": 1346.0, "recharge": 24632.8, "purchase": 12328.4, "balance": 71801.56, "regionBalance": 10416.5, "localBalance": 61385.06}, {"year": "2024年", "dept": "土右新华书店", "quantity": 1200.0, "recharge": 37352.28, "purchase": 34088.2, "balance": 142956.65, "regionBalance": 128166.33, "localBalance": 14790.32}, {"year": "2024年", "dept": "达茂新华书店", "quantity": 1378.0, "recharge": 21040.07, "purchase": 11871.88, "balance": 62839.3, "regionBalance": 14672.8, "localBalance": 48166.5}, {"year": "2024年", "dept": "合计", "quantity": 160682.0, "recharge": 5702717.260000001, "purchase": 4113710.1700000004, "balance": 16554288.61, "regionBalance": 11687384.450000001, "localBalance": 4866904.16}, {"year": "2025年", "dept": "包头书城", "quantity": 139774.0, "recharge": 4387736.73, "purchase": 3519126.74, "balance": 12936413.02, "regionBalance": 9657213.39, "localBalance": 3279199.63}, {"year": "2025年", "dept": "昆区新华书店", "quantity": 11858.0, "recharge": 411979.72, "purchase": 330997.88, "balance": 1187887.69, "regionBalance": 705721.06, "localBalance": 482166.63}, {"year": "2025年", "dept": "东河新华书店", "quantity": 8785.0, "recharge": 137523.96, "purchase": 257501.44, "balance": 949733.91, "regionBalance": 594694.34, "localBalance": 355039.57}, {"year": "2025年", "dept": "青山新华书店", "quantity": 17981.0, "recharge": 729728.41, "purchase": 541447.13, "balance": 2216072.22, "regionBalance": 2060225.45, "localBalance": 155846.77}, {"year": "2025年", "dept": "固阳新华书店", "quantity": 1381.0, "recharge": 22828.31, "purchase": 16707.1, "balance": 77922.77, "regionBalance": 13742.7, "localBalance": 64180.07}, {"year": "2025年", "dept": "土右新华书店", "quantity": 1200.0, "recharge": 15089.63, "purchase": 34671.88, "balance": 123374.4, "regionBalance": 110434.58, "localBalance": 12939.82}, {"year": "2025年", "dept": "达茂新华书店", "quantity": 1457.0, "recharge": 18300.0, "purchase": 9189.4, "balance": 71949.9, "regionBalance": 26627.7, "localBalance": 45322.2}, {"year": "2025年", "dept": "合计", "quantity": 182436.0, "recharge": 5723186.76, "purchase": 4709641.57, "balance": 17563353.909999996, "regionBalance": 13168659.219999999, "localBalance": 4394694.69}];
 
     document.addEventListener('DOMContentLoaded', () => {
         initFilters(); initParticles(); updatePrintDate();
@@ -157,29 +152,27 @@
         if (data.length === 0) { welcomeCard.classList.remove('hidden'); tablePanel.classList.add('hidden'); updateStats([]); return; }
         welcomeCard.classList.add('hidden'); tablePanel.classList.remove('hidden');
 
-        let tR = 0, tP = 0, tE = 0;
+        let tR = 0, tP = 0, tQ = 0;
         data.forEach(item => {
             const tr = document.createElement('tr');
-            tr.innerHTML = `<td>${item.year}</td><td>${item.dept}</td><td>${item.begin.toLocaleString('zh-CN', {minimumFractionDigits: 2})}</td><td>${item.recharge.toLocaleString('zh-CN', {minimumFractionDigits: 2})}</td><td>${item.purchase.toLocaleString('zh-CN', {minimumFractionDigits: 2})}</td><td style="color: #4ade80; font-weight:600;">${item.end.toLocaleString('zh-CN', {minimumFractionDigits: 2})}</td>`;
+            const isTotal = item.dept === '合计';
+            if (isTotal) tr.className = 'total-row';
+            tr.innerHTML = `<td>${item.year}</td><td>${item.dept}</td><td>${item.quantity.toLocaleString('zh-CN')}</td><td>${item.recharge.toLocaleString('zh-CN', {minimumFractionDigits: 2})}</td><td>${item.purchase.toLocaleString('zh-CN', {minimumFractionDigits: 2})}</td><td style="color: #4ade80; font-weight:600;">${item.balance.toLocaleString('zh-CN', {minimumFractionDigits: 2})}</td><td>${item.regionBalance.toLocaleString('zh-CN', {minimumFractionDigits: 2})}</td><td>${item.localBalance.toLocaleString('zh-CN', {minimumFractionDigits: 2})}</td>`;
             tbody.appendChild(tr);
-            tR += item.recharge; tP += item.purchase; tE += item.end;
+            if (!isTotal) {
+                tQ += item.quantity;
+                tR += item.recharge;
+                tP += item.purchase;
+            }
         });
-
-        const totalTr = document.createElement('tr');
-        totalTr.className = 'total-row';
-        totalTr.innerHTML = `<td colspan="2">合 计</td><td>-</td><td>${tR.toLocaleString('zh-CN', {minimumFractionDigits: 2})}</td><td>${tP.toLocaleString('zh-CN', {minimumFractionDigits: 2})}</td><td style="color: #c084fc;">${tE.toLocaleString('zh-CN', {minimumFractionDigits: 2})}</td>`;
-        tbody.appendChild(totalTr);
-        updateStats(data);
+        updateStats(data, tQ, tR, tP);
     }
 
-    function updateStats(data) {
-        document.getElementById('statCount').textContent = data.length;
-        const sumR = data.reduce((a,b) => a + b.recharge, 0);
-        const sumP = data.reduce((a,b) => a + b.purchase, 0);
-        const sumE = data.reduce((a,b) => a + b.end, 0);
-        document.getElementById('statRecharge').textContent = '¥' + sumR.toLocaleString('zh-CN', {minimumFractionDigits: 2});
-        document.getElementById('statPurchase').textContent = '¥' + sumP.toLocaleString('zh-CN', {minimumFractionDigits: 2});
-        document.getElementById('statBalance').textContent = '¥' + sumE.toLocaleString('zh-CN', {minimumFractionDigits: 2});
+    function updateStats(data, totalQ, totalR, totalP) {
+        document.getElementById('statCount').textContent = data.filter(d => d.dept !== '合计').length;
+        document.getElementById('statQuantity').textContent = totalQ.toLocaleString('zh-CN');
+        document.getElementById('statRecharge').textContent = '¥' + totalR.toLocaleString('zh-CN', {minimumFractionDigits: 2});
+        document.getElementById('statPurchase').textContent = '¥' + totalP.toLocaleString('zh-CN', {minimumFractionDigits: 2});
     }
 
     function applyFilters() {
@@ -194,7 +187,7 @@
         document.getElementById('deptFilter').value = '';
         document.getElementById('welcomeCard').classList.remove('hidden');
         document.getElementById('tablePanel').classList.add('hidden');
-        updateStats([]);
+        updateStats([], 0, 0, 0);
     }
 
     function handlePrint() {
@@ -211,18 +204,15 @@
         const filtered = rawData.filter(item => (y === '' || item.year === y) && (d === '' || item.dept === d));
         if(filtered.length === 0) return alert('当前没有数据可以导出');
         
-        const wsData = [["年度", "部门名称", "期初余额", "本期充值", "本期购书", "期末余额"]];
-        let tR=0, tP=0, tE=0;
+        const wsData = [["年度", "部门名称", "数量", "充值金额", "购书金额", "余额", "全区卡余额", "地区卡余额", "门店卡余额"]];
         filtered.forEach(item => {
-            wsData.push([item.year, item.dept, item.begin, item.recharge, item.purchase, item.end]);
-            tR += item.recharge; tP += item.purchase; tE += item.end;
+            wsData.push([item.year, item.dept, item.quantity, item.recharge, item.purchase, item.balance, item.regionBalance, item.localBalance]);
         });
-        wsData.push(["合计", "", "", tR, tP, tE]);
         
         const ws = XLSX.utils.aoa_to_sheet(wsData);
         const wb = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(wb, ws, "储值卡汇总");
-        XLSX.writeFile(wb, `包头地区储值卡余额情况(${y}年_${d}).xlsx`);
+        XLSX.writeFile(wb, `包头地区储值卡余额情况(${y}_${d}).xlsx`);
     }
 </script>
 </body>
