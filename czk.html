@@ -83,7 +83,7 @@
             <div class="stat-card"><div class="stat-label">筛选记录数</div><div class="stat-value" id="statCount">0</div></div>
             <div class="stat-card"><div class="stat-label">总数量</div><div class="stat-value" id="statQuantity">0</div></div>
             <div class="stat-card"><div class="stat-label">总充值金额</div><div class="stat-value" id="statRecharge">¥0.00</div></div>
-            <div class="stat-card"><div class="stat-label">总购书金额</div><div class="stat-value" id="statPurchase">¥0.00</div></div>
+            <div class="stat-card"><div class="stat-label">总购物金额</div><div class="stat-value" id="statPurchase">¥0.00</div></div>
         </div>
         <div class="glass-panel welcome-card" id="welcomeCard"><h2>欢迎使用数据查询系统</h2><p>请通过上方的「年度」或「部门」下拉框进行筛选查询</p></div>
         <div class="glass-panel hidden" id="tablePanel">
@@ -95,7 +95,7 @@
                             <th>部门名称</th>
                             <th>数量</th>
                             <th>充值金额</th>
-                            <th>购书金额</th>
+                            <th>购物金额</th>
                             <th>余额</th>
                             <th>全区卡余额</th>
                             <th>地区卡余额</th>
@@ -194,7 +194,7 @@
         const y = document.getElementById('yearFilter').value || '全部';
         const d = document.getElementById('deptFilter').value || '全部';
         const now = new Date();
-        document.getElementById('printSubtitle').innerText = ` 打印时间：${now.getFullYear()}年${now.getMonth() + 1}月${now.getDate()}日`;
+        document.getElementById('printSubtitle').innerText = `筛选条件：${y}年 | ${d} | 打印时间：${now.getFullYear()}年${now.getMonth() + 1}月${now.getDate()}日`;
         window.print();
     }
 
@@ -204,7 +204,7 @@
         const filtered = rawData.filter(item => (y === '' || item.year === y) && (d === '' || item.dept === d));
         if(filtered.length === 0) return alert('当前没有数据可以导出');
         
-        const wsData = [["年度", "部门名称", "数量", "充值金额", "购书金额", "余额", "全区卡余额", "地区卡余额", "门店卡余额"]];
+        const wsData = [["年度", "部门名称", "数量", "充值金额", "购物金额", "余额", "全区卡余额", "地区卡余额", "门店卡余额"]];
         filtered.forEach(item => {
             wsData.push([item.year, item.dept, item.quantity, item.recharge, item.purchase, item.balance, item.regionBalance, item.localBalance]);
         });
