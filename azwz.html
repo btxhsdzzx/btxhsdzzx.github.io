@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>星点版</title>
+<style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  min-height: 100vh;
+  font-family: "Segoe UI", Roboto, "Microsoft Yahei", sans-serif;
+  padding: 40px 20px;
+  background: linear-gradient(120deg, #eaf6ff, #fbefff, #edfff6, #eaf6ff);
+  background-size: 400% 400%;
+  animation: bgShift 14s ease infinite;
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* 动态星点画布 */
+#stars {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* 动态流动光晕 */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(circle at 20% 20%, rgba(0, 140, 255, 0.18), transparent 35%),
+    radial-gradient(circle at 80% 10%, rgba(255, 45, 120, 0.15), transparent 35%),
+    radial-gradient(circle at 70% 80%, rgba(0, 210, 140, 0.16), transparent 35%),
+    radial-gradient(circle at 30% 90%, rgba(120, 80, 255, 0.12), transparent 35%);
+  animation: floatGlow 18s ease-in-out infinite alternate;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* 顶部扫光 */
+body::after {
+  content: "";
+  position: fixed;
+  top: -30%;
+  left: -60%;
+  width: 60%;
+  height: 120%;
+  background: linear-gradient(120deg, transparent, rgba(255, 255, 255, 0.35), transparent);
+  transform: skewX(-20deg);
+  animation: sweep 7s linear infinite;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* 浅色半透明底板 */
+.wrap {
+  position: relative;
+  z-index: 2;
+  max-width: 880px;
+  margin: 0 auto;
+  background: linear-gradient(160deg, rgba(218, 234, 255, 0.86), rgba(232, 240, 255, 0.78));
+  border-radius: 22px;
+  padding: 40px;
+  border: 1px solid rgba(120, 170, 255, 0.35);
+  box-shadow:
+    0 20px 60px rgba(70, 110, 180, 0.25),
+    0 8px 24px rgba(70, 110, 180, 0.12),
+    inset 0 1px 0 rgba(255,255,255,0.9);
+  opacity: 0;
+  transform: translateY(30px);
+  animation: panelIn 0.9s ease forwards;
+}
+
+h1 {
+  font-size: 28px;
+  margin-bottom: 30px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  background: linear-gradient(90deg, #0091ff, #ff2d78, #00d69c, #7b4dff);
+  background-size: 300% 300%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: textGradient 6s ease infinite;
+  opacity: 0;
+  transform: translateY(-10px);
+  animation: titleIn 0.8s ease 0.2s forwards;
+}
+
+#content {
+  overflow-wrap: break-word;
+  word-break: break-all;
+}
+
+#content a {
+  display: block;
+  margin: 14px 0;
+  padding: 14px 18px;
+  border-radius: 14px;
+  text-decoration: none;
+  font-size: 15px;
+  font-weight: 600;
+  position: relative;
+  border: 1px solid rgba(255,255,255,0.6);
+  background: linear-gradient(120deg, #eaf4ff, #f3ebff, #eafff6);
+  background-size: 220% 220%;
+  color: #1f3a6f;
+  box-shadow:
+    0 8px 20px rgba(80, 120, 200, 0.18),
+    inset 0 1px 0 rgba(255,255,255,0.9);
+  opacity: 0;
+  transform: translateY(24px) scale(0.96);
+  animation:
+    cardGradient 5s ease infinite,
+    cardIn 0.55s ease forwards;
+  transition: transform 0.3s ease, box-shadow 0.3s ease, filter 0.3s ease;
+}
+
+#content a:nth-child(4n+1) {
+  background: linear-gradient(120deg, #0091ff, #2f6bff, #00c6ff);
+  background-size: 220% 220%;
+  color: #fff;
+  border-color: rgba(255,255,255,0.5);
+}
+
+#content a:nth-child(4n+2) {
+  background: linear-gradient(120deg, #ff2d78, #ff6ab1, #ff9f43);
+  background-size: 220% 220%;
+  color: #fff;
+  border-color: rgba(255,255,255,0.5);
+}
+
+#content a:nth-child(4n+3) {
+  background: linear-gradient(120deg, #00d69c, #14b8a6, #00c853);
+  background-size: 220% 220%;
+  color: #fff;
+  border-color: rgba(255,255,255,0.5);
+}
+
+#content a:nth-child(4n+4) {
+  background: linear-gradient(120deg, #7b4dff, #b14bff, #4b8bff);
+  background-size: 220% 220%;
+  color: #fff;
+  border-color: rgba(255,255,255,0.5);
+}
+
+#content a:hover {
+  transform: translateY(-5px) scale(1.015);
+  filter: brightness(1.08) saturate(1.1);
+  box-shadow:
+    0 14px 30px rgba(80, 120, 200, 0.32),
+    0 0 0 1px rgba(255,255,255,0.8),
+    inset 0 1px 0 rgba(255,255,255,0.9);
+}
+
+#content a:active {
+  transform: translateY(0) scale(0.995);
+}
+
+#content a:visited {
+  filter: brightness(0.82) saturate(0.85);
+}
+
+@keyframes bgShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes floatGlow {
+  0% { transform: translate3d(0, 0, 0) scale(1); }
+  100% { transform: translate3d(-2%, 1%, 0) scale(1.08); }
+}
+
+@keyframes sweep {
+  0% { left: -60%; }
+  100% { left: 160%; }
+}
+
+@keyframes panelIn {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes titleIn {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes textGradient {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes cardGradient {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes cardIn {
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+</style>
+</head>
+<body>
+
+<canvas id="stars"></canvas>
+
+<div class="wrap">
+  <h1>🔗 新华应用安装网址</h1>
+  <div id="content">
+财务OA系统http://111.57.0.140:7077
+财务报表旧系统http://111.57.0.141:9090
+财务报表新系统http://111.57.0.138:9080
+盘点客户端http://114.113.112.21/pkgl/zjpd.htm
+昆区图书馆http://110.16.13.34:1701/interlib3/login
+PHP门店http://lsd.nmgxhsd.cn:90/admin987654321/login.php
+门户网站：http://111.57.0.140:8080/DreamWeb/
+NC系统：http://111.57.0.138:9080/portal/
+CMS后台：http://cms.yhsms.com.cn/UserLogin.html
+展台监控：http://111.57.0.142:9000/home        mm:xhsd123
+书屋管理系统：https://cysw.nmgxhsd.cn:9000/centrincysw/centrincysw.htm
+商流正式地址：http://sl.nmgxhsd.cn/sl/Aspx/Main/userlogin.aspx
+物流正式地址：http://wl.nmgxhsd.cn/WL/PUBLISH.HTM
+连锁店正式地址：http://lsd.nmgxhsd.cn/centrinerp/centrinerp.htm
+POS销售正式地址：http://lsdpos.nmgxhsd.cn/posmain/pos.htm
+盘点服务器：http://lsdpd.nmgxhsd.cn/lsdpd/zjpd.htm
+基层店教材http://jcdjc.nmgxhsd.cn/jgerp/publish.htm 
+视频监控内网：http://10.0.100.240:9000/sso/login
+视频监控外网： http://111.57.0.142:9000/sso/login
+新华教辅网后台：https://nmxhyg.com
+  </div>
+</div>
+
+<script>
+/* 动态星点 */
+const canvas = document.getElementById('stars');
+const ctx = canvas.getContext('2d');
+let stars = [];
+let w, h;
+
+function resize() {
+  w = canvas.width = window.innerWidth;
+  h = canvas.height = window.innerHeight;
+}
+
+function createStars() {
+  stars = [];
+  const count = Math.floor((w * h) / 14000);
+  for (let i = 0; i < count; i++) {
+    stars.push({
+      x: Math.random() * w,
+      y: Math.random() * h,
+      r: Math.random() * 1.4 + 0.3,
+      a: Math.random() * 0.7 + 0.2,
+      s: Math.random() * 0.018 + 0.004,
+      vx: (Math.random() - 0.5) * 0.04,
+      vy: (Math.random() - 0.5) * 0.04
+    });
+  }
+}
+
+function drawStars() {
+  ctx.clearRect(0, 0, w, h);
+
+  for (const star of stars) {
+    star.a += star.s;
+    star.x += star.vx;
+    star.y += star.vy;
+
+    if (star.a >= 1 || star.a <= 0.1) star.s = -star.s;
+    if (star.x < 0) star.x = w;
+    if (star.x > w) star.x = 0;
+    if (star.y < 0) star.y = h;
+    if (star.y > h) star.y = 0;
+
+    ctx.beginPath();
+    ctx.arc(star.x, star.y, star.r, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(120, 180, 255, ${star.a})`;
+    ctx.shadowBlur = 8;
+    ctx.shadowColor = 'rgba(120, 180, 255, 0.8)';
+    ctx.fill();
+  }
+
+  requestAnimationFrame(drawStars);
+}
+
+resize();
+createStars();
+drawStars();
+window.addEventListener('resize', () => {
+  resize();
+  createStars();
+});
+
+/* 链接动态渲染 */
+function linkify(text) {
+  const reg = /(https?:\/\/[^\s]+)|(www\.[^\s]+\.[^\s]+)/g;
+  let index = 0;
+
+  const html = text.replace(reg, function(url) {
+    let link = url;
+    if (!/^https?:\/\//.test(url)) {
+      link = 'https://' + url;
+    }
+
+    const delay = 0.35 + index * 0.12;
+    index++;
+
+    return `<a href="${link}" target="_blank" style="animation-delay:${delay}s">${url}</a>`;
+  });
+
+  return html;
+}
+
+const box = document.getElementById('content');
+box.innerHTML = linkify(box.innerText);
+</script>
+
+</body>
+</html>
